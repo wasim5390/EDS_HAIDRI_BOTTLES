@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="5dp"
+    >
+    <TextView
+        android:id="@+id/item_name"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@color/black"
+        android:text="AXL"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:ellipsize="marquee"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:maxLines="2"
+
+        />
+    <TextView
+        android:id="@+id/wh_stock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_regular"
+        android:backgroundTint="@color/grey_alpha"
+        android:textColor="@color/white"
+        android:background="@drawable/input_bg"
+        android:text="0.0"
+        android:layout_marginEnd="10dp"
+        android:minWidth="120dp"
+        android:maxWidth="120dp"
+        android:textSize="14sp"
+        android:padding="10dp"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:layout_gravity="end"
+
+        />
+
+</LinearLayout>

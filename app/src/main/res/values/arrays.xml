@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pop_array">
+        <item>Continue Order</item>
+        <item>Outlet Closed</item>
+        <item>Area Inaccessible</item>
+        <item>No Time</item>
+        <item>No Visit</item>
+    </string-array>
+
+    <string-array name="asset_verification">
+        <item></item>
+        <item>Scanning Not being done</item>
+        <item>No Asset</item>
+        <item>No Barcode</item>
+    </string-array>
+</resources>

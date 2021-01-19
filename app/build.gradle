@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.optimus.eds"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 9
+        versionName "1.0.9"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    // @TODO below is needed on migration
+    /* javaCompileOptions {
+        annotationProcessorOptions {
+            arguments = ["room.schemaLocation":
+                                 "$projectDir/schemas".toString()]
+        }
+    }*/
+    useLibrary 'android.test.runner'
+
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
+}
+apply from: 'dependencies.gradle'
+
+dependencies {
+    // Core library
+    androidTestImplementation 'androidx.test:core:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
+
+    //Locations and Places
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:0.6.2'
+    implementation 'com.google.android.gms:play-services-places:17.0.0'
+    implementation 'com.google.android.libraries.places:places:2.4.0'
+
+// Espresso dependencies
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+    implementation 'com.google.android.material:material:1.0.0-beta01'
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.kaopiz:kprogresshud:1.0.2'
+}
+apply plugin: 'com.google.gms.google-services'

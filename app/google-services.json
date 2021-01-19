@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "819532646450",
+    "firebase_url": "https://eds-system.firebaseio.com",
+    "project_id": "eds-system",
+    "storage_bucket": "eds-system.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819532646450:android:af15631c96bc5272",
+        "android_client_info": {
+          "package_name": "com.optimus.eds"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819532646450-nuako8le9l94u6aar44ktteqed9glb7k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.optimus.eds",
+            "certificate_hash": "9ef4969d4e8cfe75e8beb0e346d78171316f8f26"
+          }
+        },
+        {
+          "client_id": "819532646450-okihri9h2rj5um4hr4qulrpmkjv1igvk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvTqwnlchShDWfb2l5yrpz2RTbHeyuQkY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819532646450-okihri9h2rj5um4hr4qulrpmkjv1igvk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

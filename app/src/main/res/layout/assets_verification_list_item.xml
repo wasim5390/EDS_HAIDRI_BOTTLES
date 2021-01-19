@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:weightSum="30">
+
+    <TextView
+        android:id="@+id/tvAssetCode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="8"
+        android:text="RBL1709181"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="8"
+        android:gravity="center"
+        android:text="Pending"
+        android:textSize="14sp"/>
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:background="@drawable/spinner_trans_dropdown"
+        android:id="@+id/spinnerReason"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="14"
+        android:entries="@array/asset_verification"
+        android:gravity="center"
+        android:overlapAnchor="false"/>
+
+</LinearLayout>

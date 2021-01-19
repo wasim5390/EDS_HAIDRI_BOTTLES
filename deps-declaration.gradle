@@ -1,0 +1,162 @@
+ext.deps = [:]
+
+ext.versions = [:]
+def versions = [:]
+//sdk versions
+versions.compile_sdk = 28
+versions.min_sdk = 21
+versions.target_sdk = 28
+
+// android and google essentials
+versions.android_plugin = '3.6.3'
+
+versions.build_tools = '27.0.3'
+versions.constraint_layout = '2.0.0-alpha3'
+versions.google_services = '3.0.0'
+versions.google_location_services = '17.0.0'
+versions.lifecycle = '1.1.1'
+versions.support_lib = '28.0.0'
+versions.support_test = '1.0.1'
+versions.multidex = '1.0.1'
+versions.espresso = '2.2.2'
+versions.butterknife = '10.1.0'
+versions.circularimageview = '2.2.0'
+versions.dexter='5.0.0'
+versions.scanner='1.9.13'
+versions.imagecropper = '2.7.0'
+versions.glide = '4.3.1'
+versions.glide_okhttp_integration = '4.3.1@aar'
+versions.gson = '2.8.2'
+versions.mockito = '2.12.0'
+versions.okhttp = '4.6.0'
+versions.okhttp_urlconnection = '4.6.0'
+versions.retrofit = '2.3.0'
+versions.rxjava = '2.0.1'
+versions.rxbinding = '2.0.0'
+versions.work = '2.0.1'
+versions.picasso='2.71828'
+versions.paging = '1.0.0'
+versions.room = '1.1.1'
+//versions.expandablerecyclerview = '1.3'
+versions.expandablerecyclerview = '1.4'
+
+versions.sectioned_recyclerview = '1.2.0'
+
+versions.image_compressor= '2.1.0'
+
+
+ext.versions = versions
+
+def deps = [:]
+
+// ----- START OF GOOGLE AND ANDROID ESSENTIALS
+deps.android_plugin = "com.android.tools.build:gradle:$versions.android_plugin"
+deps.constraint_layout = "com.android.support.constraint:constraint-layout:$versions.constraint_layout"
+deps.gridlayout_v7 = "com.android.support:gridlayout-v7:$versions.support_lib"
+deps.multidex = "com.android.support:multidex:$versions.multidex"
+deps.google_services = "com.google.gms:google-services:$versions.google_services"
+deps.google_location_services = "com.google.android.gms:play-services-location:$versions.google_location_services"
+
+
+
+def support_lib = [:]
+support_lib.design = "com.android.support:design:$versions.support_lib"
+support_lib.appcompat = "com.android.support:appcompat-v7:$versions.support_lib"
+support_lib.support_v4 = "com.android.support:support-v4:$versions.support_lib"
+support_lib.recyclerview = "com.android.support:recyclerview-v7:$versions.support_lib"
+support_lib.cardview = "com.android.support:cardview-v7:$versions.support_lib"
+support_lib.support_annotations = "com.android.support:support-annotations:$versions.support_lib"
+deps.support_lib = support_lib
+
+
+def lifecycle = [:]
+lifecycle.extensions = "android.arch.lifecycle:extensions:$versions.lifecycle"
+lifecycle.compiler = "android.arch.lifecycle:common-java8:$versions.lifecycle"
+deps.lifecycle = lifecycle
+
+deps.espresso = "com.android.support.test.espresso:espresso-core:$versions.espresso"
+
+// ----- END OF ANDROID AND GOOGLE ESSENTIALS
+
+deps.circularimageview = "de.hdodenhof:circleimageview:$versions.circularimageview"
+deps.clevertap = "com.clevertap.android:clevertap-android-sdk:$versions.clevertap"
+deps.imagecropper = "com.theartofdev.edmodo:android-image-cropper:$versions.imagecropper"
+
+
+def glide = [:]
+glide.runtime = "com.github.bumptech.glide:glide:$versions.glide"
+glide.compiler = "com.github.bumptech.glide:compiler:$versions.glide"
+deps.glide = glide
+
+deps.glide_okhttp_integration = "com.github.bumptech.glide:okhttp3-integration:$versions.glide_okhttp_integration"
+
+def butterknife = [:]
+butterknife.main = "com.jakewharton:butterknife:$versions.butterknife"
+butterknife.compiler= "com.jakewharton:butterknife-compiler:$versions.butterknife"
+deps.butterknife = butterknife
+
+deps.gson = "com.google.code.gson:gson:$versions.gson"
+
+
+def mockito = [:]
+mockito.core = "org.mockito:mockito-core:$versions.mockito"
+mockito.android = "org.mockito:mockito-android:$versions.mockito"
+deps.mockito = mockito
+
+def okhttp = [:]
+okhttp.main = "com.squareup.okhttp3:okhttp:$versions.okhttp"
+okhttp.logging_interceptor = "com.squareup.okhttp3:logging-interceptor:$versions.okhttp"
+deps.okhttp = okhttp
+
+deps.okhttp_urlconnection = "com.squareup.okhttp3:okhttp-urlconnection:$versions.okhttp_urlconnection"
+deps.picasso = "com.squareup.picasso:picasso:$versions.picasso"
+
+def retrofit = [:]
+retrofit.main = "com.squareup.retrofit2:retrofit:$versions.retrofit"
+retrofit.rxjava = "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
+retrofit.gson = "com.squareup.retrofit2:converter-gson:$versions.retrofit"
+deps.retrofit = retrofit
+
+def rxjava = [:]
+rxjava.main = "io.reactivex.rxjava2:rxjava:$versions.rxjava"
+rxjava.android = "io.reactivex.rxjava2:rxandroid:$versions.rxjava"
+deps.rxjava = rxjava
+
+def rxbinding = [:]
+rxbinding.platform = "com.jakewharton.rxbinding2:rxbinding:$versions.rxbinding"
+rxbinding.support_v4 = "com.jakewharton.rxbinding2:rxbinding-support-v4:$versions.rxbinding"
+rxbinding.support_v7 = "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:$versions.rxbinding"
+deps.rxbinding = rxbinding
+
+def support_test = [:]
+support_test.rules = "com.android.support.test:rules:$versions.support_test"
+support_test.runner = "com.android.support.test:runner:$versions.support_test"
+deps.support_test = support_test
+
+
+deps.sectioned_recyclerview = "io.github.luizgrp.sectionedrecyclerviewadapter:sectionedrecyclerviewadapter:$versions.sectioned_recyclerview"
+
+
+def paging = [:]
+paging.runtime = "android.arch.paging:runtime:$versions.paging"
+paging.common = "android.arch.paging:common:$versions.paging"
+deps.paging = paging
+
+def room = [:]
+room.runtime = "android.arch.persistence.room:runtime:$versions.room"
+room.compiler = "android.arch.persistence.room:compiler:$versions.room"
+room.rxjava2 = "android.arch.persistence.room:rxjava2:$versions.room"
+room.testing = "android.arch.persistence.room:testing:$versions.room"
+deps.room = room
+
+deps.dexter = "com.karumi:dexter:$versions.dexter"
+
+deps.scanner = "me.dm7.barcodescanner:zxing:$versions.scanner"
+deps.work = "androidx.work:work-runtime:$versions.work"
+
+//deps.expandablerecyclerview = "com.thoughtbot:expandablerecyclerview:$versions.expandablerecyclerview"
+deps.expandablerecyclerview = "com.thoughtbot:expandablecheckrecyclerview:$versions.expandablerecyclerview"
+deps.image_compressor="id.zelory:compressor:$versions.image_compressor"
+
+deps.signature = "com.github.gcacace:signature-pad:1.2.1"
+ext.deps = deps
