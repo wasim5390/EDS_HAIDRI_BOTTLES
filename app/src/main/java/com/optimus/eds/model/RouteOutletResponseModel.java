@@ -2,6 +2,7 @@ package com.optimus.eds.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.optimus.eds.db.entities.Asset;
+import com.optimus.eds.db.entities.LookUp;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.db.entities.Route;
@@ -38,6 +39,9 @@ public class RouteOutletResponseModel extends BaseResponse{
 
     @SerializedName("tasks")
     List<Task> tasks;
+
+    @SerializedName("lookup")
+    LookUp lookUp;
 
     public List<Route> getRouteList() {
         return routeList==null?new ArrayList<>():routeList;
@@ -121,5 +125,13 @@ public class RouteOutletResponseModel extends BaseResponse{
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public LookUp getLookUp() {
+        return lookUp;
+    }
+
+    public void setLookUp(LookUp lookUp) {
+        this.lookUp = lookUp;
     }
 }

@@ -51,9 +51,9 @@ public class PromotionAdapter extends RecyclerView.Adapter<PromotionAdapter.Prom
 //                holder.promotionSize.setText(String.valueOf(promotionList.get(pos).getAmount()));
         }else if(promotionList.get(pos).getPromoOrFreeGoodType().equals(FREE_GOOD)){
 
-            holder.promotionName.setText(promotionList.get(pos).getFreeGoodName());
+            holder.promotionName.setText(promotionList.get(pos).getFreeGoodQuantity() + " " + promotionList.get(pos).getFreeGoodSize() + " " +promotionList.get(pos).getFreeGoodName());
 
-            holder.promotionSize.setText(promotionList.get(pos).getFreeGoodSize().concat(" " + promotionList.get(pos).getCalculationType()));
+            holder.promotionSize.setText(" ");
         }
 
     }

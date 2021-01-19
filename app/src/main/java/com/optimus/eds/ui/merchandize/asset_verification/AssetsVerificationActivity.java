@@ -1,21 +1,47 @@
 package com.optimus.eds.ui.merchandize.asset_verification;
 
 import androidx.lifecycle.ViewModelProviders;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.LocationSource;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Asset;
+import com.optimus.eds.db.entities.LookUp;
+import com.optimus.eds.db.entities.Outlet;
+import com.optimus.eds.location_services.GpsUtils;
+import com.optimus.eds.model.AssetStatus;
+import com.optimus.eds.ui.route.outlet.detail.OutletDetailActivity;
 import com.optimus.eds.ui.scanner.ScannerActivity;
 import com.optimus.eds.utils.PreferenceUtil;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
@@ -39,6 +65,14 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
     List<Asset> assetList ;
 
+    String barcode ="";
+
+    LatLng currentLatLng , outletLatLng ;
+    private LocationRequest locationRequest;
+    private FusedLocationProviderClient locationProviderClient;
+    private LocationCallback locationCallback ;
+    Outlet outlet ;
+
     public static void start(Context context,Long outletId) {
         Intent starter = new Intent(context, AssetsVerificationActivity.class);
         starter.putExtra("OutletId",outletId);
@@ -54,9 +88,18 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     public void created(Bundle savedInstanceState) {
         ButterKnife.bind(this);
         setToolbar(getString(R.string.asset_verification));
-        initAssetsAdapter();
+
         outletId =  getIntent().getLongExtra("OutletId",0);
         viewModel = ViewModelProviders.of(this).get(AssetsViewModel.class);
+
+        viewModel.findOutlet(outletId).observe(this , outlet -> {
+            this.outlet = outlet ;
+        });
+
+        viewModel.getLookUpData().observe(this , lookUp -> {
+            initAssetsAdapter(lookUp.getAssetStatus());
+        });
+
         viewModel.loadAssets(outletId);
         viewModel.getAssets().observe(this, assets -> {
 
@@ -81,15 +124,138 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         assetsVerificationAdapter.populateAssets(assets);
     }
 
-    private void initAssetsAdapter() {
+    private void initAssetsAdapter(List<AssetStatus> assetStatuses) {
+        assetStatuses.add(0 , new AssetStatus("" , -1));
+
         assetList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
-        assetsVerificationAdapter = new AssetsVerificationAdapter(this,this);
+        assetsVerificationAdapter = new AssetsVerificationAdapter(this, assetStatuses,this);
         recyclerView.setAdapter(assetsVerificationAdapter);
         recyclerView.setNestedScrollingEnabled(false);
+    }
+
+    @SuppressLint("MissingPermission")
+    public void enableLocationServices() {
+//        new GpsUtils(this, LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY))
+//                .turnGPSOn(isGPSEnable -> {
+//                    // turn on GPS
+//                    if(isGPSEnable) {
+//                        createLocationRequest();
+//                        setLocationCallback();
+//                        locationProviderClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper());
+//                    }
+//                });
+
+        createLocationRequest();
+        setLocationCallback();
+        locationProviderClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper());
+
+    }
+
+    protected void createLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+    }
+
+    public void setLocationCallback(){
+        locationCallback = new LocationCallback(){
+
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+
+                        if (location.isFromMockProvider()){
+                            Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        currentLatLng = new LatLng(location.getLatitude() , location.getLongitude());
+
+                        if (outlet != null){
+
+                            outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
+                            if (checkMetre(currentLatLng, outletLatLng) > 100) {
+                                showOutsideBoundaryDialog(0);
+                            }
+                            if (barcode != null)
+                                if (!barcode.isEmpty())
+                                    viewModel.verifyAsset(barcode);
+
+                        }
+
+                        locationProviderClient.removeLocationUpdates(locationCallback);
+
+                    }
+                }
+            }
+        };
+    }
+//    private LocationCallback locationCallback = new LocationCallback(){
+//        @Override
+//        public void onLocationResult(LocationResult locationResult) {
+//            if (locationResult == null) {
+//                return;
+//            }
+//            for (Location location : locationResult.getLocations()) {
+//                if (location != null) {
+//
+//                   if (location.isFromMockProvider()){
+//                       Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
+//                       return;
+//                   }
+//
+//                    currentLatLng = new LatLng(location.getLatitude() , location.getLongitude());
+//
+//                   if (outlet != null){
+//
+//                       outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
+//                       if (checkMetre(currentLatLng, outletLatLng) > 100) {
+//                           showOutsideBoundaryDialog(0);
+//                       }
+//                       if (barcode != null)
+//                           if (!barcode.isEmpty())
+//                               viewModel.verifyAsset(barcode);
+//                   }
+//
+//                }
+//            }
+//
+//        }
+//    };
+
+    public void showOutsideBoundaryDialog( int repeat){
+
+        if (repeat != 5){
+
+            final int repeatLocal = ++repeat ;
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle(R.string.warning);
+            builderSingle.setMessage(R.string.retailersBoundary);
+            builderSingle.setCancelable(false);
+            builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
+                dialog1.dismiss();
+                showOutsideBoundaryDialog(repeatLocal);
+            });
+            builderSingle.show();
+
+        }
+    }
+    public Double checkMetre(LatLng from , LatLng to){
+        return Double.parseDouble(new DecimalFormat("##.##").format(SphericalUtil.computeDistanceBetween(from , to )));
     }
 
     @OnClick(R.id.btnScanBarcode)
@@ -105,8 +271,8 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         if(resultCode==RESULT_OK){
             switch (requestCode){
                 case SCANNER_REQUEST_CODE:
-                    String barcode = data.getStringExtra(KEY_SCANNER_RESULT);
-                    viewModel.verifyAsset(barcode);
+                    barcode = data.getStringExtra(KEY_SCANNER_RESULT);
+                   permissionCheck();
                     break;
             }
         }
@@ -117,11 +283,34 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         viewModel.updateAsset(asset);
     }
 
+    public void permissionCheck(){
+        Dexter.withActivity(this)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
+                .withListener(new MultiplePermissionsListener() {
+                    @SuppressLint("MissingPermission")
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (report.areAllPermissionsGranted()){
+                           enableLocationServices();
+                        }
+                        else{
+                            if(report.isAnyPermissionPermanentlyDenied())
+                                openLocationSettings();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        token.continuePermissionRequest();
+                    }
+                }).check();
+    }
+
     @Override
     public void onBackPressed() {
 
         if (assetsVerificationAdapter.getAssetScanning() == assetList.size()){
-            //PreferenceUtil.getInstance(this).set(true);
+            PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(true);
             finish();
         }else {
             Toast.makeText(this, "Scan all assets", Toast.LENGTH_SHORT).show();

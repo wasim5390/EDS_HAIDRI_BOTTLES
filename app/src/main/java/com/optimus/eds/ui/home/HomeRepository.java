@@ -16,6 +16,7 @@ import com.optimus.eds.db.dao.CustomerDao;
 import com.optimus.eds.db.dao.ProductsDao;
 import com.optimus.eds.db.dao.RouteDao;
 import com.optimus.eds.db.dao.TaskDao;
+import com.optimus.eds.db.entities.LookUp;
 import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.db.entities.Task;
 import com.optimus.eds.model.AppUpdateModel;
@@ -155,6 +156,7 @@ public class HomeRepository {
                                     customerDao.deleteAllCustomerInput();
                                     taskDao.deleteAllTask();
                                     routeDao.deleteAllPromotion();
+                                    routeDao.deleteAllLookUp();
                                 }
                             }))
 
@@ -169,6 +171,7 @@ public class HomeRepository {
                             .andThen(Completable.fromAction(() -> { routeDao.insertAssets(response.body().getAssetList());}))
                             .andThen(insertTasks(response.body().getTasksList()))
                             .andThen(insertPromotion(response.body().getPromosAndFOC()))
+                            .andThen(insertLookUp(response.body().getLookUp()))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.single()).subscribe(new CompletableObserver() {
                         @Override
@@ -259,6 +262,14 @@ public class HomeRepository {
         return Completable.fromAction(()->{
             //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
             AsyncTask.execute(() -> routeDao.insertPromotion(promotions));
+
+        });
+    }
+
+    private Completable insertLookUp(LookUp lookUp){
+        return Completable.fromAction(()->{
+            //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
+            AsyncTask.execute(() -> routeDao.insertLookUp(lookUp));
 
         });
     }

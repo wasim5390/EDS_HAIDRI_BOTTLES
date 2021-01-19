@@ -27,6 +27,7 @@ import com.optimus.eds.ui.order.OrderBookingActivity;
 import com.optimus.eds.ui.camera.ImageCropperActivity;
 import com.optimus.eds.ui.merchandize.asset_verification.AssetsVerificationActivity;
 import com.optimus.eds.ui.merchandize.planogaram.ImageDialog;
+import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 import java.io.File;
@@ -89,6 +90,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
         viewModel = ViewModelProviders.of(this).get(MerchandiseViewModel.class);
         viewModel.loadOutlet(outletId).observe(this, outlet -> {
             this.outlet = outlet;
+            PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(outlet.getAssetsScennedInTheLastMonth());
             onOutletLoaded(outlet);
         });
         viewModel.loadAssets(outletId);
@@ -188,13 +190,14 @@ public class OutletMerchandiseActivity extends BaseActivity {
         merchandiseAdapterAfter = new MerchandiseAdapter(this);
         recyclerViewAfter.setAdapter(merchandiseAdapterAfter);
 
-
     }
 
     @OnClick(R.id.btnNext)
     public void onNextClick(){
-        if (outlet.getAssetsScennedInTheLastMonth()){
+        if (PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+            outlet.setAssetsScennedInTheLastMonth(true);
             String remarks = etRemarks.getText().toString();
+            viewModel.updateOutlet(outlet);
             viewModel.insertMerchandiseIntoDB(outletId,remarks);
         } else{
             Toast.makeText(this, "Please scan assets", Toast.LENGTH_SHORT).show();

@@ -6,7 +6,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.annotation.NonNull;
 
+import com.optimus.eds.db.dao.RouteDao;
 import com.optimus.eds.db.entities.Asset;
+import com.optimus.eds.db.entities.LookUp;
+import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.ui.merchandize.MerchandiseRepository;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class AssetsViewModel extends AndroidViewModel {
     private MerchandiseRepository repository;
 
 
+
     public AssetsViewModel(@NonNull Application application) {
         super(application);
         mAssets = new MutableLiveData<>();
@@ -38,6 +42,14 @@ public class AssetsViewModel extends AndroidViewModel {
                     mAssets.postValue(assets);
         });
 
+    }
+
+    public LiveData<Outlet> findOutlet(Long outletId){
+        return repository.getOutletById(outletId);
+    }
+
+    public LiveData<LookUp> getLookUpData(){
+        return repository.getLookUpData();
     }
 
     public void updateAsset(Asset asset){

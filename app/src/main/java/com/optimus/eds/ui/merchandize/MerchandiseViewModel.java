@@ -156,6 +156,11 @@ public class MerchandiseViewModel extends AndroidViewModel {
     }
 
 
+    public void updateOutlet(Outlet outlet){
+        repository.updateOutlet(outlet);
+    }
+
+
     public void removeImage(MerchandiseImage item){
         listImages.remove(item);
         imagesLiveDate.setValue(listImages);

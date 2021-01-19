@@ -55,6 +55,9 @@ public interface MerchandiseDao {
     @Query("DELETE FROM Promotion")
     void deleteAllPromotion();
 
+    @Query("DELETE FROM LookUp")
+    void deleteAllLookUp();
+
     @Query("DELETE FROM Merchandise")
     void deleteAllMerchandise();
 

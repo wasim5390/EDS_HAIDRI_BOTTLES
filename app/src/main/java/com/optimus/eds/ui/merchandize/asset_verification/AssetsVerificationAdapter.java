@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Asset;
+import com.optimus.eds.model.AssetStatus;
 import com.optimus.eds.utils.PreferenceUtil;
 
 import java.util.ArrayList;
@@ -32,11 +33,14 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
     private AssetVerificationStatusListener listener;
     private int check=0;
     private int assetScanning = 0;
+    private List<AssetStatus> assetStatuses;
+    private Integer COOLER_SCANNED = 5;
 
-    public AssetsVerificationAdapter(Context context, AssetVerificationStatusListener listener) {
+    public AssetsVerificationAdapter(Context context, List<AssetStatus> assetStatuses , AssetVerificationStatusListener listener) {
         this.mContext = context;
         this.listener = listener;
         this.assetList = new ArrayList<>();
+        this.assetStatuses = assetStatuses;
     }
 
     public void populateAssets(List<Asset> assets) {
@@ -73,8 +77,8 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
         List<String> reasons = getReasons(asset.getVerified());
         ((AssetsListHolder) holder).codeTv.setText(String.valueOf(asset.getAssetId()));
         ((AssetsListHolder) holder).statusTextView.setText(asset.getVerified()?"Verified":"Pending");
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
-                (mContext, R.layout.spinner_item, reasons);
+        ArrayAdapter<AssetStatus> spinnerArrayAdapter = new ArrayAdapter<AssetStatus>
+                (mContext, R.layout.spinner_item, assetStatuses);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout
                 .simple_spinner_dropdown_item);
 
@@ -82,28 +86,53 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
 
         String reason = asset.getReason();
         if(!reason.isEmpty()){
-            int index = reasons.indexOf(reason);
+            int index;
+
+            if (asset.getVerified()){
+               index = getAssetIndex(COOLER_SCANNED);
+            }else{
+                index = getAssetIndex(asset.getStatusid());
+            }
             assetsListHolder.reasonsSpinner.setSelection(index);
 
-            if (!assetList.get(position).getVerified())
-                 ++assetScanning;
-        }
-
-        if (assetList.get(position).getVerified()){
             assetScanning++;
+        }else{
+            if (asset.getVerified()){
+
+                int index = getAssetIndex(COOLER_SCANNED);
+                assetsListHolder.reasonsSpinner.setSelection(index);
+            }
         }
+//
+//        if (assetList.get(position).getVerified()){
+//            assetScanning++;
+//        }
 
         assetsListHolder.reasonsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int positionListener, long id) {
-                if(++check > 1) {
-                    if (assetList.get(position).getReason().isEmpty()){
+//                if(++check > 1) {
+
+                if (!((TextView) view).getText().toString().isEmpty()){
+                    if (assetList.get(position).getStatusid() == null){
                         assetScanning++;
                     }
                     asset.setReason(((TextView) view).getText().toString());
+                    asset.setStatusid(assetStatuses.get(positionListener).getKey());
+                    assetList.get(position).setStatusid(assetStatuses.get(positionListener).getKey());
                     listener.onStatusChange(asset);
                     Log.i("Errorrrr!!!", positionListener + "");
+                }else{
+
+                    if (assetList.get(position).getStatusid() != null){
+                        assetScanning--;
+                        asset.setStatusid(null);
+                        assetList.get(position).setStatusid(null);
+                        listener.onStatusChange(asset);
+
+                    }
                 }
+//                }
             }
 
             @Override
@@ -115,6 +144,17 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
 
     public int getAssetScanning() {
         return assetScanning;
+    }
+
+    public int getAssetIndex(Integer key){
+        int count = 0 ;
+        for (AssetStatus assetStatus : assetStatuses){
+            if (assetStatus.getKey().equals(key)){
+                return count;
+            }
+            count++;
+        }
+        return -1;
     }
 
     @Override

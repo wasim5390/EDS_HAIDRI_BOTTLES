@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.optimus.eds.db.entities.Asset;
+import com.optimus.eds.db.entities.LookUp;
 import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.OutletOrderStatus;
@@ -99,6 +100,9 @@ public interface RouteDao extends MerchandiseDao{
     @Insert(onConflict = REPLACE)
     void insertPromotion(List<Promotion> routes);
 
+    @Insert(onConflict = REPLACE)
+    void insertLookUp(LookUp lookUp);
+
     @Update
     int updateRoute(Route route);
 
@@ -111,8 +115,12 @@ public interface RouteDao extends MerchandiseDao{
     @Query("SELECT * FROM Promotion WHERE outletId=:id")
     LiveData<List<Promotion>> getPromotionByOutletId(Long id);
 
+    @Query("SELECT * FROM LookUp ")
+    LiveData<LookUp> getLookUpData();
+
     @Insert(onConflict = REPLACE)
     long insertOutlet(Outlet outlet);
+
 
     @Insert(onConflict = IGNORE)
     void insertOutlets(List<Outlet> outlets);

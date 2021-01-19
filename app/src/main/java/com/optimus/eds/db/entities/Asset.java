@@ -51,6 +51,8 @@ public class Asset implements Serializable {
     private Double mDeposit;
     @SerializedName("documentNumber")
     private String mDocumentNumber;
+    @SerializedName("statusid ")
+    private Integer statusid ;
 
     public void setAssetModel(String mAssetModel) {
         this.mAssetModel = mAssetModel;
@@ -373,5 +375,13 @@ public class Asset implements Serializable {
 
     public void setmTransactionType(String mTransactionType) {
         this.mTransactionType = mTransactionType;
+    }
+
+    public Integer getStatusid() {
+        return statusid;
+    }
+
+    public void setStatusid(Integer statusid) {
+        this.statusid = statusid;
     }
 }

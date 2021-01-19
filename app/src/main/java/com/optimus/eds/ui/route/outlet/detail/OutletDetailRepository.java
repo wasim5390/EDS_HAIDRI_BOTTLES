@@ -10,6 +10,7 @@ import com.optimus.eds.db.AppDatabase;
 import com.optimus.eds.db.dao.ProductsDao;
 import com.optimus.eds.db.dao.RouteDao;
 import com.optimus.eds.db.dao.TaskDao;
+import com.optimus.eds.db.entities.LookUp;
 import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.model.Configuration;
 import com.optimus.eds.db.entities.Outlet;
@@ -72,6 +73,10 @@ public class OutletDetailRepository {
 
     public LiveData<List<Promotion>> getPromotionByOutletId(Long outletId){
         return routeDao.getPromotionByOutletId(outletId);
+    }
+
+    public LiveData<LookUp> getLookUpData(){
+        return routeDao.getLookUpData();
     }
 
     public LiveData<List<Task>> getTasksByOutletId(Long outletId){
