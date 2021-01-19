@@ -93,9 +93,10 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
             }else{
                 index = getAssetIndex(asset.getStatusid());
             }
-            assetsListHolder.reasonsSpinner.setSelection(index);
 
             assetScanning++;
+            assetsListHolder.reasonsSpinner.setSelection(index);
+
         }else{
             if (asset.getVerified()){
 
@@ -127,6 +128,7 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
                     if (assetList.get(position).getStatusid() != null){
                         assetScanning--;
                         asset.setStatusid(null);
+                        asset.setReason(null);
                         assetList.get(position).setStatusid(null);
                         listener.onStatusChange(asset);
 

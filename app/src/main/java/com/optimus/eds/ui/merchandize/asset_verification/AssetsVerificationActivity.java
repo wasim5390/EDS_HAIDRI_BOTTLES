@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -131,6 +132,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this , RecyclerView.VERTICAL));
         recyclerView.setNestedScrollingEnabled(false);
         assetsVerificationAdapter = new AssetsVerificationAdapter(this, assetStatuses,this);
         recyclerView.setAdapter(assetsVerificationAdapter);
