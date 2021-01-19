@@ -89,7 +89,7 @@
         android:background="@drawable/input_bg"
         android:padding="10dp"
         android:maxLines="1"
-        android:inputType="numberDecimal"
+
         android:maxLength="9"
         android:singleLine="true"
         />

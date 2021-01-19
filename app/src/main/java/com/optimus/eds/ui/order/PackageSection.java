@@ -2,14 +2,18 @@ package com.optimus.eds.ui.order;
 
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.optimus.eds.EdsApplication;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Product;
 import com.optimus.eds.model.PackageModel;
+import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 import java.util.List;
@@ -88,6 +92,12 @@ public class PackageSection extends StatelessSection {
             }
         });
 
+        if (PreferenceUtil.getInstance(EdsApplication.getContext()).getPunchOrder()){
+          itemHolder.etOrderQty.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+        }else{
+            itemHolder.etOrderQty.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        }
+
         itemHolder.etOrderQty.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -100,6 +110,7 @@ public class PackageSection extends StatelessSection {
                     product.setQty(null,null);
                     return;
                 }
+
                 double qty = Double.parseDouble(s.toString());
                 Integer unitStock = product.getUnitStockInHand();
                 if(qty>0){
