@@ -44,6 +44,9 @@ public class OrderDetail implements Cloneable{
     @SerializedName("orderId")
     public Long mOrderId;
 
+    @SerializedName("pkgId")
+    public Long pkgId;
+
     @SerializedName("unitOrderDetailId")
     @ColumnInfo(name = "unitOrderDetailId")
     public Long mUnitOrderDetailId;
@@ -506,6 +509,14 @@ public class OrderDetail implements Cloneable{
         OrderDetail that = (OrderDetail) o;
         return mProductId.equals(that.mProductId) &&
                 mProductGroupId.equals(that.mProductGroupId);
+    }
+
+    public Long getPkgId() {
+        return pkgId;
+    }
+
+    public void setPkgId(Long pkgId) {
+        this.pkgId = pkgId;
     }
 
     @Override

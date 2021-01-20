@@ -120,8 +120,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
     public void filterProductsByGroup(Long groupId){
 //        Single<List<Product>> allProductsByGroup = repository.findAllProductsByGroup(groupId);
         Single<List<Product>> allProductsByPackage = repository.findAllProductsByPackageId(groupId);
-        if(order==null)
-        {
+        if(order==null) {
             disposable.add(allProductsByPackage.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onProductsLoaded));
             return;
         }
@@ -158,13 +157,14 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
 
 
-    public void addOrder(List<Product> orderItems,Long groupId,boolean sendToServer){
+    public void addOrder(List<Product> orderItems,Long pkgId,boolean sendToServer){
         Completable.create(e -> {
             if(order==null) {
                 Order order = new Order(outletId);
                 repository.createOrder(order);
             }else{
-                repository.deleteOrderItemsByGroup(order.getOrder().getLocalOrderId(),groupId);
+//                repository.deleteOrderItemsByGroup(order.getOrder().getLocalOrderId(),groupId);
+                repository.deleteOrderItemsByPackage(order.getOrder().getLocalOrderId(),pkgId);
             }
             e.onComplete();
         }).subscribeOn(Schedulers.io())
@@ -322,6 +322,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
             orderDetail.setProductGroupId(product.getProductGroupId());
             orderDetail.setType(Constant.ProductType.PAID);
             orderDetail.setCartonSize(product.getCartonQuantity());
+            orderDetail.setPkgId(product.getPkgId());
             orderDetails.add(orderDetail);
         }
         order.setOrderDetails(orderDetails);

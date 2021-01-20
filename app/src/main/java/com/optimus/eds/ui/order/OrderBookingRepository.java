@@ -73,6 +73,10 @@ public class OrderBookingRepository {
         orderDao.deleteOrderItemsByGroup(orderId,groupId);
     }
 
+    public void deleteOrderItemsByPackage(Long orderId,Long packageId){
+        orderDao.deleteOrderItemsByPkg(orderId,packageId);
+    }
+
 
     public Completable deleteOrderItems(Long orderId){
        return Completable.fromAction(()->orderDao.deleteOrderItems(orderId));
