@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="ifContentScrolls"
+        >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp"
+        android:layout_marginTop="5dp"
+        >
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/top_summary_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:columnCount="4"
+            app:rowCount="2"
+            android:padding="1dp"
+
+            android:background="@color/white">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/planned"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/completed"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:layout_marginEnd="1dp"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/productive"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="Pending"/>
+            <TextView
+                android:id="@+id/tvPlannedCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0"/>
+            <TextView
+                android:id="@+id/tvCompletedCount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0"/>
+            <TextView
+                android:id="@+id/tvProductiveCount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:layout_marginEnd="1dp"
+                android:background="@color/grey"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0"/>
+
+            <TextView
+                android:id="@+id/tvPendingCount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:layout_marginEnd="1dp"
+                android:background="@color/grey"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0"/>
+
+
+
+        </androidx.gridlayout.widget.GridLayout>
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/top_summary_view2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_summary_view"
+            app:columnCount="2"
+            app:rowCount="2"
+            android:padding="1dp"
+            android:background="@color/white">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/completion_rate"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/strike_rate"/>
+
+            <TextView
+                android:id="@+id/tvCompRate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0 %"/>
+            <TextView
+                android:id="@+id/tvStrikeRate"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0"/>
+
+
+
+
+        </androidx.gridlayout.widget.GridLayout>
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/top_summary_view3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_summary_view2"
+            app:columnCount="2"
+            app:rowCount="2"
+            android:padding="1dp"
+            android:background="@color/white">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/avg_sku"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/drop_size"/>
+
+            <TextView
+                android:id="@+id/tvAvgSku"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0 %"/>
+            <TextView
+                android:id="@+id/tvDropSize"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0"/>
+
+
+
+
+        </androidx.gridlayout.widget.GridLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/carton_qty_view"
+
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/unit_qty_view"
+            app:layout_constraintTop_toBottomOf="@id/top_summary_view3"
+            android:gravity="center"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:fontFamily="@font/roboto_medium"
+                android:textColor="@color/black"
+                android:text="@string/carton_s"
+                android:textSize="18sp"
+                />
+
+            <TextView
+                android:id="@+id/tvOrderQty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/reports_bg_1"
+                android:fontFamily="@font/roboto_bold"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/unit_qty_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/carton_qty_view"
+            app:layout_constraintStart_toEndOf="@id/carton_qty_view"
+
+
+            android:orientation="vertical"
+            android:gravity="center"
+
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:fontFamily="@font/roboto_medium"
+                android:textColor="@color/black"
+                android:text="@string/amount"
+                android:textSize="18sp"
+                android:gravity="center"
+
+                />
+
+            <TextView
+                android:id="@+id/tvOrderAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/reports_bg_1"
+                android:fontFamily="@font/roboto_bold"
+
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Rs 00.00"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/confirmed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/carton_qty_view"
+            android:text="@string/confirmed_orders"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            />
+
+        <View
+            android:id="@+id/sep"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/seperater"
+            android:layerType="software"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/confirmed"
+            />
+
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/confirmed_summary_view1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sep"
+            app:columnCount="2"
+            app:rowCount="2"
+            android:padding="1dp"
+            android:background="@color/white">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/carton_s"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="16sp"
+                android:text="@string/amount"/>
+
+            <TextView
+                android:id="@+id/tvConfirmOrderQty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="0 (0)"/>
+            <TextView
+                android:id="@+id/tvConfirmTotalAmount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                android:background="@color/grey"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginEnd="1dp"
+                android:layout_marginTop="1dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="RS 00.00"/>
+
+
+
+
+        </androidx.gridlayout.widget.GridLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

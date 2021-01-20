@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/account"
+        android:icon="@drawable/ic_account"
+        android:title="My Account"/>
+
+    <item android:id="@+id/update"
+        android:icon="@drawable/ic_refresh"
+        android:title="Check for Update"/>
+
+    <item android:id="@+id/exit"
+        android:icon="@drawable/ic_exit_to_app"
+        android:title="Logout"/>
+</menu>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:layout_marginBottom="55dp"
+        >
+        <TextView
+            android:id="@+id/outletName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tool:layout_constraintTop_toTopOf="@+id/tvOutletName"
+            tool:layout_constraintBottom_toBottomOf="@+id/tvOutletName"
+            tool:layout_constraintStart_toStartOf="parent"
+            android:text="@string/outlet_name"
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="@color/colorPrimaryDark"
+            android:padding="5dp"
+            android:layout_marginStart="6dp"
+            />
+        <TextView
+            android:id="@+id/tvOutletName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tool:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            tool:layout_constraintStart_toEndOf="@+id/outletName"
+            android:text="30405236-1 shop "
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="@color/colorPrimaryDark"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            />
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            tool:layout_constraintTop_toBottomOf="@+id/tvOutletName"
+            android:layout_marginTop="5dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="80dp"
+            android:background="@color/colorAccent"
+            android:weightSum="30"
+            >
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_weight="7"
+                >
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/white"
+                    android:text="@string/qty"
+
+
+                    />
+
+                <TextView
+                    android:id="@+id/tvQty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/white"
+                    android:text="6000.0"
+
+                    android:layout_marginStart="5dp"
+
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:visibility="visible"
+                android:layout_weight="12"
+
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/white"
+                    android:text="Free Qty:"
+
+
+                    />
+                <TextView
+                    android:id="@+id/tvFreeQty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/white"
+                    android:text="0.0"
+
+                    android:layout_marginStart="5dp"
+
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical|right"
+                android:layout_weight="11"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="@string/total"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    />
+
+
+                <TextView
+                    android:id="@+id/tvGrandTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/white"
+
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:paddingBottom="92dp"
+            tool:layout_constraintTop_toBottomOf="@+id/header"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCartItems"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    tools:listitem="@layout/cashmemo_item_view"
+                    android:layout_marginTop="5dp"
+                    />
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+    <LinearLayout
+        android:id="@+id/bottomview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        android:gravity="center_horizontal"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        >
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnEditOrder"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
+            android:theme="@style/PositiveButton"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="@string/edit"
+            android:textSize="18sp"
+            />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnNext"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_weight="1"
+            android:layout_margin="1dp"
+            android:theme="@style/PositiveButton"
+            android:text="@string/next"
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+    <!--<include layout="@layout/breakdown_bottom_sheet" />-->
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

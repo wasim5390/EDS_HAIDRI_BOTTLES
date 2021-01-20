@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            android:paddingBottom="80dp"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardUseCompatPadding="true"
+                    app:cardElevation="3dp"
+                    app:cardCornerRadius="0dp"
+                    app:contentPadding="5dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginTop="10dp"
+                    >
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/name"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:fontFamily="@font/roboto_regular"
+                            android:textColor="@color/black"
+                            android:text="@string/outlet_name"
+                            android:textSize="14sp"
+
+
+                            />
+
+                        <TextView
+                            android:id="@+id/amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:text="@string/order_amount"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvName"
+
+                            />
+
+                        <TextView
+                            android:visibility="visible"
+                            android:id="@+id/tvCnic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:text="@string/cnic"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOrderAmount"
+
+                            />
+
+                        <TextView
+                            android:visibility="visible"
+                            android:id="@+id/tvStrn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:text="@string/customer_strn"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvCnic"
+
+                            />
+
+                        <TextView
+                            android:id="@+id/customer_mobile_number"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:text="@string/mobile_number_for_order"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvStrn"
+
+                            />
+
+                        <TextView
+                            android:id="@+id/customer_remarks"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:text="@string/remarks"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/etMobileNumber"
+
+                            />
+                        <androidx.constraintlayout.widget.Barrier
+                            android:id="@+id/barrier3"
+                            android:layout_height="wrap_content"
+                            app:barrierDirection="right"
+                            app:constraint_referenced_ids="name,amount,customer_mobile_number"
+
+                            tools:layout_editor_absoluteX="123dp"
+                            android:layout_width="wrap_content" />
+                        <TextView
+                            android:id="@+id/tvName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="14sp"
+                            android:layout_marginStart="10dp"
+                            app:layout_constraintStart_toEndOf="@+id/barrier3"
+                            app:layout_constraintTop_toTopOf="@+id/name" />
+
+                        <TextView
+                            android:id="@+id/tvOrderAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0.00"
+                            android:layout_marginStart="10dp"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toEndOf="@+id/barrier3"
+                            app:layout_constraintTop_toTopOf="@+id/amount" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/customer_cnic"
+                            android:visibility="visible"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/input_bg"
+                            android:maxLength="13"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:hint="@string/_13_digits_cnic"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/barrier3"
+                            app:layout_constraintTop_toTopOf="@+id/tvCnic"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvCnic"
+
+                            />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/customer_strn"
+                            android:visibility="visible"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/input_bg"
+                            android:maxLength="20"
+                            android:hint="@string/sales_tax_registration_number"
+                            android:maxLines="1"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:singleLine="true"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/barrier3"
+                            app:layout_constraintTop_toTopOf="@+id/tvStrn"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvStrn"
+
+                            />
+
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etMobileNumber"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/input_bg"
+                            android:hint="@string/mobile_number_hint"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textSize="14sp"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            app:layout_constraintBottom_toBottomOf="@+id/customer_mobile_number"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/barrier3"
+                            app:layout_constraintTop_toTopOf="@+id/customer_mobile_number"
+
+                            />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etCustomerRemarks"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/input_bg"
+                            android:gravity="top"
+                            android:hint="@string/remarks_hint"
+
+                            android:minHeight="80dp"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/customer_remarks"
+                            app:layout_constraintTop_toTopOf="@+id/customer_remarks"
+
+
+                            />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardUseCompatPadding="true"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="0dp"
+                    app:contentPadding="5dp"
+                    android:layout_margin="2dp"
+                    android:backgroundTint="@android:color/transparent"
+                    >
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/signature_view"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/signature"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/btnClearSignature"
+                            app:layout_constraintBottom_toBottomOf="@+id/btnClearSignature"
+                            android:fontFamily="@font/roboto_italic"
+                            android:textColor="@color/black"
+                            android:text="@string/customer_signature"
+                            android:textSize="16sp"
+                            android:paddingBottom="5dp"
+
+                            />
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnClearSignature"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:theme="@style/NegativeButton"
+                            android:text="@string/clear_signature"
+                            android:textSize="16sp"
+
+                            />
+                        <com.github.gcacace.signaturepad.views.SignaturePad
+                            android:layout_width="match_parent"
+                            android:layout_height="150dp"
+                            android:id="@+id/signaturePad"
+                            android:background="#fff"
+                            app:layout_constraintTop_toBottomOf="@+id/btnClearSignature"
+                            />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"/>
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnNext"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:theme="@style/PositiveButton"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="@string/next"
+                android:textSize="22sp"
+                />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
