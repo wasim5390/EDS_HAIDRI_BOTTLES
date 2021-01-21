@@ -70,7 +70,7 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
     int SELECTED_ROUTE_INDEX=0;
     int SELECTED_TAB=0 , SELECTED_PJP_TAB = 0;
     final int PENDING = 0 , VISITED = 1 , PRODUCTIVE = 2;
-    Route route;
+    Route route , routeIntent;
     private List<OutletOrderStatus> outletOrderStatuses = new ArrayList<>();
 
     private String TAG=OutletListActivity.class.getSimpleName();
@@ -88,11 +88,15 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
     @Override
     public void created(Bundle savedInstanceState) {
         ButterKnife.bind(this);
-        setToolbar(getString(R.string.outlets));
+        //setToolbar(getString(R.string.routes));
 
         viewModel = ViewModelProviders.of(this).get(OutletListViewModel.class);
         initOutletsAdapter();
 
+        if (getIntent().hasExtra("route")){
+            routeIntent = (Route) getIntent().getSerializableExtra("route");
+            setToolbar(routeIntent.getRouteName());
+        }
         // Comment
 //        viewModel.getRoutes().observe(this, routes -> {
 //            onRouteListLoaded(routes);

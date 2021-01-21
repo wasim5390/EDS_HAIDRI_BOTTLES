@@ -163,24 +163,24 @@ public class MainActivity extends BaseActivity {
         if (targetVsAchievement.getTargetAmount() != null){
 
             keyOne.setText(R.string.targetAmount);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetAmount() != null ? targetVsAchievement.getTargetAmount() : ""));
+            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetAmount() != null ? targetVsAchievement.getTargetAmount() : "0"));
 
             keyTwo.setText(R.string.achieved_amount);
-            keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedAmountPercentage() != null ? targetVsAchievement.getAchievedAmountPercentage() : ""));
+            keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedAmountPercentage() != null ? targetVsAchievement.getAchievedAmountPercentage() : "0"));
 
             keyThree.setText(R.string.perDayAmount);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleAmount() != null ? targetVsAchievement.getPerDayRequiredSaleAmount() : ""));
+            keyOneValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleAmount() != null ? targetVsAchievement.getPerDayRequiredSaleAmount() : "0"));
 
         }else if (targetVsAchievement.getTargetQuantity() != null){
 
             keyOne.setText(R.string.targetQuantity);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetQuantity() != null ? targetVsAchievement.getTargetQuantity() : "" ));
+            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetQuantity() != null ? targetVsAchievement.getTargetQuantity() : "0" ));
 
             keyTwo.setText(R.string.achieved_quantity);
-            keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedQuantityPercentage() != null ? targetVsAchievement.getAchievedQuantityPercentage() : ""));
+            keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedQuantityPercentage() != null ? targetVsAchievement.getAchievedQuantityPercentage() : "0"));
 
             keyThree.setText(R.string.perDayQuantity);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity()  != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : ""));
+            keyOneValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity()  != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : "0"));
         }
 
     }

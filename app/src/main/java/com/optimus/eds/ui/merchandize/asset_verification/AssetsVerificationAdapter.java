@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Asset;
@@ -74,7 +75,7 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         AssetsListHolder assetsListHolder = (AssetsListHolder) holder;
         Asset asset = assetList.get(position);
-        List<String> reasons = getReasons(asset.getVerified());
+//        List<String> reasons = getReasons(asset.getVerified());
         ((AssetsListHolder) holder).codeTv.setText(String.valueOf(asset.getAssetId()));
         ((AssetsListHolder) holder).statusTextView.setText(asset.getVerified()?"Verified":"Pending");
         ArrayAdapter<AssetStatus> spinnerArrayAdapter = new ArrayAdapter<AssetStatus>
@@ -84,8 +85,9 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
 
         assetsListHolder.reasonsSpinner.setAdapter(spinnerArrayAdapter);
 
-        String reason = asset.getReason();
-        if(!reason.isEmpty()){
+//        String reason = asset.getReason();
+        Integer statusId = asset.getStatusid();
+        if(statusId != null){
             int index;
 
             if (asset.getVerified()){
@@ -122,13 +124,21 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
                     asset.setStatusid(assetStatuses.get(positionListener).getKey());
                     assetList.get(position).setStatusid(assetStatuses.get(positionListener).getKey());
                     listener.onStatusChange(asset);
+
+                    if (asset.getStatusid().equals(COOLER_SCANNED) && !asset.getVerified()){
+                        Toast.makeText(mContext, "Please Scan Barcode", Toast.LENGTH_SHORT).show();
+                        assetsListHolder.reasonsSpinner.setSelection(0);
+                    }else if (!asset.getStatusid().equals(COOLER_SCANNED) && asset.getVerified()){
+                        Toast.makeText(mContext, "You have already scan the asset", Toast.LENGTH_SHORT).show();
+                        assetsListHolder.reasonsSpinner.setSelection(COOLER_SCANNED);
+                    }
                     Log.i("Errorrrr!!!", positionListener + "");
                 }else{
 
                     if (assetList.get(position).getStatusid() != null){
                         assetScanning--;
                         asset.setStatusid(null);
-                        asset.setReason(null);
+//                        asset.setReason(null);
                         assetList.get(position).setStatusid(null);
                         listener.onStatusChange(asset);
 

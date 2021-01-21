@@ -105,7 +105,6 @@
             app:tabBackground="@color/white"
             app:tabTextAppearance="@style/TextAppearance.AppCompat.Menu"
             app:tabIndicatorColor="@color/colorPrimary"
-            app:tabMaxWidth="1500dp"
             android:fillViewport="true"
             android:id="@+id/selectedPjp"
             >

@@ -185,7 +185,7 @@ public class Outlet implements Serializable {
     }
 
     public String getAddress() {
-        return mAddress;
+        return mAddress != null?mAddress : "";
     }
 
 
@@ -202,7 +202,7 @@ public class Outlet implements Serializable {
     }
 
     public String getLastSaleQuantity() {
-        return mLastSaleQuantity;
+        return mLastSaleQuantity!=null ?mLastSaleQuantity : "";
     }
 
     public Double getLastSale() {

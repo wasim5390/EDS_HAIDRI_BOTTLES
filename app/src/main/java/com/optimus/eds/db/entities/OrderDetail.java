@@ -44,8 +44,8 @@ public class OrderDetail implements Cloneable{
     @SerializedName("orderId")
     public Long mOrderId;
 
-    @SerializedName("pkgId")
-    public Long pkgId;
+    @SerializedName("packageId")
+    public Long packageId;
 
     @SerializedName("unitOrderDetailId")
     @ColumnInfo(name = "unitOrderDetailId")
@@ -512,11 +512,11 @@ public class OrderDetail implements Cloneable{
     }
 
     public Long getPkgId() {
-        return pkgId;
+        return packageId;
     }
 
     public void setPkgId(Long pkgId) {
-        this.pkgId = pkgId;
+        this.packageId = pkgId;
     }
 
     @Override

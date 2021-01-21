@@ -233,8 +233,9 @@ public class OutletDetailActivity extends BaseActivity implements
 
                     if (outletLatLng != null){
 
-                        if (checkMetre(currentLatLng , outletLatLng) > 100 ){
-                            showOutsideBoundaryDialog(0);
+                        Double metre = checkMetre(currentLatLng , outletLatLng);
+                        if (metre > 100 ){
+                            showOutsideBoundaryDialog(0 , String.valueOf(metre));
                         }
                     }
 
@@ -245,18 +246,18 @@ public class OutletDetailActivity extends BaseActivity implements
         }
     };
 
-    public void showOutsideBoundaryDialog( int repeat){
+    public void showOutsideBoundaryDialog( int repeat , String metres){
 
         if (repeat != 5){
 
             final int repeatLocal = ++repeat ;
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
             builderSingle.setTitle(R.string.warning);
-            builderSingle.setMessage(R.string.retailersBoundary);
+            builderSingle.setMessage("You are "+ metres +"away from the retailer\'s defined boundary.\nPress Ok to continue");
             builderSingle.setCancelable(false);
             builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
                 dialog1.dismiss();
-                showOutsideBoundaryDialog(repeatLocal);
+                showOutsideBoundaryDialog(repeatLocal , metres);
             });
             builderSingle.show();
 
@@ -320,8 +321,8 @@ public class OutletDetailActivity extends BaseActivity implements
         if(outlet !=null) {
             setTitle(outlet.getOutletName());
             outletAddress.setText(outlet.getAddress());
-            outletLastSale.setText(outlet.getLastSaleString());
-            outletSaleQty.setText(String.valueOf(outlet.getLastSaleQuantity()));
+            outletLastSale.setText(!outlet.getLastSaleString().isEmpty()?outlet.getLastSaleString() : "Rs 0");
+            outletSaleQty.setText(String.valueOf(!outlet.getLastSaleQuantity().isEmpty()?outlet.getLastSaleString() : "0"));
             outletChannel.setText(String.valueOf(outlet.getChannelName()));
             outletLastSaleDate.setText(Util.formatDate(Util.DATE_FORMAT_2, outlet.getLastSaleDate()));
             outletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));

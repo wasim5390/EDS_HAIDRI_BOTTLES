@@ -85,7 +85,7 @@ public interface OrderDao {
     @Query("Delete From 'OrderDetail' WHERE fk_oid=:orderId AND mProductGroupId=:groupId")
     void deleteOrderItemsByGroup(Long orderId,Long groupId);
 
-    @Query("Delete From 'OrderDetail' WHERE fk_oid=:orderId AND pkgId=:pkgId")
+    @Query("Delete From 'OrderDetail' WHERE fk_oid=:orderId AND packageId=:pkgId")
     void deleteOrderItemsByPkg(Long orderId,Long pkgId);
 
     @Query("Delete From 'OrderDetail' WHERE fk_oid=:orderId")

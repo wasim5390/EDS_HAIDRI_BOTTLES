@@ -50,7 +50,7 @@
                 android:layout_weight="14"
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="center"
-                android:text="@string/reason"
+                android:text="Status"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
