@@ -61,7 +61,8 @@ public class PackageSection extends StatelessSection {
 
         itemHolder.tvItemName.setText(product.getName());
 
-        itemHolder.whStock.setText(String.valueOf(Util.convertStockToDecimalQuantity(product.getCartonStockInHand(),product.getUnitStockInHand())));
+//        itemHolder.whStock.setText(String.valueOf(Util.convertStockToDecimalQuantity(product.getCartonStockInHand(),product.getUnitStockInHand())));
+        itemHolder.whStock.setText(String.valueOf(product.getCartonStockInHand()));
 
         itemHolder.etAvlStock.setText(String.valueOf(Util.convertToNullableDecimalQuantity(product.getAvlStockCarton(),product.getAvlStockUnit())));
 

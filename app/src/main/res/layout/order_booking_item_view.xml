@@ -47,6 +47,7 @@
         android:backgroundTint="@color/grey_alpha"
         android:textColor="@color/white"
         android:text="20.30"
+        android:textAlignment="center"
         android:textSize="12sp"
         android:padding="10dp"
         android:maxLines="1"

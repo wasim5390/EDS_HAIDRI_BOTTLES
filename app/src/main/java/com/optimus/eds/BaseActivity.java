@@ -31,7 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     public abstract void showProgress();
     public abstract void hideProgress();
     private KProgressHUD progressHUD;
-    protected Boolean enableMerchandise=true; // change this to enable/disable merchandise
+    protected Boolean enableMerchandise=false; // change this to enable/disable merchandise
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override

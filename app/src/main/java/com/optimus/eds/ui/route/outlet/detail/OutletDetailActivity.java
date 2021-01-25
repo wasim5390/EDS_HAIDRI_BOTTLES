@@ -253,7 +253,7 @@ public class OutletDetailActivity extends BaseActivity implements
             final int repeatLocal = ++repeat ;
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
             builderSingle.setTitle(R.string.warning);
-            builderSingle.setMessage("You are "+ metres +"away from the retailer\'s defined boundary.\nPress Ok to continue");
+            builderSingle.setMessage("You are "+ metres +" meters away from the retailer\'s defined boundary.\nPress Ok to continue");
             builderSingle.setCancelable(false);
             builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
                 dialog1.dismiss();
@@ -320,9 +320,9 @@ public class OutletDetailActivity extends BaseActivity implements
     private void updateUI(Outlet outlet) {
         if(outlet !=null) {
             setTitle(outlet.getOutletName());
-            outletAddress.setText(outlet.getAddress());
-            outletLastSale.setText(!outlet.getLastSaleString().isEmpty()?outlet.getLastSaleString() : "Rs 0");
-            outletSaleQty.setText(String.valueOf(!outlet.getLastSaleQuantity().isEmpty()?outlet.getLastSaleString() : "0"));
+            outletAddress.setText(!outlet.getAddress().isEmpty()? outlet.getAddress() : "");
+            outletLastSale.setText(outlet.getLastOrder()!=null?outlet.getLastOrder().getOrderTotal().toString() : "Rs 0");
+            outletSaleQty.setText(outlet.getLastOrder()!=null?outlet.getLastOrder().getOrderQuantity().toString() : "0");
             outletChannel.setText(String.valueOf(outlet.getChannelName()));
             outletLastSaleDate.setText(Util.formatDate(Util.DATE_FORMAT_2, outlet.getLastSaleDate()));
             outletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));

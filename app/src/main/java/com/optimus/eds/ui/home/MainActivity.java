@@ -169,7 +169,7 @@ public class MainActivity extends BaseActivity {
             keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedAmountPercentage() != null ? targetVsAchievement.getAchievedAmountPercentage() : "0"));
 
             keyThree.setText(R.string.perDayAmount);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleAmount() != null ? targetVsAchievement.getPerDayRequiredSaleAmount() : "0"));
+            keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleAmount() != null ? targetVsAchievement.getPerDayRequiredSaleAmount() : "0"));
 
         }else if (targetVsAchievement.getTargetQuantity() != null){
 
@@ -180,7 +180,7 @@ public class MainActivity extends BaseActivity {
             keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedQuantityPercentage() != null ? targetVsAchievement.getAchievedQuantityPercentage() : "0"));
 
             keyThree.setText(R.string.perDayQuantity);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity()  != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : "0"));
+            keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity()  != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : "0"));
         }
 
     }

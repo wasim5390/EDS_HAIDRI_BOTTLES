@@ -54,7 +54,12 @@ public class OutletListItemView extends ConstraintLayout {
         if (item != null) {
             outletName.setText(outletItem.getOutletName().concat(" - "+ outletItem.getLocation()));
             outletCode.setText(getResources().getString(R.string.outlet_code,outletItem.getOutletCode()));
-            orderAmount.setText("RS. "+ outletItem.getTotalAmount());
+
+            if (outletItem.getLastOrder() != null){
+                orderAmount.setText("RS. "+ outletItem.getLastOrder().getOrderTotal());
+            }else{
+                orderAmount.setText("RS. "+ "0.0");
+            }
             ivStatus.setVisibility(outletItem.getVisitStatus()!=0?VISIBLE:GONE);
             Integer res = getResource();
             if(res!=null)
@@ -79,5 +84,7 @@ public class OutletListItemView extends ConstraintLayout {
     public void onOutletClick(){
         callback.onOutletClick(outletItem);
     }
+
+
 
 }

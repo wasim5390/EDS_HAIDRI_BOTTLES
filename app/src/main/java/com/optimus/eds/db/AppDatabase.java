@@ -8,6 +8,7 @@ import androidx.room.TypeConverters;
 import android.content.Context;
 
 import com.optimus.eds.db.converters.AssetConverter;
+import com.optimus.eds.db.converters.LastOrderConverter;
 import com.optimus.eds.db.converters.LookUpConverter;
 import com.optimus.eds.db.converters.MerchandiseItemConverter;
 import com.optimus.eds.db.converters.ProductConverter;
@@ -42,7 +43,7 @@ import com.optimus.eds.db.entities.UnitPriceBreakDown;
         OrderDetail.class, CartonPriceBreakDown.class,
         UnitPriceBreakDown.class, CustomerInput.class, Task.class, Promotion.class , LookUp.class
 }, version =9, exportSchema = false )
-@TypeConverters({MerchandiseItemConverter.class, AssetConverter.class, LookUpConverter.class,  ProductConverter.class , PromotionConverter.class})
+@TypeConverters({MerchandiseItemConverter.class, LastOrderConverter.class, AssetConverter.class, LookUpConverter.class,  ProductConverter.class , PromotionConverter.class})
 
 public abstract class AppDatabase extends RoomDatabase {
 

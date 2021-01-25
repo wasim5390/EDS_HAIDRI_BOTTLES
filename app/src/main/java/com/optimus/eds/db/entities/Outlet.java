@@ -5,8 +5,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import com.google.gson.annotations.SerializedName;
+import com.optimus.eds.db.converters.LastOrderConverter;
+import com.optimus.eds.model.LastOrder;
 
 import java.io.Serializable;
 
@@ -66,9 +69,15 @@ public class Outlet implements Serializable {
     @SerializedName("mobileNumber")
     private String mobileNumber;
 
+    @SerializedName("lastOrder")
+    @TypeConverters(LastOrderConverter.class)
+    private LastOrder lastOrder;
+
     private Boolean isAssetsScennedInTheLastMonth;
 
     private Boolean synced;
+
+
     public Boolean getSynced() {
         return synced;
     }
@@ -295,6 +304,14 @@ public class Outlet implements Serializable {
 
     public void setAssetsScennedInTheLastMonth(Boolean assetsScennedInTheLastMonth) {
         isAssetsScennedInTheLastMonth = assetsScennedInTheLastMonth;
+    }
+
+    public LastOrder getLastOrder() {
+        return lastOrder;
+    }
+
+    public void setLastOrder(LastOrder lastOrder) {
+        this.lastOrder = lastOrder;
     }
 
     @Override
