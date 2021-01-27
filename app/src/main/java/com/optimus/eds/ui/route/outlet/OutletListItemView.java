@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Outlet;
+import com.optimus.eds.db.entities.OutletOrderStatus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class OutletListItemView extends ConstraintLayout {
-
 
     @BindView(R.id.outletName)
     TextView outletName;
@@ -47,7 +47,7 @@ public class OutletListItemView extends ConstraintLayout {
 
     }
 
-    public void setOutlet(Outlet item, OutletListAdapter.Callback callback) {
+    public void setOutlet(Outlet item, OutletOrderStatus outletOrderStatus, OutletListAdapter.Callback callback) {
         this.callback = callback;
         this.outletItem = item;
 
@@ -55,11 +55,28 @@ public class OutletListItemView extends ConstraintLayout {
             outletName.setText(outletItem.getOutletName().concat(" - "+ outletItem.getLocation()));
             outletCode.setText(getResources().getString(R.string.outlet_code,outletItem.getOutletCode()));
 
-            if (outletItem.getLastOrder() != null){
-                orderAmount.setText("RS. "+ outletItem.getLastOrder().getOrderTotal());
+            if (outletOrderStatus != null){
+                if (outletOrderStatus.orderStatus != null){
+                    if (outletOrderStatus.orderStatus.getStatus() >=7){
+                        orderAmount.setText("RS. "+ outletOrderStatus.orderStatus.getOrderAmount());
+                    }else{
+                        orderAmount.setText("RS. "+ 0.0);
+                    }
+                }else{
+                    if (outletItem.getLastOrder() != null){
+                        orderAmount.setText("RS. "+ outletItem.getLastOrder().getOrderTotal());
+                    }else{
+                        orderAmount.setText("RS. "+ "0.0");
+                    }
+                }
             }else{
-                orderAmount.setText("RS. "+ "0.0");
+                if (outletItem.getLastOrder() != null){
+                    orderAmount.setText("RS. "+ outletItem.getLastOrder().getOrderTotal());
+                }else{
+                    orderAmount.setText("RS. "+ "0.0");
+                }
             }
+
             ivStatus.setVisibility(outletItem.getVisitStatus()!=0?VISIBLE:GONE);
             Integer res = getResource();
             if(res!=null)

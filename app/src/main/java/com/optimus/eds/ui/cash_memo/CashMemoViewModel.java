@@ -57,16 +57,19 @@ public class CashMemoViewModel extends AndroidViewModel {
                 Integer unitFreeQty = orderWithDetails.getOrderDetail().getUnitFreeGoodQuantity();
                 Integer cartonFreeQty = orderWithDetails.getOrderDetail().getCartonFreeGoodQuantity();
 
+
                 if(orderWithDetails.getOrderDetail().getCartonFreeQuantityTypeId()==PRIMARY
                         ||orderWithDetails.getOrderDetail().getUnitFreeQuantityTypeId()==PRIMARY
                 ){
                     cartonFreeQty=0;unitFreeQty=0;
                     for(OrderDetail freeItem :orderWithDetails.getOrderDetail().getCartonFreeGoods()){
+                        if (freeItem.getCartonQuantity() != null) // Added By Husnain
                         cartonFreeQty += freeItem.getCartonQuantity();
                     }
 
                     for(OrderDetail freeItem :orderWithDetails.getOrderDetail().getUnitFreeGoods()){
-                        unitFreeQty += freeItem.getUnitQuantity();
+                        if (freeItem.getUnitQuantity() != null) // Added By Husnain
+                            unitFreeQty += freeItem.getUnitQuantity();
                     }
                 }
 

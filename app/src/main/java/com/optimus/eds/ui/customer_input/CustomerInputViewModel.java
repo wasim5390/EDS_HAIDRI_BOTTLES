@@ -130,7 +130,8 @@ public class CustomerInputViewModel extends AndroidViewModel {
         MasterModel data = generateOrder(orderModel,customerInput);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String finalJson = gson.toJson(data);
-        OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOrder().getPayable());
+//        OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOrder().getPayable());
+        OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOutlet().getLastOrder()!=null?orderModel.getOutlet().getLastOrder().getOrderTotal() : 0.0);
         orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
         orderStatus.setData(finalJson);
         statusRepository.updateStatus(orderStatus);

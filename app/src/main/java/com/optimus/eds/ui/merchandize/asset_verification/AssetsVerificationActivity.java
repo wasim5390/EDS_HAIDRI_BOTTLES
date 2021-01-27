@@ -98,7 +98,8 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         });
 
         viewModel.getLookUpData().observe(this , lookUp -> {
-            initAssetsAdapter(lookUp.getAssetStatus());
+            if (lookUp != null)
+                initAssetsAdapter(lookUp.getAssetStatus());
         });
 
         viewModel.loadAssets(outletId);
@@ -313,9 +314,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
         if (assetsVerificationAdapter.getAssetScanning() == assetList.size()){
             PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(true);
-            finish();
-        }else {
-            Toast.makeText(this, "Scan all assets", Toast.LENGTH_SHORT).show();
         }
+        finish();
     }
 }

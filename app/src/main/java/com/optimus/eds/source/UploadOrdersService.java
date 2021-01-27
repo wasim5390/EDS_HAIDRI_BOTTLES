@@ -165,7 +165,7 @@ public class UploadOrdersService extends IntentService {
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .blockingGet();
-        String json = status.getData();
+        String json = status.getData() != null ? status.getData() : ""; // Added Check By Husnain
         MasterModel masterModel = new Gson().fromJson(json,MasterModel.class);
         uploadMasterData(masterModel,status.getStatus());
 

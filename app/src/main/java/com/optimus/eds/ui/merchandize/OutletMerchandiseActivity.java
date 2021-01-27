@@ -68,6 +68,8 @@ public class OutletMerchandiseActivity extends BaseActivity {
     int type=0;
     ImageDialog dialogFragment;
 
+    boolean isAssets = true;
+
     public static void start(Context context,Long outletId, int requestCode) {
         Intent starter = new Intent(context, OutletMerchandiseActivity.class);
         starter.putExtra("OutletId",outletId);
@@ -89,9 +91,11 @@ public class OutletMerchandiseActivity extends BaseActivity {
         outletId =  getIntent().getLongExtra("OutletId",0);
         viewModel = ViewModelProviders.of(this).get(MerchandiseViewModel.class);
         viewModel.loadOutlet(outletId).observe(this, outlet -> {
-            this.outlet = outlet;
-            PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(outlet.getAssetsScennedInTheLastMonth());
-            onOutletLoaded(outlet);
+            if (outlet != null){
+                this.outlet = outlet;
+                PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(outlet.getAssetsScennedInTheLastMonth());
+                onOutletLoaded(outlet);
+            }
         });
         viewModel.loadAssets(outletId);
         viewModel.loadMerchandise(outletId).observe(this,merchandise -> {
@@ -104,6 +108,9 @@ public class OutletMerchandiseActivity extends BaseActivity {
                 findViewById(R.id.btnAssetVerification).setClickable(false);
                 findViewById(R.id.btnAssetVerification).setAlpha(0.5f);
                 ((AppCompatButton)findViewById(R.id.btnAssetVerification)).setText("No Assets");
+                isAssets = false;
+            }else{
+                isAssets = true;
             }
 
         });
@@ -194,13 +201,19 @@ public class OutletMerchandiseActivity extends BaseActivity {
 
     @OnClick(R.id.btnNext)
     public void onNextClick(){
-        if (PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
-            outlet.setAssetsScennedInTheLastMonth(true);
+
+        if (isAssets){
+            if (PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+                outlet.setAssetsScennedInTheLastMonth(true);
+                String remarks = etRemarks.getText().toString();
+                viewModel.updateOutlet(outlet);
+                viewModel.insertMerchandiseIntoDB(outletId,remarks);
+            } else{
+                Toast.makeText(this, "Please scan assets", Toast.LENGTH_SHORT).show();
+            }
+        }else{
             String remarks = etRemarks.getText().toString();
-            viewModel.updateOutlet(outlet);
             viewModel.insertMerchandiseIntoDB(outletId,remarks);
-        } else{
-            Toast.makeText(this, "Please scan assets", Toast.LENGTH_SHORT).show();
         }
     }
 

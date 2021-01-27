@@ -62,7 +62,7 @@ public interface RouteDao extends MerchandiseDao{
     List<OutletOrderStatus> getVisitedOutletCount();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE Outlet.planned=1 AND OrderStatus.status isnull or OrderStatus.status = 0" )
+            " WHERE Outlet.planned=1 AND OrderStatus.status isnull or OrderStatus.status < 2" )
     List<OutletOrderStatus> getPendingOutletCount();
 
    /* @Query("SELECT COUNT(*) FROM Outlet WHERE planned=1 AND mVisitStatus between 2 AND 8 ")
@@ -81,7 +81,7 @@ public interface RouteDao extends MerchandiseDao{
     Observable<List<OutletOrderStatus>> getVisitedOutlets();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  OrderStatus.status isnull or OrderStatus.status = 0" )
+            " WHERE  Outlet.planned=1 AND  OrderStatus.status isnull or OrderStatus.status < 2" )
     Observable<List<OutletOrderStatus>> getPendingOutlets();
 
 

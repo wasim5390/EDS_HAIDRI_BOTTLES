@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@id/outletCode"
         android:textColor="@color/black"
         android:textSize="14sp"
-        android:text="RS. 15000.00"
+        android:text="RS. 0.0"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/roboto_light"
         android:ellipsize="end"

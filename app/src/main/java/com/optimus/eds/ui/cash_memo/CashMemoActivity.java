@@ -115,7 +115,7 @@ public class CashMemoActivity extends BaseActivity {
     private void setObserver(){
         viewModel.loadOutlet(outletId).observe(this, this::onOutletLoaded);
         viewModel.getOrder(outletId).observe(this, orderModel -> {
-            cashMemoEditable= orderModel.getOrder().getOrderStatus() != 1;
+            cashMemoEditable = orderModel.getOrder().getOrderStatus() != 1;
             configUi();
             updateCart(orderModel.getOrderDetailAndCPriceBreakdowns());
             updatePricesOnUi(orderModel);

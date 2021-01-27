@@ -73,6 +73,7 @@ public class Outlet implements Serializable {
     @TypeConverters(LastOrderConverter.class)
     private LastOrder lastOrder;
 
+    @SerializedName("isAssetsScennedInTheLastMonth")
     private Boolean isAssetsScennedInTheLastMonth;
 
     private Boolean synced;

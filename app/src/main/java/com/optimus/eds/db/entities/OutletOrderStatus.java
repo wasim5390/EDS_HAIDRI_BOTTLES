@@ -9,4 +9,3 @@ public class OutletOrderStatus {
     @Embedded
     public Outlet outlet;
 }
-//    SELECT Outlet.*, OrderStatus.* FROM Outlet left JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId

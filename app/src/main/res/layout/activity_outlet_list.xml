@@ -105,24 +105,23 @@
             app:tabBackground="@color/white"
             app:tabTextAppearance="@style/TextAppearance.AppCompat.Menu"
             app:tabIndicatorColor="@color/colorPrimary"
-            android:fillViewport="true"
             android:id="@+id/selectedPjp"
             >
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/pending"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/pending"
                 />
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/visited"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/visited"
                 />
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/productive"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/productive"
                 />

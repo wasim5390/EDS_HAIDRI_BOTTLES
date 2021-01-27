@@ -74,12 +74,15 @@ public class OutletListAdapter extends
         int safePos = holder.getAdapterPosition();
         Outlet outlet = null;
 
-        if (!isPjp)
+        OutletOrderStatus outletOrderStatus = null;
+        if (!isPjp){
             outlet = outletsFiltered.get(safePos);
-        else
+        } else{
             outlet = filteredOutletOrderStatuses.get(safePos).outlet;
+            outletOrderStatus = filteredOutletOrderStatuses.get(safePos);
+        }
 
-        ((OutletListItemView)holder.itemView).setOutlet(outlet,mCallback);
+        ((OutletListItemView)holder.itemView).setOutlet(outlet , outletOrderStatus ,mCallback);
 
     }
 
