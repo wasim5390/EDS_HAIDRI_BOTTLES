@@ -7,6 +7,162 @@
     android:layout_height="match_parent">
 
 
+    <LinearLayout
+        android:id="@+id/bottomview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:visibility="gone"
+            android:weightSum="10">
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnBeforeMerchandize1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4.5"
+                android:text="@string/before_merchandize"
+                android:theme="@style/PositiveButton" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAfterMerchandize1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4.5"
+                android:enabled="false"
+                android:text="@string/after_merchandize"
+                android:theme="@style/PositiveButton"
+
+                />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:enabled="false"
+            android:text="@string/next"
+            android:textSize="22sp"
+            android:theme="@style/PositiveButton" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/bottomview"
+        app:layout_constraintTop_toBottomOf="@+id/constraintView">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnBeforeMerchandise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:minWidth="180dp"
+                android:text="@string/before_merchandize"
+                android:theme="@style/PositiveButton"
+                app:layout_constraintBottom_toTopOf="@+id/mapGuideline"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAfterMerchandise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:minWidth="180dp"
+                android:text="@string/after_merchandize"
+                android:theme="@style/PositiveButton"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+
+                />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/mapGuideline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent=".50" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAfterMerchandise"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:reverseLayout="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="horizontal"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toTopOf="@+id/btnAfterMerchandise"
+                app:layout_constraintTop_toBottomOf="@+id/mapGuideline"
+                tools:listitem="@layout/merchandise_list_item" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvBeforeMerchandize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:reverseLayout="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toTopOf="@+id/btnBeforeMerchandise"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/merchandise_list_item" />
+            <!--    <androidx.core.widget.NestedScrollView-->
+            <!--        android:layout_width="match_parent"-->
+            <!--        android:layout_height="0dp"-->
+            <!--        android:layout_marginTop="5dp"-->
+            <!--        android:orientation="vertical"-->
+            <!--        app:layout_constraintBottom_toTopOf="@+id/bottomview"-->
+            <!--        app:layout_constraintTop_toBottomOf="@+id/constraintView"-->
+            <!--        >-->
+            <!--        <LinearLayout-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:orientation="vertical"-->
+            <!--            android:visibility="visible"-->
+            <!--            >-->
+
+            <!--           -->
+            <!--        </LinearLayout>-->
+            <!--    </androidx.core.widget.NestedScrollView>-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintView"
         android:layout_width="match_parent"
@@ -18,14 +174,68 @@
 
         >
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_merchandise_images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/topBtnView" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/topBtnView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_marginStart="2dp"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="3dp"
+            app:cardUseCompatPadding="true"
+            app:contentPadding="5dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnInputView">
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+
+                android:elevation="5dp"
+                android:orientation="horizontal"
+                android:weightSum="10">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnShowPlanogram"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4.5"
+                    android:text="@string/show_planogram"
+                    android:theme="@style/PositiveButton" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnAssetVerification"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4.5"
+                    android:text="@string/asset_verification"
+                    android:theme="@style/PositiveButton"
+
+                    />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnInputView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginStart="2dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="10dp"
             app:cardCornerRadius="0dp"
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
@@ -94,179 +304,5 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/topBtnView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="3dp"
-            app:cardUseCompatPadding="true"
-            app:contentPadding="5dp"
-            app:layout_constraintTop_toBottomOf="@+id/btnInputView"
-            >
-        <LinearLayout
-
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-
-            android:weightSum="10"
-            android:elevation="5dp"
-            android:background="@color/white"
-            >
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnShowPlanogram"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4.5"
-                android:text="@string/show_planogram"
-                android:theme="@style/PositiveButton" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnAssetVerification"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4.5"
-                android:text="@string/asset_verification"
-                android:theme="@style/PositiveButton"
-
-                />
-        </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_merchandise_images"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/topBtnView"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="5dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/bottomview"
-        app:layout_constraintTop_toBottomOf="@+id/constraintView"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="visible"
-            >
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvBeforeMerchandize"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="5dp"
-
-                android:nestedScrollingEnabled="true"
-                android:orientation="horizontal"
-                tools:listitem="@layout/outlet_list_item" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnBeforeMerchandise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-               android:layout_marginTop="5dp"
-                android:minWidth="180dp"
-                android:layout_gravity="center"
-                android:text="@string/before_merchandize"
-                android:theme="@style/PositiveButton" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvAfterMerchandise"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="5dp"
-                android:nestedScrollingEnabled="true"
-                android:orientation="horizontal"
-                tools:listitem="@layout/outlet_list_item" />
-            <androidx.appcompat.widget.AppCompatButton
-                android:enabled="false"
-                android:id="@+id/btnAfterMerchandise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-               android:layout_marginTop="5dp"
-                android:minWidth="180dp"
-                android:layout_gravity="center"
-                android:text="@string/after_merchandize"
-                android:theme="@style/PositiveButton"
-
-                />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-    <LinearLayout
-        android:id="@+id/bottomview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="10dp"
-            android:visibility="gone"
-            android:paddingEnd="10dp"
-            android:weightSum="10">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnBeforeMerchandize1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4.5"
-                android:text="@string/before_merchandize"
-                android:theme="@style/PositiveButton" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:enabled="false"
-                android:id="@+id/btnAfterMerchandize1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4.5"
-                android:text="@string/after_merchandize"
-                android:theme="@style/PositiveButton"
-
-                />
-        </LinearLayout>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:enabled="false"
-            android:id="@+id/btnNext"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/next"
-            android:textSize="22sp"
-            android:theme="@style/PositiveButton" />
-    </LinearLayout>
-
-
-    <ProgressBar
-        android:visibility="gone"
-        android:id="@+id/progressBar"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 </androidx.constraintlayout.widget.ConstraintLayout>

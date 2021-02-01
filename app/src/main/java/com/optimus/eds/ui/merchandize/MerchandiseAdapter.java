@@ -7,12 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.optimus.eds.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -51,6 +54,10 @@ public class MerchandiseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         MerchandiseImage merchandiseImage = merchandiseImages.get(position);
         File imgFile = new File(merchandiseImage.getPath());
         Picasso.get().load(imgFile).fit().into(merchandiseListHolder.imageView);
+
+        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        String date = simpleDateFormat.format(new Date());
+        ((MerchandiseListHolder) holder).date.setText(date);
         merchandiseListHolder.deleteImageView.setOnClickListener(view -> ((OutletMerchandiseActivity) mContext).removeImage(merchandiseImage));
     }
 
@@ -64,10 +71,13 @@ public class MerchandiseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ImageView imageView;
         @BindView(R.id.imageView_delete)
         ImageView deleteImageView;
+        @BindView(R.id.date)
+        TextView date ;
 
         MerchandiseListHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
         }
     }
 }
