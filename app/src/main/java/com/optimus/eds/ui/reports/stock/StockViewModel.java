@@ -56,6 +56,12 @@ public class StockViewModel extends AndroidViewModel {
         disposable.add(allProductsByGroup.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onProductsLoaded));
     }
 
+    public void findAllProductsByPackageId(Long packageId){
+        Single<List<Product>> allProductsByGroup = repository.findAllProductsByPackageId(packageId);
+        disposable.add(allProductsByGroup.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onProductsLoaded));
+
+    }
+
     private void onProductsLoaded(List<Product> products) {
         mutablePkgList.postValue(repository.packageModel(packages.getValue(),products));
     }
@@ -79,6 +85,10 @@ public class StockViewModel extends AndroidViewModel {
 
     public LiveData<List<ProductGroup>> getProductGroupList() {
         return productGroupList;
+    }
+
+    public LiveData<List<Package>> getPackages() {
+        return packages;
     }
 
     public LiveData<PackageProductResponseModel> stockLoaded(){

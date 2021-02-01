@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.R;
+import com.optimus.eds.db.entities.Package;
 import com.optimus.eds.db.entities.Product;
 import com.optimus.eds.db.entities.ProductGroup;
 import com.optimus.eds.model.PackageModel;
@@ -66,11 +67,17 @@ public class StockActivity extends BaseActivity {
 
         viewModel.stockLoaded().observe(this, responseModel -> {
           if(responseModel.isSuccess()){
-              onProductGroupsLoaded(responseModel.getProductGroups());
+//              onProductGroupsLoaded(responseModel.getProductGroups());
           }
         });
 
-        viewModel.getProductGroupList().observe(this, this::onProductGroupsLoaded);
+        viewModel.getPackages().observe(this, packages -> {
+
+            hideProgress();
+            onPackagesLoaded(packages);
+        });
+
+//        viewModel.getProductGroupList().observe(this, this::onProductGroupsLoaded);
 
         viewModel.getProductList().observe(this, this::setSectionedAdapter);
 
@@ -107,14 +114,35 @@ public class StockActivity extends BaseActivity {
         rvProducts.setAdapter(sectionAdapter);
     }
 
-    private void onProductGroupsLoaded(List<ProductGroup> groups) {
+//    private void onProductGroupsLoaded(List<ProductGroup> groups) {
+//
+//        ArrayAdapter userAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_dropdown_item, groups);
+//        spinner.setAdapter(userAdapter);
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                viewModel.filterProductsByGroup(((ProductGroup)(parent.getSelectedItem())).getProductGroupId());
+//                viewModel.findAllProductsByPackageId();
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
+//
+//    }
+
+    private void onPackagesLoaded(List<Package> groups) {
 
         ArrayAdapter userAdapter = new ArrayAdapter<>(this, R.layout.simple_spinner_dropdown_item, groups);
         spinner.setAdapter(userAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.filterProductsByGroup(((ProductGroup)(parent.getSelectedItem())).getProductGroupId());
+//                viewModel.filterProductsByGroup(((ProductGroup)(parent.getSelectedItem())).getProductGroupId());
+                viewModel.findAllProductsByPackageId(((Package)(parent.getSelectedItem())).getPackageId());
 
             }
 
