@@ -1,4 +1,4 @@
-package com.optimus.eds.db.entities;
+    package com.optimus.eds.db.entities;
 
 
 import androidx.room.ColumnInfo;
