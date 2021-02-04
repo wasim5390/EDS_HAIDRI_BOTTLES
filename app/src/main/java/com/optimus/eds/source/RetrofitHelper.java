@@ -41,7 +41,6 @@ public class RetrofitHelper implements Constant {
     private Retrofit retrofit;
     private API service;
 
-
     private static final String TAG = "RetrofitHelper";
     private RetrofitHelper () {
 
@@ -56,12 +55,9 @@ public class RetrofitHelper implements Constant {
         return instance;
     }
 
-
-
     public API getApi() {
         return service;
     }
-
 
     public class AuthorizationInterceptor implements Interceptor {
         Response response;
@@ -97,12 +93,9 @@ public class RetrofitHelper implements Constant {
                 }else{
                     // goto Login as we cannot refresh token
                 }
-
             }
-
             return response;
         }
-
     }
 
     private Retrofit getRetrofit(){

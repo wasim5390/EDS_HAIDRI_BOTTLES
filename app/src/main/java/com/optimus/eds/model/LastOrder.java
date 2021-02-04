@@ -21,7 +21,7 @@ public class LastOrder {
     private Double orderTotal;
     @SerializedName("orderQuantity")
     @Expose
-    private Integer orderQuantity;
+    private Double orderQuantity;
     @SerializedName("orderDetails")
     @Expose
     private List<OrderDetail> orderDetails = null;
@@ -66,11 +66,11 @@ public class LastOrder {
         this.orderDetails = orderDetails;
     }
 
-    public Integer getOrderQuantity() {
+    public Double getOrderQuantity() {
         return orderQuantity;
     }
 
-    public void setOrderQuantity(Integer orderQuantity) {
+    public void setOrderQuantity(Double orderQuantity) {
         this.orderQuantity = orderQuantity;
     }
 }

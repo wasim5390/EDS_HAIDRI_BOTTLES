@@ -153,4 +153,5 @@
     <string name="perDayQuantity">Per Day Required Sale Quantity</string>
     <string name="perDayAmount">Per Day Required Sale Amount</string>
     <string name="package_name">Package Name</string>
+    <string name="delivery_date">Delivery Date</string>
 </resources>

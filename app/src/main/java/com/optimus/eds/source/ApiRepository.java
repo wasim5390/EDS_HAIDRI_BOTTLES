@@ -25,9 +25,7 @@ public class ApiRepository implements DataSource, Constant {
         return instance;
     }
 
-    private ApiRepository() {
-
-        }
+    private ApiRepository() { }
     @Override
     public LiveData<List<Route>> getRoutes(String userId) {
           RetrofitHelper.getInstance().getApi().getRoutes(userId).enqueue(new Callback<List<Route>>() {
@@ -36,7 +34,6 @@ public class ApiRepository implements DataSource, Constant {
                   if(response.isSuccessful())
                       mutableRouteList.setValue(response.body());
               }
-
               @Override
               public void onFailure(Call<List<Route>> call, Throwable t) {
                 mutableRouteList.setValue(null);
@@ -53,11 +50,9 @@ public class ApiRepository implements DataSource, Constant {
                 if(response.isSuccessful())
                     mutableOutletList.setValue(response.body());
             }
-
             @Override
             public void onFailure(Call<List<Outlet>> call, Throwable t) {
                 mutableOutletList.setValue(null);
-
             }
         });
         return mutableOutletList;

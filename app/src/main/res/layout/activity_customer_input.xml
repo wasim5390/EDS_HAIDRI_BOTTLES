@@ -118,6 +118,20 @@
                             />
 
                         <TextView
+                            android:id="@+id/deliveryDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:text="@string/delivery_date"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/customer_mobile_number"
+
+                            />
+
+                        <TextView
                             android:id="@+id/customer_remarks"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -127,7 +141,7 @@
                             android:textColor="@color/black"
                             android:textSize="14sp"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/etMobileNumber"
+                            app:layout_constraintTop_toBottomOf="@+id/deliveryDate"
 
                             />
                         <androidx.constraintlayout.widget.Barrier
@@ -220,6 +234,26 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/barrier3"
                             app:layout_constraintTop_toTopOf="@+id/customer_mobile_number"
+
+                            />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/deliveryDateEditText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/input_bg"
+                            android:hint="01-01-2012"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textSize="14sp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            app:layout_constraintBottom_toBottomOf="@+id/deliveryDate"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/barrier3"
+                            app:layout_constraintTop_toTopOf="@+id/deliveryDate"
 
                             />
 

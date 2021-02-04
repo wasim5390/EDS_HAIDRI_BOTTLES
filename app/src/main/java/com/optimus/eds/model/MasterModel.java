@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.optimus.eds.db.entities.CustomerInput;
 import com.optimus.eds.db.entities.Merchandise;
 import com.optimus.eds.db.entities.Outlet;
+import com.optimus.eds.utils.Util;
 
 import androidx.room.Ignore;
 
@@ -24,6 +25,9 @@ public class MasterModel extends BaseResponse {
     @Expose
     public Long outletEndTime; // when user completes order for that outlet
 
+    public String outletOpenTime;
+
+    public String outletCloseTime;
 
     @Expose
     public Double latitude;
@@ -88,6 +92,7 @@ public class MasterModel extends BaseResponse {
 
     public void setOutletVisitTime(Long outletVisitTime) {
         this.outletVisitTime = outletVisitTime;
+        this.outletOpenTime = Util.formatDate("HH:mm" , outletVisitTime);
     }
 
     public Long getOutletEndTime() {
@@ -96,6 +101,7 @@ public class MasterModel extends BaseResponse {
 
     public void setOutletEndTime(Long outletEndTime) {
         this.outletEndTime = outletEndTime;
+        this.outletCloseTime = Util.formatDate("HH:mm" , outletEndTime);
     }
 
 

@@ -53,7 +53,6 @@ public class JobIdManager {
                     return;
                 }
             }
-
         }catch (NullPointerException e){
             Log.e("JobCancel:",e.getMessage());
             e.printStackTrace();

@@ -10,7 +10,7 @@ public class OrderDetail {
     private Integer productId;
     @SerializedName("quantity")
     @Expose
-    private Integer quantity;
+    private Double quantity;
     @SerializedName("productTotal")
     @Expose
     private Double productTotal;
@@ -26,11 +26,11 @@ public class OrderDetail {
         this.productId = productId;
     }
 
-    public Integer getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
 

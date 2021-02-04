@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,8 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
     EditText etMobileNumber;
     @BindView(R.id.customer_cnic)
     EditText etCnic;
+    @BindView(R.id.deliveryDateEditText)
+    EditText etDeliveryDate;
     @BindView(R.id.customer_strn)
     EditText etStrn;
     @BindView(R.id.etCustomerRemarks)
@@ -65,6 +68,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
     private Long outletId;
     private CustomerInputViewModel viewModel;
 
+    DatePickerDialog datePickerDialog ;
 
     public static void start(Context context, Long outletId,int resCode) {
         Intent starter = new Intent(context, CustomerInputActivity.class);
@@ -170,11 +174,32 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         signaturePad.clear();
     }
 
+    @OnClick(R.id.deliveryDateEditText)
+    public void deliveryDateClickListener(){
+
+        final Calendar cldr = Calendar.getInstance();
+        int day = cldr.get(Calendar.DAY_OF_MONTH);
+        int month = cldr.get(Calendar.MONTH);
+        int year = cldr.get(Calendar.YEAR);
+
+        // date picker dialog
+        datePickerDialog = new DatePickerDialog(this,
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    etDeliveryDate.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1);
+
+                }, year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
+        datePickerDialog.show();
+    }
+
     @OnClick(R.id.btnNext)
     public void navigateToComplaints(){
         if(signaturePad.isEmpty())
         {
             Toast.makeText(this, "Please take customer signature", Toast.LENGTH_SHORT).show();
+            return;
+        }else if (etDeliveryDate.toString().isEmpty()){
+            Toast.makeText(this, "Please select delivery date", Toast.LENGTH_SHORT).show();
             return;
         }
         String mobileNumber = etMobileNumber.getText().toString();
@@ -182,8 +207,9 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         String cnic = etCnic.getText().toString();
         String strn = etStrn.getText().toString();
         String base64Sign = Util.compressBitmap(signature);
+        String deliveryDate = etDeliveryDate.getText().toString();
 
-        viewModel.saveOrder(mobileNumber,remarks,cnic,strn,base64Sign);
+        viewModel.saveOrder(mobileNumber,remarks,cnic,strn,base64Sign , deliveryDate);
         findViewById(R.id.btnNext).setEnabled(false);
     }
     @Override

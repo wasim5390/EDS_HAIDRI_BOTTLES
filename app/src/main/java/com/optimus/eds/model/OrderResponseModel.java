@@ -57,8 +57,6 @@ public class OrderResponseModel extends BaseResponse{
     private Long startedDate;
 
 
-
-
     public void setOutletStatus(Integer outletStatus) {
         this.outletStatus = outletStatus;
     }

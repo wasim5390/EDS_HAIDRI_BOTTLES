@@ -19,6 +19,7 @@ public class CustomerInput {
     private String remarks;
     private String signature;
     private String cnic;
+    private String deliveryDate;
 
     public String getStrn() {
         return strn;
@@ -44,12 +45,13 @@ public class CustomerInput {
     }
 
     @Ignore
-    public CustomerInput(@NonNull Long outletId,@NonNull Long orderId, String mobileNumber,String cnic, String strn,String remarks, String signature) {
+    public CustomerInput(@NonNull Long outletId,@NonNull Long orderId, String mobileNumber,String cnic, String strn,String remarks, String signature , String deliveryDate) {
         this.outletId = outletId;
         this.orderId = orderId;
         this.cnic = cnic;
         this.strn = strn;
        // this.requiredDeliveryDate = deliveryDate;
+        this.deliveryDate = deliveryDate;
         this.mobileNumber = mobileNumber;
         this.remarks = remarks;
         this.signature = signature;
@@ -90,6 +92,15 @@ public class CustomerInput {
     public void setRequiredDeliveryDate(Long deliveryDate) {
         this.requiredDeliveryDate = deliveryDate;
     }*/
+
+
+    public String getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(String deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
 
     public String getSignature() {
         return signature;

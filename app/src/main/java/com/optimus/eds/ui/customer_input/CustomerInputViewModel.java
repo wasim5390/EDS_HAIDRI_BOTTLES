@@ -103,14 +103,14 @@ public class CustomerInputViewModel extends AndroidViewModel {
     }
 
 
-    public void saveOrder(String mobileNumber,String remarks,String cnic,String strn,String base64Sign){
+    public void saveOrder(String mobileNumber,String remarks,String cnic,String strn,String base64Sign , String deliveryDate){
         isSaving.postValue(true);
         Crashlytics.setBool("order_empty",orderModelLiveData.getValue()==null || orderModelLiveData.getValue().getOrder()==null);
         OrderModel orderModel = orderModelLiveData.getValue();
         if(orderModel!=null && orderModel.getOrder()!=null) {
             // @TODO have to change logic for livedata value as it gets null on some devices
             Order order = orderModel.getOrder();
-            CustomerInput customerInput = new CustomerInput(outletId, order.getLocalOrderId(), mobileNumber, cnic, strn, remarks, base64Sign);
+            CustomerInput customerInput = new CustomerInput(outletId, order.getLocalOrderId(), mobileNumber, cnic, strn, remarks, base64Sign , deliveryDate);
 
             customerInputRepository.saveCustomerInput(customerInput)
                     .observeOn(AndroidSchedulers.mainThread())

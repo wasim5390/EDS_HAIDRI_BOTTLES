@@ -106,7 +106,7 @@ public class OutletDetailActivity extends BaseActivity implements
     Outlet outlet ;
 
     OutletDetailViewModel viewModel;
-    private String reasonForNoSale="";
+    private String  reasonForNoSale="";
 
     private GoogleMap mMap ;
     private Long outletVisitStartTime = Calendar.getInstance().getTimeInMillis();
