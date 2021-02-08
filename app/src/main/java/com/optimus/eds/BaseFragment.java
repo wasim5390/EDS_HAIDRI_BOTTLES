@@ -45,7 +45,6 @@ public abstract class BaseFragment  extends Fragment implements Constant{
         return this.view;
     }
 
-
 /*    public void setHintForInputNumber(String code, EditText editText) {
         Phonenumber.PhoneNumber phoneNumber = PhoneNumberUtil.getInstance().getExampleNumber(code);
         if (phoneNumber!=null) {
@@ -55,10 +54,6 @@ public abstract class BaseFragment  extends Fragment implements Constant{
             editText.setHint(R.string.mobile_number);
         }
     }*/
-
-
-
-
 
     protected void showSettingsDialog(){
         mBaseActivity.showSettingsDialog();

@@ -10,6 +10,7 @@ import androidx.room.Update;
 import com.optimus.eds.db.entities.CartonPriceBreakDown;
 import com.optimus.eds.db.entities.Order;
 import com.optimus.eds.db.entities.OrderDetail;
+import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
 import com.optimus.eds.model.OrderModel;
 
@@ -57,6 +58,14 @@ public interface OrderDao {
 
     @Insert(onConflict = REPLACE)
     void insertOrder(Order order);
+
+    // Added By Husnain
+    @Insert(onConflict = REPLACE)
+    void insertOrderStatus(OrderStatus orderStatus);
+
+    // Added By Husnain
+    @Insert(onConflict = REPLACE)
+    void insertOrders(List<Order> order);
 
     @Insert(onConflict = REPLACE)
     void insertOrderItems(List<OrderDetail> orderItems);

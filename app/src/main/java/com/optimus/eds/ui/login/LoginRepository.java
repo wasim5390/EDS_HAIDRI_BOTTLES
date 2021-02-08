@@ -29,13 +29,12 @@ public class LoginRepository {
     private PreferenceUtil preferenceUtil;
     private StatusRepository statusRepository;
 
-
-
     public static LoginRepository getInstance(Application application) {
         if(instance==null)
             instance = new LoginRepository(application);
         return instance;
     }
+
     public LoginRepository(Application application) {
         statusRepository = StatusRepository.singleInstance(application);
         api = RetrofitHelper.getInstance().getApi();

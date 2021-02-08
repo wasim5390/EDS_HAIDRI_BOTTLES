@@ -79,6 +79,10 @@ public class Outlet implements Serializable {
     private Boolean synced;
 
 
+    @SerializedName("statusId")
+    private Integer statusId;
+
+
     public Boolean getSynced() {
         return synced;
     }
@@ -320,4 +324,11 @@ public class Outlet implements Serializable {
         return super.hashCode();
     }
 
+    public Integer getStatusId() {
+        return statusId!= null?statusId:0;
+    }
+
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
+    }
 }

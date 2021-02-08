@@ -55,37 +55,45 @@ public class OutletListItemView extends ConstraintLayout {
             outletName.setText(outletItem.getOutletName().concat(" - "+ outletItem.getLocation()));
             outletCode.setText(getResources().getString(R.string.outlet_code,outletItem.getOutletCode()));
 
-            if (outletOrderStatus != null){
-                if (outletOrderStatus.orderStatus != null){
-                    if (outletOrderStatus.orderStatus.getStatus() >=7){
-                        orderAmount.setText("RS. "+ outletOrderStatus.orderStatus.getOrderAmount());
-                    }else{
-                        orderAmount.setText("RS. "+ 0.0);
-                    }
-                }else{
-                    if (outletItem.getLastOrder() != null){
-                        orderAmount.setText("RS. "+ outletItem.getLastOrder().getOrderTotal());
-                    }else{
-                        orderAmount.setText("RS. "+ "0.0");
-                    }
-                }
+            if (outletItem.getStatusId() != 0){
+              setTotal();
             }else{
-                if (outletItem.getLastOrder() != null){
-                    orderAmount.setText("RS. "+ outletItem.getLastOrder().getOrderTotal());
+                if (outletOrderStatus != null){
+                    if (outletOrderStatus.orderStatus != null){
+                        if (outletOrderStatus.orderStatus.getStatus() >=7){
+                            orderAmount.setText("RS. "+ outletOrderStatus.orderStatus.getOrderAmount());
+                        }else{
+                            orderAmount.setText("RS. "+ 0.0);
+                        }
+                    }else{
+                       setTotal();
+                    }
                 }else{
-                    orderAmount.setText("RS. "+ "0.0");
+                   setTotal();
                 }
             }
 
+
+
+            if (outletItem.getVisitStatus() != 0)
             ivStatus.setVisibility(outletItem.getVisitStatus()!=0?VISIBLE:GONE);
+            else if (outletItem.getStatusId() != 0)
+            ivStatus.setVisibility(outletItem.getStatusId()!=0?VISIBLE:GONE);
             Integer res = getResource();
-            if(res!=null)
-            ivStatus.setImageResource(res);
+            if(res!=null){
+                ivStatus.setImageResource(res);
+                ivStatus.setVisibility(VISIBLE);
+            } else
+                ivStatus.setVisibility(GONE);
         }
     }
 
     private Integer getResource(){
         Integer visitStatus = outletItem.getVisitStatus();
+        if (visitStatus == 0){
+            visitStatus = outletItem.getStatusId();
+            outletItem.setSynced(true);
+        }
         Integer resourceId;
         if(visitStatus<1)
             resourceId = null;
@@ -103,5 +111,12 @@ public class OutletListItemView extends ConstraintLayout {
     }
 
 
+    public void setTotal(){
+        if (outletItem.getLastOrder() != null){
+            orderAmount.setText("RS. "+ outletItem.getLastOrder().getOrderTotal());
+        }else{
+            orderAmount.setText("RS. "+ "0.0");
+        }
+    }
 
 }

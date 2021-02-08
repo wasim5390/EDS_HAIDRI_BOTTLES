@@ -248,18 +248,21 @@ public class OutletDetailActivity extends BaseActivity implements
 
     public void showOutsideBoundaryDialog( int repeat , String metres){
 
+
         if (repeat != 5){
 
-            final int repeatLocal = ++repeat ;
-            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-            builderSingle.setTitle(R.string.warning);
-            builderSingle.setMessage("You are "+ metres +" meters away from the retailer\'s defined boundary.\nPress Ok to continue");
-            builderSingle.setCancelable(false);
-            builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
-                dialog1.dismiss();
-                showOutsideBoundaryDialog(repeatLocal , metres);
-            });
-            builderSingle.show();
+                final int repeatLocal = ++repeat ;
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+                builderSingle.setTitle(R.string.warning);
+                builderSingle.setMessage("You are "+ metres +" meters away from the retailer\'s defined boundary.\nPress Ok to continue");
+                builderSingle.setCancelable(false);
+                builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
+                    dialog1.dismiss();
+                    showOutsideBoundaryDialog(repeatLocal , metres);
+                });
+            if (!OutletDetailActivity.this.isFinishing()){
+                builderSingle.show();
+            }
 
         }
     }
@@ -304,7 +307,7 @@ public class OutletDetailActivity extends BaseActivity implements
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        int code=  getOutletPopCode(popSpinner.getSelectedItem().toString());
+        int code =  getOutletPopCode(popSpinner.getSelectedItem().toString());
         viewModel.updateOutletStatusCode(code);
 
     }

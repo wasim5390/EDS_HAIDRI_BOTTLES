@@ -57,19 +57,19 @@ public interface RouteDao extends MerchandiseDao{
     @Query("SELECT COUNT() FROM Outlet WHERE planned=1")
     int getPjpCount();
 
-    @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet INNER JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE Outlet.planned=1 AND OrderStatus.status between 2 AND 8" )
+    @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
+            " WHERE Outlet.planned=1 AND  ( (OrderStatus.status between 2 AND 8) OR (Outlet.statusId between 2 AND 8))" )
     List<OutletOrderStatus> getVisitedOutletCount();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE Outlet.planned=1 AND OrderStatus.status isnull or OrderStatus.status < 2" )
+            " WHERE Outlet.planned=1 AND ( (OrderStatus.status isnull or OrderStatus.status < 2) OR (Outlet.statusId isnull or Outlet.statusId < 2 ) )" )
     List<OutletOrderStatus> getPendingOutletCount();
 
    /* @Query("SELECT COUNT(*) FROM Outlet WHERE planned=1 AND mVisitStatus between 2 AND 8 ")
     List<OutletOrderStatus> getVisitedOutletCount();*/
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet INNER JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE Outlet.planned=1 AND OrderStatus.status >=7" )
+            " WHERE Outlet.planned=1 AND OrderStatus.status >=7 " )
     List<OutletOrderStatus> getProductiveOutletCount();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
@@ -77,16 +77,20 @@ public interface RouteDao extends MerchandiseDao{
     Observable<List<OutletOrderStatus>> getProductiveOutlets();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  OrderStatus.status between 2 AND 8" )
+            " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status between 2 AND 8) OR (Outlet.statusId between 2 AND 8))" )
     Observable<List<OutletOrderStatus>> getVisitedOutlets();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  OrderStatus.status isnull or OrderStatus.status < 2" )
+            " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status isnull or OrderStatus.status < 2) OR (Outlet.statusId isnull or Outlet.statusId < 2 ) ) " )
     Observable<List<OutletOrderStatus>> getPendingOutlets();
 
 
     @Query("SELECT * FROM Outlet WHERE mOutletId=:id")
     LiveData<Outlet> findOutletById(Long id);
+
+    // Added by Husnain
+    @Query("SELECT * FROM Outlet WHERE mOutletId=:id")
+    Outlet findOutletByOutletId(Long id);
 
     @Query("SELECT * FROM Outlet WHERE mOutletId=:id")
     Single<Outlet> findOutletByIdSingle(Long id);

@@ -152,9 +152,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
 
     }
 
-
-
-
     /**
      * Retrieves Outlet availability status.
      * @param statusString

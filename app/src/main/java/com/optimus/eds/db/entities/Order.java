@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.google.gson.annotations.SerializedName;
+import com.optimus.eds.db.converters.OrderDetailConverter;
 import com.optimus.eds.db.converters.PriceBreakdownConverter;
 
 import java.io.Serializable;
@@ -65,6 +66,11 @@ public class Order implements Serializable {
     @SerializedName("priceBreakDown")
     @TypeConverters(PriceBreakdownConverter.class)
     public List<UnitPriceBreakDown> priceBreakDown; // invoice level breakdown
+
+    // added by Husnain
+    @SerializedName("orderDetails")
+    @TypeConverters(OrderDetailConverter.class)
+    private List<OrderDetail> orderDetails;
 
 
     public Long getDistributionId() {
@@ -187,5 +193,13 @@ public class Order implements Serializable {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 }

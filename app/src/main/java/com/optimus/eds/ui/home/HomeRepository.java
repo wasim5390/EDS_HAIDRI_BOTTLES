@@ -13,14 +13,20 @@ import com.optimus.eds.Constant;
 import com.optimus.eds.EdsApplication;
 import com.optimus.eds.db.AppDatabase;
 import com.optimus.eds.db.dao.CustomerDao;
+import com.optimus.eds.db.dao.OrderDao;
 import com.optimus.eds.db.dao.ProductsDao;
 import com.optimus.eds.db.dao.RouteDao;
 import com.optimus.eds.db.dao.TaskDao;
 import com.optimus.eds.db.entities.LookUp;
+import com.optimus.eds.db.entities.Order;
+import com.optimus.eds.db.entities.OrderDetail;
+import com.optimus.eds.db.entities.OrderStatus;
+import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.db.entities.Task;
 import com.optimus.eds.model.AppUpdateModel;
 import com.optimus.eds.model.LogModel;
+import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.model.PackageProductResponseModel;
 import com.optimus.eds.model.RouteOutletResponseModel;
 import com.optimus.eds.model.WorkStatus;
@@ -57,6 +63,7 @@ public class HomeRepository {
     private ProductsDao productsDao;
     private RouteDao routeDao;
     private TaskDao taskDao;
+    private OrderDao orderDao;
 
 
     private MutableLiveData<Boolean> targetVsAchievement;
@@ -79,6 +86,7 @@ public class HomeRepository {
         routeDao = appDatabase.routeDao();
         taskDao = appDatabase.taskDao();
         customerDao = appDatabase.customerDao();
+        orderDao = appDatabase.orderDao();
         isLoading = new MutableLiveData<>();
         onDayStartLiveData = new MutableLiveData<>();
         msg = new MutableLiveData<>();
@@ -172,6 +180,46 @@ public class HomeRepository {
                             .andThen(insertTasks(response.body().getTasksList()))
                             .andThen(insertPromotion(response.body().getPromosAndFOC()))
                             .andThen(insertLookUp(response.body().getLookUp()))
+                            .andThen(Completable.fromAction(() -> {
+                                long mobileOrderId = 1;
+                                for (Order order: response.body().getOrders()){
+
+                                    order.setLocalOrderId(mobileOrderId);
+                                    orderDao.insertOrder(order);
+                                    mobileOrderId++;
+                                }
+                            })) // added By Husanin
+                            .andThen(Completable.fromAction(() -> { // added By Husanin
+                                for (Order order : response.body().getOrders()){
+
+
+                                    OrderStatus orderStatus = new OrderStatus();
+                                    orderStatus.setOrderId(order.getOrderId());
+                                    orderStatus.setOutletId(order.getOutletId());
+
+                                    MasterModel masterModel = new MasterModel();
+                                    masterModel.setOutletId(order.getOutletId());
+                                    masterModel.setOutletStatus(8);
+
+                                    orderStatus.setSynced(false);
+                                    orderStatus.setData(new Gson().toJson(masterModel));
+                                    orderStatus.setStatus(8);
+
+
+                                    orderDao.insertOrderStatus(orderStatus);
+                                }
+                            }))
+                            .andThen(Completable.fromAction(() -> { // added By Husanin
+                                long mobileOrderId = 1;
+                                for (Order order : response.body().getOrders()){
+                                    for (OrderDetail orderDetail : order.getOrderDetails()){
+
+                                        orderDetail.setLocalOrderId(mobileOrderId);
+                                        orderDao.insertOrderItem(orderDetail);
+                                    }
+                                    mobileOrderId++;
+                                }
+                            }))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.single()).subscribe(new CompletableObserver() {
                         @Override
@@ -270,6 +318,23 @@ public class HomeRepository {
         return Completable.fromAction(()->{
             //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
             AsyncTask.execute(() -> routeDao.insertLookUp(lookUp));
+
+        });
+    }
+    // Added By Husnain
+    private Completable insertOrder(List<Order> order){
+        return Completable.fromAction(()->{
+            //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
+//            AsyncTask.execute(() -> orderDao.insertOrders(order));
+            orderDao.insertOrders(order);
+
+        });
+    }
+
+    private Completable insertOrderDetail(List<OrderDetail> orderDetails){
+        return Completable.fromAction(()->{
+            //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
+            AsyncTask.execute(() -> orderDao.insertOrderItems(orderDetails));
 
         });
     }

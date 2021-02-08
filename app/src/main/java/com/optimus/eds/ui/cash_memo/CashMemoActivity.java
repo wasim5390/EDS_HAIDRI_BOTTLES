@@ -119,8 +119,6 @@ public class CashMemoActivity extends BaseActivity {
             configUi();
             updateCart(orderModel.getOrderDetailAndCPriceBreakdowns());
             updatePricesOnUi(orderModel);
-
-
         });
     }
 
