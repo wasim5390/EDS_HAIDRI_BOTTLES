@@ -134,6 +134,10 @@ public class CustomerInputViewModel extends AndroidViewModel {
         OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOutlet().getLastOrder()!=null?orderModel.getOutlet().getLastOrder().getOrderTotal() : 0.0);
         orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
         orderStatus.setData(finalJson);
+
+        if (orderModel.order.serverOrderId != null)
+            orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
+
         statusRepository.updateStatus(orderStatus);
         outletDetailRepository.updateOutletVisitStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false);
         outletDetailRepository.updateOutletCnic(outletId,customerInput.getMobileNumber(),customerInput.getCnic(),customerInput.getStrn());
@@ -168,6 +172,11 @@ public class CustomerInputViewModel extends AndroidViewModel {
         masterModel.setLocation(orderModel.getOutlet().getVisitTimeLat(),orderModel.getOutlet().getVisitTimeLng());
         masterModel.setOutletId(order.getOutletId());
         masterModel.setOutletStatus(Constant.STATUS_CONTINUE); // 8 for order complete
+
+        if (order.serverOrderId != null){
+            masterModel.setLocation(order.latitude , order.longitude);
+
+        }
         if(status!=null)
             masterModel.setOutletVisitTime(status.getOutletVisitStartTime()>0?status.getOutletVisitStartTime():null);
         masterModel.setOutletEndTime(Calendar.getInstance().getTimeInMillis());

@@ -204,6 +204,10 @@ public class HomeRepository {
                                     orderStatus.setSynced(false);
                                     orderStatus.setData(new Gson().toJson(masterModel));
                                     orderStatus.setStatus(8);
+                                    orderStatus.setOrderAmount(order.getPayable());
+                                    orderStatus.setOutletVisitEndTime(0L);
+                                    orderStatus.setOutletVisitStartTime(0L);
+
 
 
                                     orderDao.insertOrderStatus(orderStatus);

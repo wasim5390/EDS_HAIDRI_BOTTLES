@@ -55,9 +55,6 @@ public class OutletListItemView extends ConstraintLayout {
             outletName.setText(outletItem.getOutletName().concat(" - "+ outletItem.getLocation()));
             outletCode.setText(getResources().getString(R.string.outlet_code,outletItem.getOutletCode()));
 
-            if (outletItem.getStatusId() != 0){
-              setTotal();
-            }else{
                 if (outletOrderStatus != null){
                     if (outletOrderStatus.orderStatus != null){
                         if (outletOrderStatus.orderStatus.getStatus() >=7){
@@ -71,8 +68,6 @@ public class OutletListItemView extends ConstraintLayout {
                 }else{
                    setTotal();
                 }
-            }
-
 
 
             if (outletItem.getVisitStatus() != 0)

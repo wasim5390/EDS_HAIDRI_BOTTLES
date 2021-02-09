@@ -1,6 +1,7 @@
 package com.optimus.eds.ui.cash_memo;
 
 import android.app.Application;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -9,9 +10,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.annotation.NonNull;
 
 import com.optimus.eds.db.entities.OrderDetail;
+import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.model.OrderDetailAndPriceBreakdown;
 import com.optimus.eds.model.OrderModel;
+import com.optimus.eds.source.StatusRepository;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.Util;
 
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -35,6 +39,7 @@ public class CashMemoViewModel extends AndroidViewModel {
 
     public MutableLiveData<List<OrderDetail>> savedProducts;
     private CashMemoRepository repository;
+    private StatusRepository statusRepository ;
     private OutletDetailRepository outletDetailRepository;
     private MutableLiveData<OrderModel> orderLiveData;
 
@@ -44,6 +49,7 @@ public class CashMemoViewModel extends AndroidViewModel {
         savedProducts = new MutableLiveData<>();
         orderLiveData = new MutableLiveData<>();
         repository = new CashMemoRepository(application);
+        statusRepository = new StatusRepository(application);
         outletDetailRepository = new OutletDetailRepository(application);
 
     }
@@ -161,6 +167,14 @@ public class CashMemoViewModel extends AndroidViewModel {
 
     public LiveData<Outlet> loadOutlet(Long outletId) {
         return outletDetailRepository.getOutletById(outletId);
+    }
+
+    public void updateStatus(OrderStatus status){
+       statusRepository.updateStatus(status);
+    }
+
+    public Maybe<OrderStatus> findOrderStatus(Long outletId){
+        return statusRepository.findOrderStatus(outletId);
     }
 
 }

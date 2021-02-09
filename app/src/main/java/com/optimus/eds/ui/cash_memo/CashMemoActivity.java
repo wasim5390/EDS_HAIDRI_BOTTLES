@@ -23,6 +23,7 @@ import com.optimus.eds.BaseActivity;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Order;
+import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
 import com.optimus.eds.model.OrderDetailAndPriceBreakdown;
@@ -32,11 +33,13 @@ import com.optimus.eds.ui.customer_input.CustomerInputActivity;
 import com.optimus.eds.ui.order.OrderBookingActivity;
 import com.optimus.eds.ui.route.outlet.OutletListActivity;
 
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.optimus.eds.EdsApplication.getContext;
 import static com.optimus.eds.utils.Util.formatCurrency;
@@ -67,6 +70,8 @@ public class CashMemoActivity extends BaseActivity {
     AppCompatButton btnNext;
     @BindView(R.id.btnEditOrder)
     AppCompatButton btnEditOrder;
+
+    OrderModel orderModel ;
 
     private CashMemoAdapter cartAdapter;
     private CashMemoViewModel viewModel;
@@ -116,7 +121,9 @@ public class CashMemoActivity extends BaseActivity {
         viewModel.loadOutlet(outletId).observe(this, this::onOutletLoaded);
         viewModel.getOrder(outletId).observe(this, orderModel -> {
             cashMemoEditable = orderModel.getOrder().getOrderStatus() != 1;
-            configUi();
+            this.orderModel = orderModel;
+//            configUi(); Added By Husnain
+
             updateCart(orderModel.getOrderDetailAndCPriceBreakdowns());
             updatePricesOnUi(orderModel);
         });
@@ -219,7 +226,8 @@ public class CashMemoActivity extends BaseActivity {
 
     @OnClick(R.id.btnEditOrder)
     public void upNavigate(){
-        Intent intent = new Intent(this,cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class);
+
+        Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
         intent.putExtras(getIntent());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);

@@ -208,10 +208,18 @@ public class OrderBookingViewModel extends AndroidViewModel {
             if(order.getOrder().getPayable()!=null){
 
                 setOrder(order);
+
+                if (order.order.serverOrderId != null){
+                    for (int i=0 ; i<order.getOrderDetails().size(); i++){
+                        order.order.getOrderDetails().get(i).setOrderId(order.order.serverOrderId);
+                    }
+                }
+
                 Completable orderUpdateCompletable= repository.updateOrder(order.getOrder());
                 Completable removeOrderItems = repository.deleteOrderItems(order.getOrder().getLocalOrderId());
                 Completable insertOrderItems = repository.addOrderItems(order.getOrderDetails());
                 // Completable updateOrderItems = repository.updateOrderItems(order.getOrderDetails());
+
 
                 Completable insertBreakdown= Completable.fromAction(()-> {
                     for(OrderDetail orderDetail:order.getOrderDetails()){
@@ -271,6 +279,14 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     }
                     else
                         noOrder.postValue(false);
+
+                    if (order.order.serverOrderId != null){
+                        for (int i=0 ; i<orderDetails.size(); i++){
+
+                            orderDetails.get(i).setOrderId(order.order.serverOrderId);
+                        }
+                    }
+
                     orderModel.setOrderDetails(orderDetails);
                     setOrder(orderModel);
                     if(sendToServer) {
@@ -358,11 +374,14 @@ public class OrderBookingViewModel extends AndroidViewModel {
             mOrder.setVisitDayId(order.getOutlet().getVisitDay());
             mOrder.setOrderStatus(Constant.ORDER_CREATED); //2 created
             mOrder.setLocalOrderId(order.getOrder().getLocalOrderId());
+            mOrder.serverOrderId = order.getOrder().serverOrderId;
             mOrder.setLatitude(order.getOutlet().getLatitude());
             mOrder.setLongitude(order.getOutlet().getLongitude());
+//            mOrder = order.order;
 
 
             order.setOrder(mOrder);
+
 
             Gson gson = new Gson();
             String json = gson.toJson(mOrder);
@@ -392,6 +411,14 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     orderModel.setOrder(order);
                     orderModel.setOutlet(this.order.getOutlet());
                     orderModel.setSuccess(orderResponseModel.isSuccess());
+
+                    if (orderModel.order.serverOrderId != null){
+                        for (int i=0 ; i<orderResponseModel.getOrderDetails().size(); i++){
+
+                            orderModel.getOrderDetails().get(i).setOrderId(orderModel.getOrder().serverOrderId);
+                        }
+                    }
+
                     return orderModel;
                 }).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

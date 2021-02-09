@@ -167,6 +167,9 @@ public class UploadOrdersService extends IntentService {
                 .blockingGet();
         String json = status.getData() != null ? status.getData() : ""; // Added Check By Husnain
         MasterModel masterModel = new Gson().fromJson(json,MasterModel.class);
+
+
+
         uploadMasterData(masterModel,status.getStatus());
 
     }
