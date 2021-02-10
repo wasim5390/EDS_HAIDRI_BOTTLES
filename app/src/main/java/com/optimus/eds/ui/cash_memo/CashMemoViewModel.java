@@ -170,7 +170,7 @@ public class CashMemoViewModel extends AndroidViewModel {
     }
 
     public void updateStatus(OrderStatus status){
-       statusRepository.updateStatus(status);
+       statusRepository.update(status);
     }
 
     public Maybe<OrderStatus> findOrderStatus(Long outletId){

@@ -2,6 +2,8 @@ package com.optimus.eds.ui.customer_input;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.BroadcastReceiver;
@@ -58,7 +60,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
     @BindView(R.id.customer_cnic)
     EditText etCnic;
     @BindView(R.id.deliveryDateEditText)
-    EditText etDeliveryDate;
+    AppCompatEditText etDeliveryDate;
     @BindView(R.id.customer_strn)
     EditText etStrn;
     @BindView(R.id.etCustomerRemarks)
@@ -198,7 +200,9 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         {
             Toast.makeText(this, "Please take customer signature", Toast.LENGTH_SHORT).show();
             return;
-        }else if (etDeliveryDate.toString().isEmpty()){
+        }
+
+        if (etDeliveryDate.getText().toString().isEmpty()){
             Toast.makeText(this, "Please select delivery date", Toast.LENGTH_SHORT).show();
             return;
         }

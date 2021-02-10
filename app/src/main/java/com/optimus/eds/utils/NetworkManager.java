@@ -49,6 +49,7 @@ public class NetworkManager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @SuppressLint("MissingPermission")
     public LiveData<String> findIMEI(Context context) {
         MutableLiveData<String> imei = new MutableLiveData<>();
         try {

@@ -31,6 +31,8 @@ import com.optimus.eds.utils.NetworkManager;
 import com.optimus.eds.utils.Util;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -69,9 +71,9 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
     private Long outletId;
     private Integer distributionId;
-    private OrderModel order =null;
+    private OrderModel order = null;
     private final API webservice;
-    private  final static String TAG=OrderBookingViewModel.class.getName();
+    private final static String TAG = OrderBookingViewModel.class.getName();
 
 
     public OrderBookingViewModel(@NonNull Application application) {
@@ -88,7 +90,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
         onScreenCreated();
     }
 
-    private void onScreenCreated(){
+    private void onScreenCreated() {
         isSaving.setValue(true);
         noOrder.setValue(false);
         productGroupList = repository.findAllGroups();
@@ -105,22 +107,25 @@ public class OrderBookingViewModel extends AndroidViewModel {
         findOrder(outletId);
     }
 
-    public void setDistributionId(Integer distributionId){
+    public void setDistributionId(Integer distributionId) {
         this.distributionId = distributionId;
     }
 
-    private void findOrder(Long outletId){
-        Maybe<OrderModel> orderSingle = repository.findOrder(outletId);
-        Disposable orderDisposable = orderSingle.observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io()).subscribe(this::setOrder,this::onError);
-        disposable.add(orderDisposable);
+    private void findOrder(Long outletId) {
+//        Maybe<OrderModel> orderSingle = repository.findOrder(outletId);
+//        Disposable orderDisposable = orderSingle.observeOn(Schedulers.io())
+//                .subscribeOn(Schedulers.io()).subscribe(this::setOrder, this::onError);
+//        disposable.add(orderDisposable);
+
+        OrderModel orderModel = repository.findOrder(outletId).blockingGet();
+        setOrder(orderModel);
     }
 
 
-    public void filterProductsByGroup(Long groupId){
+    public void filterProductsByGroup(Long groupId) {
 //        Single<List<Product>> allProductsByGroup = repository.findAllProductsByGroup(groupId);
         Single<List<Product>> allProductsByPackage = repository.findAllProductsByPackageId(groupId);
-        if(order==null) {
+        if (order == null) {
             disposable.add(allProductsByPackage.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onProductsLoaded));
             return;
         }
@@ -138,11 +143,12 @@ public class OrderBookingViewModel extends AndroidViewModel {
     }
 
 
-    private List<Product> updatedProducts(List<Product> filteredProducts, List<OrderDetail> addedProducts){
+    @NotNull
+    private List<Product> updatedProducts(List<Product> filteredProducts, List<OrderDetail> addedProducts) {
 
-        for(Product product:filteredProducts){
-            for(OrderDetail orderDetail:addedProducts){
-                if(Objects.equals(product.getId(), orderDetail.getProductId())) {
+        for (Product product : filteredProducts) {
+            for (OrderDetail orderDetail : addedProducts) {
+                if (Objects.equals(product.getId(), orderDetail.getProductId())) {
                     product.setQty(orderDetail.getCartonQuantity(), orderDetail.getUnitQuantity());
                     product.setAvlStock(orderDetail.getAvlCartonQuantity(), orderDetail.getAvlUnitQuantity());
 
@@ -155,16 +161,14 @@ public class OrderBookingViewModel extends AndroidViewModel {
     }
 
 
-
-
-    public void addOrder(List<Product> orderItems,Long pkgId,boolean sendToServer){
+    public void addOrder(List<Product> orderItems, Long pkgId, boolean sendToServer) {
         Completable.create(e -> {
-            if(order==null) {
+            if (order == null) {
                 Order order = new Order(outletId);
                 repository.createOrder(order);
-            }else{
+            } else {
 //                repository.deleteOrderItemsByGroup(order.getOrder().getLocalOrderId(),groupId);
-                repository.deleteOrderItemsByPackage(order.getOrder().getLocalOrderId(),pkgId);
+                repository.deleteOrderItemsByPackage(order.getOrder().getLocalOrderId(), pkgId);
             }
             e.onComplete();
         }).subscribeOn(Schedulers.io())
@@ -176,7 +180,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
             @Override
             public void onComplete() {
-                addOrderItems(orderItems,sendToServer);
+                addOrderItems(orderItems, sendToServer);
             }
 
             @Override
@@ -189,7 +193,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
     }
 
     @SuppressLint("CheckResult")
-    private void addOrderItems(List<Product> orderItems, boolean sendToServer){
+    private void addOrderItems(List<Product> orderItems, boolean sendToServer) {
 
         repository.findOrder(outletId)
                 .flatMapCompletable(
@@ -197,41 +201,51 @@ public class OrderBookingViewModel extends AndroidViewModel {
                 .andThen(repository.findOrder(outletId))
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .subscribe(orderModel -> onInsertedInDb(orderModel,sendToServer),this::onError);
+                .subscribe(orderModel -> onInsertedInDb(orderModel, sendToServer), this::onError);
     }
 
 
     private void updateOrder(OrderModel order) {
 
-        if(order != null && order.getOrder() !=null && order.isSuccess() && order.getOrderDetails()!=null)
-        {
-            if(order.getOrder().getPayable()!=null){
+        if (order != null && order.getOrder() != null && order.isSuccess() && order.getOrderDetails() != null) {
+            if (order.getOrder().getPayable() != null) {
 
                 setOrder(order);
 
-                if (order.order.serverOrderId != null){
-                    for (int i=0 ; i<order.getOrderDetails().size(); i++){
-                        order.order.getOrderDetails().get(i).setOrderId(order.order.serverOrderId);
+                if (order.order != null){
+                    if (order.order.serverOrderId != null) {
+                        for (int i = 0; i < order.getOrderDetails().size(); i++) {
+                            order.order.getOrderDetails().get(i).setOrderId(order.order.serverOrderId);
+
+                            if ( order.order.getOrderDetails().get(i).getCartonFreeGoods() != null){
+
+                                for (int j=0; j<order.order.getOrderDetails().get(i).getCartonFreeGoods().size(); j++){
+                                    order.order.getOrderDetails().get(i).getCartonFreeGoods().get(j).setOrderId(order.order.serverOrderId);
+                                }
+                            }
+
+                        }
                     }
+
                 }
 
-                Completable orderUpdateCompletable= repository.updateOrder(order.getOrder());
+                Completable orderUpdateCompletable = repository.updateOrder(order.getOrder());
                 Completable removeOrderItems = repository.deleteOrderItems(order.getOrder().getLocalOrderId());
                 Completable insertOrderItems = repository.addOrderItems(order.getOrderDetails());
                 // Completable updateOrderItems = repository.updateOrderItems(order.getOrderDetails());
 
 
-                Completable insertBreakdown= Completable.fromAction(()-> {
-                    for(OrderDetail orderDetail:order.getOrderDetails()){
-                        if(!Util.isListEmpty(orderDetail.getUnitPriceBreakDown()))
+                Completable insertBreakdown = Completable.fromAction(() -> {
+                    for (OrderDetail orderDetail : order.getOrderDetails()) {
+                        if (!Util.isListEmpty(orderDetail.getUnitPriceBreakDown()))
                             repository.addOrderUnitPriceBreakDown(orderDetail.getUnitPriceBreakDown());
-                        if(!Util.isListEmpty(orderDetail.getCartonPriceBreakDown()))
+                        if (!Util.isListEmpty(orderDetail.getCartonPriceBreakDown()))
                             repository.addOrderCartonPriceBreakDown(orderDetail.getCartonPriceBreakDown());
                     }
                 });
 
                 orderUpdateCompletable
-                        .andThen(Completable.fromAction(()-> System.out.println("Update Order finished")))
+                        .andThen(Completable.fromAction(() -> System.out.println("Update Order finished")))
                         .andThen(removeOrderItems)
                         .andThen(Completable.fromAction(() -> System.out.println("Remove Order Items finished")))
                         .andThen(insertOrderItems).andThen(Completable.fromAction(() -> System.out.println("Insert Order Items")))
@@ -261,7 +275,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
                         });
             }
 
-        }else{
+        } else {
             msg.postValue(Constant.PRICING_ERROR);
             isSaving.postValue(false);
         }
@@ -274,22 +288,24 @@ public class OrderBookingViewModel extends AndroidViewModel {
         repository.getOrderItems(orderModel.getOrder().getLocalOrderId())
                 .observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
                 .subscribe(orderDetails -> {
-                    if(orderDetails.isEmpty() && sendToServer) {
-                        noOrder.postValue(true); return;
-                    }
-                    else
+                    if (orderDetails.isEmpty() && sendToServer) {
+                        noOrder.postValue(true);
+                        return;
+                    } else
                         noOrder.postValue(false);
 
-                    if (order.order.serverOrderId != null){
-                        for (int i=0 ; i<orderDetails.size(); i++){
+                    if (order != null)
+                        if (order.order != null)
+                            if (order.order.serverOrderId != null) {
+                                for (int i = 0; i < orderDetails.size(); i++) {
 
-                            orderDetails.get(i).setOrderId(order.order.serverOrderId);
-                        }
-                    }
+                                    orderDetails.get(i).setOrderId(order.order.serverOrderId);
+                                }
+                            }
 
                     orderModel.setOrderDetails(orderDetails);
                     setOrder(orderModel);
-                    if(sendToServer) {
+                    if (sendToServer) {
                         composeOrderForServer();
                     }
                 });
@@ -298,21 +314,21 @@ public class OrderBookingViewModel extends AndroidViewModel {
     }
 
     private void onProductsLoaded(List<Product> products) {
-        mutablePkgList.postValue(repository.packageModel(packages.getValue(),products));
+        mutablePkgList.postValue(repository.packageModel(packages.getValue(), products));
         isSaving.postValue(false);
     }
 
     private void onError(Throwable throwable) throws IOException {
         throwable.printStackTrace();
         String errorBody = throwable.getMessage();
-        if (throwable instanceof HttpException){
-            HttpException error = (HttpException)throwable;
-            if(error.code()==500)
+        if (throwable instanceof HttpException) {
+            HttpException error = (HttpException) throwable;
+            if (error.code() == 500)
                 errorBody = Constant.GENERIC_ERROR;
             else
                 errorBody = error.response().errorBody().string();
         }
-        if (throwable instanceof IOException){
+        if (throwable instanceof IOException) {
             errorBody = "Please check your internet connection";
         }
 
@@ -321,13 +337,13 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
     }
 
-    private Completable modifyOrderDetails(OrderModel order,List<Product> orderProducts) {
+    private Completable modifyOrderDetails(OrderModel order, List<Product> orderProducts) {
 
         List<OrderDetail> orderDetails = new ArrayList<>(orderProducts.size());
-        for(Product product:orderProducts) {
-            OrderManager.OrderQuantity orderQuantity = OrderManager.instance().calculateOrderQty(product.getCartonQuantity(),product.getQtyUnit(),product.getQtyCarton());
-            OrderDetail orderDetail = new OrderDetail(order.getOrder().getLocalOrderId(), product.getId(),orderQuantity.getCarton(),orderQuantity.getUnits());
-            orderDetail.setAvlQty(product.getAvlStockCarton(),product.getAvlStockUnit());
+        for (Product product : orderProducts) {
+            OrderManager.OrderQuantity orderQuantity = OrderManager.instance().calculateOrderQty(product.getCartonQuantity(), product.getQtyUnit(), product.getQtyCarton());
+            OrderDetail orderDetail = new OrderDetail(order.getOrder().getLocalOrderId(), product.getId(), orderQuantity.getCarton(), orderQuantity.getUnits());
+            orderDetail.setAvlQty(product.getAvlStockCarton(), product.getAvlStockUnit());
             orderDetail.setCartonCode(product.getCartonCode());
             orderDetail.setUnitCode(product.getUnitCode());
             orderDetail.setProductName(product.getName());
@@ -346,14 +362,14 @@ public class OrderBookingViewModel extends AndroidViewModel {
         // return order;
     }
 
-    protected List<Product> filterOrderProducts(Map<String,Section> sectionHashMap){
+    protected List<Product> filterOrderProducts(Map<String, Section> sectionHashMap) {
         List<Product> productList = new ArrayList<>();
 
         for (Map.Entry<String, Section> entry : sectionHashMap.entrySet()) {
-            PackageSection section =(PackageSection) entry.getValue();
+            PackageSection section = (PackageSection) entry.getValue();
             List<Product> products = section.getList();
-            for(Product product:products){
-                if(product.isProductSelected()) {
+            for (Product product : products) {
+                if (product.isProductSelected()) {
                     productList.add(product);
                 }
             }
@@ -372,7 +388,10 @@ public class OrderBookingViewModel extends AndroidViewModel {
             Order mOrder = new Order(order.getOrder().getOutletId());
             mOrder.setRouteId(order.getOutlet().getRouteId());
             mOrder.setVisitDayId(order.getOutlet().getVisitDay());
+            if (order.getOrder().orderStatus == null)
             mOrder.setOrderStatus(Constant.ORDER_CREATED); //2 created
+            else
+            mOrder.setOrderStatus(order.getOrder().orderStatus); // Server Side Status
             mOrder.setLocalOrderId(order.getOrder().getLocalOrderId());
             mOrder.serverOrderId = order.getOrder().serverOrderId;
             mOrder.setLatitude(order.getOutlet().getLatitude());
@@ -402,7 +421,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
     }
 
     private Disposable calculateFromServer(OrderResponseModel responseModel) {
-        return   webservice.calculatePricing(responseModel)
+        return webservice.calculatePricing(responseModel)
                 .map(orderResponseModel -> {
                     OrderModel orderModel = new OrderModel();
                     String orderString = new Gson().toJson(orderResponseModel);
@@ -412,12 +431,15 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     orderModel.setOutlet(this.order.getOutlet());
                     orderModel.setSuccess(orderResponseModel.isSuccess());
 
-                    if (orderModel.order.serverOrderId != null){
-                        for (int i=0 ; i<orderResponseModel.getOrderDetails().size(); i++){
 
-                            orderModel.getOrderDetails().get(i).setOrderId(orderModel.getOrder().serverOrderId);
+                    if (orderModel.order != null)
+                        if (orderModel.order.serverOrderId != null) {
+                            for (int i = 0; i < orderResponseModel.getOrderDetails().size(); i++) {
+
+                                orderModel.getOrderDetails().get(i).setOrderId(orderModel.getOrder().serverOrderId);
+                            }
                         }
-                    }
+
 
                     return orderModel;
                 }).observeOn(AndroidSchedulers.mainThread())
@@ -427,11 +449,11 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
 
     private int getOrderTotalQty(List<OrderDetail> orderDetails) {
-        int totalQuantity=0;
-        for(OrderDetail orderDetail:orderDetails){
-            int cartonQty = orderDetail.getCartonQuantity()==null?0:orderDetail.getCartonQuantity();
-            int unitQty = orderDetail.getUnitQuantity()==null?0:orderDetail.getUnitQuantity();
-            totalQuantity+=(cartonQty+unitQty);
+        int totalQuantity = 0;
+        for (OrderDetail orderDetail : orderDetails) {
+            int cartonQty = orderDetail.getCartonQuantity() == null ? 0 : orderDetail.getCartonQuantity();
+            int unitQty = orderDetail.getUnitQuantity() == null ? 0 : orderDetail.getUnitQuantity();
+            totalQuantity += (cartonQty + unitQty);
         }
         return totalQuantity;
     }
@@ -457,15 +479,15 @@ public class OrderBookingViewModel extends AndroidViewModel {
         return isSaving;
     }
 
-    public LiveData<String> showMessage(){
+    public LiveData<String> showMessage() {
         return msg;
     }
 
-    public LiveData<Boolean> orderSaved(){
+    public LiveData<Boolean> orderSaved() {
         return orderSaved;
     }
 
-    public LiveData<Boolean> noOrderTaken(){
+    public LiveData<Boolean> noOrderTaken() {
         return noOrder;
     }
 

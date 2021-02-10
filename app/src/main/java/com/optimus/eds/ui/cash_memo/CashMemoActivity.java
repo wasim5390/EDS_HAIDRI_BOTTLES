@@ -124,6 +124,7 @@ public class CashMemoActivity extends BaseActivity {
             this.orderModel = orderModel;
 //            configUi(); Added By Husnain
 
+
             updateCart(orderModel.getOrderDetailAndCPriceBreakdowns());
             updatePricesOnUi(orderModel);
         });
@@ -226,6 +227,13 @@ public class CashMemoActivity extends BaseActivity {
 
     @OnClick(R.id.btnEditOrder)
     public void upNavigate(){
+
+        if (this.orderModel.order.serverOrderId != null){
+
+            OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
+            orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
+            viewModel.updateStatus(orderStatus);
+        }
 
         Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
         intent.putExtras(getIntent());

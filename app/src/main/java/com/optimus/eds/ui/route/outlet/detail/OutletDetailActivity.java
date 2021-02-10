@@ -157,6 +157,8 @@ public class OutletDetailActivity extends BaseActivity implements
                     OutletMerchandiseActivity.start(this, outletId, REQUEST_CODE);
                 else
                     OrderBookingActivity.start(this,outletId,REQUEST_CODE);
+
+                finish();
             }
         });
 

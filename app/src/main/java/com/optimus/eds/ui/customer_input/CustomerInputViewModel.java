@@ -138,9 +138,9 @@ public class CustomerInputViewModel extends AndroidViewModel {
         if (orderModel.order.serverOrderId != null)
             orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
 
-        statusRepository.updateStatus(orderStatus);
         outletDetailRepository.updateOutletVisitStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false);
         outletDetailRepository.updateOutletCnic(outletId,customerInput.getMobileNumber(),customerInput.getCnic(),customerInput.getStrn());
+        statusRepository.updateStatus(orderStatus);
 
         NetworkManager.getInstance().isOnline().subscribe((available, throwable) -> {
             Log.println(100,"Post Data:",outletId.toString());
@@ -184,10 +184,19 @@ public class CustomerInputViewModel extends AndroidViewModel {
                 for (int i=0; i<masterModel.getOrderModel().getOrderDetails().size(); i++){
 
                     masterModel.getOrderModel().getOrderDetails().get(i).setOrderId(masterModel.getOrderModel().getOrderId());
+
+                    if (masterModel.getOrderModel().getOrderDetails().get(i).getCartonFreeGoods()!= null){
+
+                        for (int j =0 ; j<masterModel.getOrderModel().getOrderDetails().get(i).getCartonFreeGoods().size(); j++){
+                            masterModel.getOrderModel().getOrderDetails().get(i).getCartonFreeGoods().get(j).setOrderId(masterModel.getOrderModel().getOrderId());
+                        }
+                    }
                 }
             }
 
-            masterModel.setOutletVisitTime(Calendar.getInstance().getTimeInMillis());
+
+
+//            masterModel.setOutletVisitTime(Calendar.getInstance().getTimeInMillis());
         }
 
         masterModel.setOutletEndTime(Calendar.getInstance().getTimeInMillis());

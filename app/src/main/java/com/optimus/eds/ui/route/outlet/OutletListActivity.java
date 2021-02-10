@@ -188,8 +188,7 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
         tabLayout.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                int pos = tab.getPosition();
-                SELECTED_TAB=pos; // pos <1 because pjp is on zero index
+                SELECTED_TAB= tab.getPosition(); // pos <1 because pjp is on zero index
 
                 if (SELECTED_TAB == 0)
                     selectedPjp.setVisibility(View.VISIBLE);
@@ -452,7 +451,10 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(route!=null)
-            viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+            if (SELECTED_TAB == 0)
+               pjpTab();
+            else
+                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
     }
 
     protected BroadcastReceiver orderUploadSuccessReceiver = new BroadcastReceiver() {
@@ -462,7 +464,10 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
                 MasterModel response = (MasterModel) intent.getSerializableExtra("Response");
                 Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
                 if(route!=null)
-                    viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+                    if (SELECTED_TAB == 0)
+                        pjpTab();
+                    else
+                        viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         }
     };
