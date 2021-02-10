@@ -150,6 +150,7 @@ public class OutletDetailViewModel extends AndroidViewModel {
             outlet.setVisitTimeLng(currentLocation.getLongitude());
             outlet.setVisitStatus(outletStatus);
             outlet.setSynced(false);
+            outlet.setZeroSaleOutlet(false);
 
             OrderStatus orderStatus = new OrderStatus(outlet.getOutletId(),outletStatus,false,0.0);
             orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());

@@ -84,7 +84,6 @@ public interface RouteDao extends MerchandiseDao{
             " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status isnull or OrderStatus.status < 2) OR (Outlet.statusId isnull or Outlet.statusId < 2 ) ) " )
     Observable<List<OutletOrderStatus>> getPendingOutlets();
 
-
     @Query("SELECT * FROM Outlet WHERE mOutletId=:id")
     LiveData<Outlet> findOutletById(Long id);
 

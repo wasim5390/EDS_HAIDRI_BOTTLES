@@ -82,6 +82,8 @@ public class Outlet implements Serializable {
     @SerializedName("statusId")
     private Integer statusId;
 
+    @SerializedName("isZeroSaleOutlet")
+    private boolean isZeroSaleOutlet;
 
     public Boolean getSynced() {
         return synced;
@@ -330,5 +332,13 @@ public class Outlet implements Serializable {
 
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
+    }
+
+    public boolean getZeroSaleOutlet() {
+        return isZeroSaleOutlet;
+    }
+
+    public void setZeroSaleOutlet(boolean zeroSaleOutlet) {
+        isZeroSaleOutlet = zeroSaleOutlet;
     }
 }

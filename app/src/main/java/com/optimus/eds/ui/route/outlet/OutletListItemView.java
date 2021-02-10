@@ -22,6 +22,8 @@ public class OutletListItemView extends ConstraintLayout {
     TextView outletCode;
     @BindView(R.id.orderAmount)
     TextView orderAmount;
+    @BindView(R.id.noSale)
+    TextView noSale;
     @BindView(R.id.iv_status)
     ImageView ivStatus;
 
@@ -69,6 +71,14 @@ public class OutletListItemView extends ConstraintLayout {
                    setTotal();
                 }
 
+            if (outletItem.getZeroSaleOutlet()){
+                ivStatus.setImageResource(R.drawable.ic_tick_red);
+                ivStatus.setVisibility(VISIBLE);
+                noSale.setVisibility(VISIBLE);
+            }else{
+                ivStatus.setVisibility(GONE);
+                noSale.setVisibility(GONE);
+            }
 
             if (outletItem.getVisitStatus() != 0)
             ivStatus.setVisibility(outletItem.getVisitStatus()!=0?VISIBLE:GONE);
@@ -81,6 +91,8 @@ public class OutletListItemView extends ConstraintLayout {
             } else
                 ivStatus.setVisibility(GONE);
         }
+
+
     }
 
     private Integer getResource(){
