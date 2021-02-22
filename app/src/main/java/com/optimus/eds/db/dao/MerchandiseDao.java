@@ -24,14 +24,11 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface MerchandiseDao {
 
-
     @Query("SELECT * FROM Merchandise WHERE outletId=:outletId")
     Maybe<Merchandise> findMerchandiseByOutletId(Long outletId);
 
-
     @Insert(onConflict = REPLACE)
     void insertMerchandise(Merchandise merchandise);
-
 
     @Query("SELECT * FROM Asset WHERE outletId=:outletId")
     Single<List<Asset>> findAllAssetsForOutlet(Long outletId);
@@ -48,7 +45,6 @@ public interface MerchandiseDao {
     @Update
     void updateAssets(List<Asset> assets);
 
-
     @Query("DELETE FROM Asset")
     void deleteAllAssets();
 
@@ -63,5 +59,4 @@ public interface MerchandiseDao {
 
     @Query("DELETE FROM Merchandise where outletId=:merchandiseId")
     void deleteMerchandise(Long merchandiseId);
-
 }

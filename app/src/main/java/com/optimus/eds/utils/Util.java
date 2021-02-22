@@ -34,6 +34,7 @@ import java.util.Locale;
 public class Util {
     public static final String DATE_FORMAT_1 = "MM/dd/yyyy hh:mm:ss";
     public static final String DATE_FORMAT_2 = "MMM dd";
+    public static final String DATE_FORMAT = "MMM dd YYYY";
     public static final String DATE_FORMAT_3 = "MMM-dd";
     public static final String DATE_FORMAT_5 = "hh:mm a";
     public static final String DATE_FORMAT_4 = "MM/dd/yyyy";

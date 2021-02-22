@@ -66,6 +66,7 @@ public class UploadOrdersService extends IntentService {
     private OutletDetailRepository outletDetailRepository;
     private StatusRepository repository;
 
+
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
@@ -215,6 +216,8 @@ public class UploadOrdersService extends IntentService {
             }else{
                 outletDetailRepository.updateOutletVisitStatus(outletId,statusId,true);
                 repository.updateStatus(new OrderStatus(outletId,statusId,true,0.0));
+                outletDetailRepository.updateOutlet(statusId , outletId);
+
             }
         Intent intent = new Intent();
         intent.setAction(Constant.ACTION_ORDER_UPLOAD);
@@ -226,6 +229,7 @@ public class UploadOrdersService extends IntentService {
     private void updateOutletTaskStatus(Long outletId,Double amount){
         outletDetailRepository.updateOutletVisitStatus(outletId,Constant.STATUS_COMPLETED,true); // 8 for completed task
         repository.updateStatus(new OrderStatus(outletId,Constant.STATUS_COMPLETED,true,amount));
+        outletDetailRepository.updateOutlet(Constant.STATUS_COMPLETED , outletId);
     }
 
 

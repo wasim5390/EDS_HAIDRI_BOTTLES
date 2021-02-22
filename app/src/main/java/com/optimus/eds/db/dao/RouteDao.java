@@ -25,7 +25,6 @@ import io.reactivex.Single;
 import static androidx.room.OnConflictStrategy.IGNORE;
 import static androidx.room.OnConflictStrategy.REPLACE;
 
-
 @Dao
 public interface RouteDao extends MerchandiseDao{
 
@@ -46,7 +45,6 @@ public interface RouteDao extends MerchandiseDao{
 
     @Query("SELECT * FROM Outlet WHERE planned=:planned AND mVisitStatus<=1")
     Flowable<List<Outlet>> findOutletsWithPendingTasks( int planned);
-
 
     @Query("SELECT * FROM Outlet WHERE mOutletId in (:outletsIds)")
     Single<List<Outlet>> findOutletsWithPendingOrderToSync(List<Long> outletsIds);
@@ -81,7 +79,7 @@ public interface RouteDao extends MerchandiseDao{
     Observable<List<OutletOrderStatus>> getVisitedOutlets();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status isnull or OrderStatus.status < 2) OR (Outlet.statusId isnull or Outlet.statusId < 2 ) ) " )
+            " WHERE  Outlet.planned=1 AND  ( ( OrderStatus.status < 2) OR ( Outlet.statusId < 2 ) ) " )
     Observable<List<OutletOrderStatus>> getPendingOutlets();
 
     @Query("SELECT * FROM Outlet WHERE mOutletId=:id")
@@ -124,7 +122,6 @@ public interface RouteDao extends MerchandiseDao{
     @Insert(onConflict = REPLACE)
     long insertOutlet(Outlet outlet);
 
-
     @Insert(onConflict = IGNORE)
     void insertOutlets(List<Outlet> outlets);
 
@@ -133,6 +130,9 @@ public interface RouteDao extends MerchandiseDao{
 
     @Update
     int updateOutlet(Outlet outlet);
+
+    @Query("Update Outlet set statusId = :statusId WHERE mOutletId = :outletId")
+    int updateOutlet(Integer statusId , Long outletId);
 
     @Query("Update Outlet SET mVisitStatus=:status, synced=:sync where mOutletId=:outletId")
     int updateOutletVisitStatus(Long outletId,Integer status,Boolean sync);
@@ -151,6 +151,4 @@ public interface RouteDao extends MerchandiseDao{
 
     @Query("DELETE FROM Route")
     void deleteAllRoutes();
-
-
 }

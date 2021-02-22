@@ -26,7 +26,6 @@ public interface ProductsDao {
     @Query("SELECT * FROM ProductGroup ORDER BY productGroupId ASC")
     List<ProductGroup> findAllProductGroups();
 
-
     @Query("SELECT * FROM Product ORDER BY name ASC")
     LiveData<List<Product>> findAllProduct();
 
@@ -45,7 +44,6 @@ public interface ProductsDao {
     @Query("SELECT * FROM Package WHERE packageId=:id")
     LiveData<Package> findPackageById(Long id);
 
-
     @Insert(onConflict = REPLACE)
     void insertProduct(Product product);
 
@@ -60,7 +58,6 @@ public interface ProductsDao {
 
     @Update
     int updateProduct(Product product);
-
 
     @Update
     void updateProducts(List<Product> products);
@@ -82,5 +79,4 @@ public interface ProductsDao {
 
     @Query("DELETE FROM ProductGroup")
     void deleteAllProductGroups();
-
 }

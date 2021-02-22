@@ -63,16 +63,13 @@ public interface API {
     @POST("api/AppOpertion/LogStartEnd")
     Single<LogModel> updateStartEndStatus(@FieldMap Map<String, Integer> params);
 
-
     @GET("api/AppOpertion/GetLatestAPKInfo")
     Single<AppUpdateModel> checkAppUpdate();
-
 
     @GET("routes")
     Call<List<Route>> getRoutes(@Query("id") String userId);
 
     @GET("outlets")
     Call<List<Outlet>> getOutlets(@Query("id") String routeId);
-
 
 }

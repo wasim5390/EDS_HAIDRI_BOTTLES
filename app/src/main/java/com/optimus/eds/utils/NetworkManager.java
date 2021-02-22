@@ -20,6 +20,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class NetworkManager {
+
     private static final NetworkManager ourInstance = new NetworkManager();
 
     public static NetworkManager getInstance() {

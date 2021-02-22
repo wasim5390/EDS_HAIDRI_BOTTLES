@@ -19,6 +19,9 @@ public class LastOrder {
     @SerializedName("orderTotal")
     @Expose
     private Double orderTotal;
+    @SerializedName("lastSaleDate")
+    @Expose
+    private Long lastSaleDate;
     @SerializedName("orderQuantity")
     @Expose
     private Double orderQuantity;
@@ -72,5 +75,13 @@ public class LastOrder {
 
     public void setOrderQuantity(Double orderQuantity) {
         this.orderQuantity = orderQuantity;
+    }
+
+    public Long getLastSaleDate() {
+        return lastSaleDate;
+    }
+
+    public void setLastSaleDate(Long lastSaleDate) {
+        this.lastSaleDate = lastSaleDate;
     }
 }

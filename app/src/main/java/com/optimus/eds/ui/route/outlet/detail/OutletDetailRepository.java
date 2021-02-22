@@ -95,6 +95,10 @@ public class OutletDetailRepository {
         AsyncTask.execute(() -> routeDao.updateOutlet(outlet));
     }
 
+    public void updateOutlet(Integer statusId , Long outletId){
+        AsyncTask.execute(() -> routeDao.updateOutlet(statusId , outletId));
+    }
+
     public void updateTask(Task task){
         AsyncTask.execute(() -> {
             Completable completable = Completable.fromAction(() -> {

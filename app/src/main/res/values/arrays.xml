@@ -3,7 +3,6 @@
     <string-array name="pop_array">
         <item>Continue Order</item>
         <item>Outlet Closed</item>
-        <item>Area Inaccessible</item>
         <item>No Time</item>
     </string-array>
 

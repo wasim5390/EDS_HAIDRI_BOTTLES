@@ -22,7 +22,6 @@ import io.reactivex.Single;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
-
 @Dao
 public interface OrderDao {
 
@@ -34,7 +33,6 @@ public interface OrderDao {
 
     @Query("SELECT * FROM OrderDetail where fk_oid=:orderId")
     Single<List<OrderDetail>> findOrderItemsByOrderId(Long orderId);
-
 
     @Query("SELECT * FROM 'Order' WHERE c_outletId IN (SELECT mOutletId From Outlet where mVisitStatus in (7,8))")
     @Transaction
@@ -99,6 +97,4 @@ public interface OrderDao {
 
     @Query("Delete From 'OrderDetail' WHERE fk_oid=:orderId")
     void deleteOrderItems(Long orderId);
-
-
 }

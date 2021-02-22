@@ -15,7 +15,9 @@ import android.widget.Toast;
 import com.optimus.eds.R;
 import com.optimus.eds.model.CustomObject;
 import com.optimus.eds.db.entities.Promotion;
+import com.optimus.eds.model.LastOrder;
 import com.optimus.eds.ui.route.PromotionAdapter;
+import com.optimus.eds.ui.route.outlet.detail.LastOrderAdapter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -84,6 +86,37 @@ public class AlertDialogManager {
 
         int width = (int)(context.getResources().getDisplayMetrics().widthPixels * 0.80f);
         int height = (int)(context.getResources().getDisplayMetrics().heightPixels * 0.80f);
+
+        Objects.requireNonNull(dialog.getWindow()).setLayout(width, height);
+
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    public void showLastOrderDialog(Context context, LastOrder lastOrder){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context );
+
+        LayoutInflater inflater =  (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+        View dialogView= inflater.inflate(R.layout.last_orders, null);
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
+
+        RecyclerView lastOrdersRecyclerView = dialogView.findViewById(R.id.lastOrdersRecyclerView);
+        TextView cancelTextView = dialogView.findViewById(R.id.cancel);
+
+        LastOrderAdapter lastOrderAdapter = new LastOrderAdapter(lastOrder.getOrderDetails());
+
+        lastOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(context , RecyclerView.VERTICAL , false));
+        lastOrdersRecyclerView.setAdapter(lastOrderAdapter);
+
+        cancelTextView.setOnClickListener( view -> {
+            dialog.dismiss();
+        });
+
+        int width = (int)(context.getResources().getDisplayMetrics().widthPixels * 0.80f);
+        int height = (int)(context.getResources().getDisplayMetrics().heightPixels * 0.75f);
 
         Objects.requireNonNull(dialog.getWindow()).setLayout(width, height);
 

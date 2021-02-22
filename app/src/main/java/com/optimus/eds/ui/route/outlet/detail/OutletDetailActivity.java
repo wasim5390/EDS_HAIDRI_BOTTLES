@@ -37,6 +37,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.card.MaterialCardView;
 import com.google.maps.android.SphericalUtil;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -88,12 +89,7 @@ public class OutletDetailActivity extends BaseActivity implements
     TextView outletAddress;
     @BindView(R.id.tvChannel)
     TextView outletChannel;
-    @BindView(R.id.tvLastSale)
-    TextView outletLastSale;
-    @BindView(R.id.tvLastSaleQty)
-    TextView outletSaleQty;
-    @BindView(R.id.tvLastSaleDate)
-    TextView outletLastSaleDate;
+
     @BindView(R.id.tvTotalVisit)
     TextView outletVisits;
     @BindView(R.id.pop_spinner)
@@ -102,6 +98,16 @@ public class OutletDetailActivity extends BaseActivity implements
     Button btnOk;
     @BindView(R.id.btnTasks)
     Button btnTasks;
+
+
+    @BindView(R.id.lastOrderPrice)
+    TextView lastOrderPrice;
+    @BindView(R.id.lastOrderTakenDate)
+    TextView lastOrderTakenDate;
+    @BindView(R.id.lastOrderQuantityText)
+    TextView lastOrderQuantity;
+    @BindView(R.id.lastOrder)
+    MaterialCardView lastOrderCard;
 
     Outlet outlet ;
 
@@ -326,13 +332,18 @@ public class OutletDetailActivity extends BaseActivity implements
         if(outlet !=null) {
             setTitle(outlet.getOutletName());
             outletAddress.setText(!outlet.getAddress().isEmpty()? outlet.getAddress() : "");
-            outletLastSale.setText(outlet.getLastOrder()!=null?outlet.getLastOrder().getOrderTotal().toString() : "Rs 0");
-            outletSaleQty.setText(outlet.getLastOrder()!=null?outlet.getLastOrder().getOrderQuantity().toString() : "0");
             outletChannel.setText(String.valueOf(outlet.getChannelName()));
-            outletLastSaleDate.setText(Util.formatDate(Util.DATE_FORMAT_2, outlet.getLastSaleDate()));
             outletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));
             outletVisits.setText(String.valueOf(outlet.getVisitFrequency()));
             viewModel.setOutlet(outlet);
+
+            if (outlet.getLastOrder()  != null){
+                lastOrderPrice.setText(String.valueOf("RS. " + outlet.getLastOrder().getOrderTotal()));
+                lastOrderQuantity.setText(String.valueOf(outlet.getLastOrder().getOrderQuantity()));
+                lastOrderTakenDate.setText(Util.formatDate(Util.DATE_FORMAT, outlet.getLastOrder().getLastSaleDate()));
+            }else{
+                lastOrderCard.setVisibility(View.GONE);
+            }
 
             outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
             if (mMap!= null && outlet != null){
@@ -385,6 +396,11 @@ public class OutletDetailActivity extends BaseActivity implements
     public void onViewTasksClick(){
         OutletTasksDialogFragment.newInstance(outletId).show(getSupportFragmentManager(),"TaskFragmentDialog");
 
+    }
+
+    @OnClick(R.id.lastOrder)
+    public void onLastOrderCLick(){
+        AlertDialogManager.getInstance().showLastOrderDialog(this , outlet.getLastOrder());
     }
 
     @OnClick(R.id.btnOk)

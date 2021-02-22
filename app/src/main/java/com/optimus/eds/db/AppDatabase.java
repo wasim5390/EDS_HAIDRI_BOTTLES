@@ -37,7 +37,6 @@ import com.optimus.eds.db.entities.Route;
 import com.optimus.eds.db.entities.Task;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
 
-
 @Database(entities = {Route.class, Outlet.class, Merchandise.class, Asset.class,ProductGroup.class,
         Product.class, Package.class, Order.class, OrderStatus.class,
         OrderDetail.class, CartonPriceBreakDown.class,

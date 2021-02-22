@@ -18,7 +18,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class PreferenceUtil {
 
-
     public static final String KEY_IS_SIGN_IN = "is_sign_in";
     public static final String KEY_USERNAME = "username";
     public static final String KEY_PASSWORD = "password";
@@ -282,12 +281,9 @@ public class PreferenceUtil {
     }
 
     public void clearAllPreferences() {
-
         SharedPreferences.Editor editor = sPref.edit();
         editor.clear();
         editor.commit();
-
     }
-
 
 }
