@@ -256,7 +256,6 @@ public class OutletDetailActivity extends BaseActivity implements
 
     public void showOutsideBoundaryDialog( int repeat , String metres){
 
-
         if (repeat != 5){
 
                 final int repeatLocal = ++repeat ;

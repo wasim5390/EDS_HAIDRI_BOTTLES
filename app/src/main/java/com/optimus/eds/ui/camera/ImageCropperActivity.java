@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,9 +24,12 @@ import com.optimus.eds.BuildConfig;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.watermark.androidwm.WatermarkBuilder;
+import com.watermark.androidwm.bean.WatermarkText;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -154,6 +158,56 @@ public class ImageCropperActivity extends BaseActivity {
 
     }
 
+    public void createWaterMark(Bitmap imageBitmap){
+
+        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        String date = simpleDateFormat.format(new Date());
+        WatermarkText watermarkText = new WatermarkText(date)
+                .setTextColor(Color.RED)
+                .setTextAlpha(150)
+                .setTextSize(20);
+//
+        Bitmap bitmap = WatermarkBuilder
+                .create(this, imageBitmap)
+                .loadWatermarkText(watermarkText)
+                .getWatermark()
+                .getOutputImage();
+
+        saveImageToExternalStorage(bitmap);
+
+    }
+
+    public void saveImageToExternalStorage(Bitmap image) {
+        String fullPath = mFileTemp.getAbsolutePath() ;
+        try
+        {
+            File dir = new File(fullPath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            OutputStream fOut = null;
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+
+
+            File file = new File(fullPath);
+            if(file.exists())
+                file.delete();
+            file.createNewFile();
+            fOut = new FileOutputStream(file);
+            // 100 means no compression, the lower you go, the stronger the compression
+            image.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+
+            mImagePath = file.getAbsolutePath();
+        }
+        catch (Exception e)
+        {
+            Log.e("saveToExternalStorage()", e.getMessage());
+        }
+    }
 
     /**
      * Save cropped image and send image path back to calling activity
@@ -161,6 +215,22 @@ public class ImageCropperActivity extends BaseActivity {
     private void saveCroppedImage() {
         saveOutput().observe(this,aBoolean -> {
             if (aBoolean) {
+
+                Bitmap bitmap ;
+                try {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//                        bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(getContentResolver(), mImageUri));
+//                    } else {
+//                        bitmap =  MediaStore.Images.Media.getBitmap(getContentResolver(), mImageUri);
+//                    }
+
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+
+                    createWaterMark(bitmap);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent();
                 intent.putExtra(Constant.IntentExtras.IMAGE_PATH, mImagePath);
                 setResult(RESULT_OK, intent);

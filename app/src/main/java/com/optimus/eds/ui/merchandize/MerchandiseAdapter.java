@@ -55,9 +55,9 @@ public class MerchandiseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         File imgFile = new File(merchandiseImage.getPath());
         Picasso.get().load(imgFile).fit().into(merchandiseListHolder.imageView);
 
-        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        String date = simpleDateFormat.format(new Date());
-        ((MerchandiseListHolder) holder).date.setText(date);
+//        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+//        String date = simpleDateFormat.format(new Date());
+//        ((MerchandiseListHolder) holder).date.setText(date);date
         merchandiseListHolder.deleteImageView.setOnClickListener(view -> ((OutletMerchandiseActivity) mContext).removeImage(merchandiseImage));
     }
 
