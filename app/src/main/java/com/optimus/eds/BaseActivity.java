@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -16,6 +18,10 @@ import android.view.MenuItem;
 
 
 import com.kaopiz.kprogresshud.KProgressHUD;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
@@ -167,8 +173,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         return 1;
 
     }
-
-
 
 
 }

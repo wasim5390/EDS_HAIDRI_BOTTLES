@@ -45,7 +45,7 @@ public class AlertDialogManager {
      * @param context
      * @param listener
      * @param options
-     */
+     */ 
     public void showListAlertDialog(Context context,String title,ListAlertItemClickListener listener, List<CustomObject> options) {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
         builderSingle.setIcon(R.drawable.ic_remove_box);
