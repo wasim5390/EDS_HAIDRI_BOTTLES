@@ -208,13 +208,13 @@ public class OutletMerchandiseActivity extends BaseActivity {
                 outlet.setAssetsScennedInTheLastMonth(true);
                 String remarks = etRemarks.getText().toString();
                 viewModel.updateOutlet(outlet);
-                viewModel.insertMerchandiseIntoDB(outletId,remarks);
+                viewModel.insertMerchandiseIntoDB(outletId,remarks , outlet.getStatusId());
             } else{
                 Toast.makeText(this, "Please scan assets", Toast.LENGTH_SHORT).show();
             }
         }else{
             String remarks = etRemarks.getText().toString();
-            viewModel.insertMerchandiseIntoDB(outletId,remarks);
+            viewModel.insertMerchandiseIntoDB(outletId,remarks , outlet.getStatusId());
         }
     }
 

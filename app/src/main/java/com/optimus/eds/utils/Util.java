@@ -95,6 +95,13 @@ public class Util {
         return calendar.getTime();
     }
 
+    public static Calendar getCalendarFromMilliseconds(long date) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(getDateFromMilliseconds(date));
+        return calendar;
+    }
+
     public static Long convertDateToMilli(String date,String format){
         long timeInMilliseconds;
         SimpleDateFormat sdf = new SimpleDateFormat(format);

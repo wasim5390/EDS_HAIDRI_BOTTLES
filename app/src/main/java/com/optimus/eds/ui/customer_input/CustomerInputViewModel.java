@@ -103,7 +103,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
     }
 
 
-    public void saveOrder(String mobileNumber,String remarks,String cnic,String strn,String base64Sign , String deliveryDate){
+    public void saveOrder(String mobileNumber,String remarks,String cnic,String strn,String base64Sign , String deliveryDate , Integer statusId){
         isSaving.postValue(true);
         Crashlytics.setBool("order_empty",orderModelLiveData.getValue()==null || orderModelLiveData.getValue().getOrder()==null);
         OrderModel orderModel = orderModelLiveData.getValue();
@@ -117,7 +117,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
                     .subscribeOn(Schedulers.io())
                     .subscribe(() -> {
                         postData(orderModel, customerInput);
-                        scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken());
+                        scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken() , statusId);
 
                     });
         }else{
@@ -208,10 +208,11 @@ public class CustomerInputViewModel extends AndroidViewModel {
 
 
     // schedule
-    public void scheduleMerchandiseJob(Context context,Long outletId,String token) {
+    public void scheduleMerchandiseJob(Context context,Long outletId,String token , Integer statusId) {
         PersistableBundle extras = new PersistableBundle();
         extras.putLong(Constant.EXTRA_PARAM_OUTLET_ID,outletId);
         extras.putString(Constant.TOKEN, "Bearer "+token);
+        extras.putInt("statusId", statusId);
         ComponentName serviceComponent = new ComponentName(context, MerchandiseUploadService.class);
         JobInfo.Builder builder = new JobInfo.Builder(JobIdManager.getJobId(JobIdManager.JOB_TYPE_MERCHANDISE_UPLOAD,outletId.intValue()), serviceComponent);
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require any network

@@ -83,11 +83,11 @@ public class MerchandiseViewModel extends AndroidViewModel {
     }
 
 
-    public void insertMerchandiseIntoDB(Long outletId,String remarks){
+    public void insertMerchandiseIntoDB(Long outletId,String remarks , Integer statusId){
 
         if(listImages.size()>=2) {
             inProgress.postValue(true);
-            saveMerchandise(outletId, remarks,imagesLiveDate.getValue());
+            saveMerchandise(outletId, remarks,imagesLiveDate.getValue() , statusId);
         }else {
             lessImages.setValue(true);
         }
@@ -115,7 +115,7 @@ public class MerchandiseViewModel extends AndroidViewModel {
         });
 
     }
-    public void saveMerchandise(Long outletId, String remarks,List<MerchandiseImage> merchandiseImages){
+    public void saveMerchandise(Long outletId, String remarks,List<MerchandiseImage> merchandiseImages , Integer statusId){
 
         Completable.create(e -> {
             Merchandise merchandise = new Merchandise();

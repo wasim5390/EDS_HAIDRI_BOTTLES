@@ -47,6 +47,9 @@ public class RouteOutletResponseModel extends BaseResponse{
     @SerializedName("orders")
     List<Order> orders;
 
+    @SerializedName("deliveryDate")
+    Long deliveryDate;
+
     public List<Route> getRouteList() {
         return routeList==null?new ArrayList<>():routeList;
     }
@@ -145,5 +148,13 @@ public class RouteOutletResponseModel extends BaseResponse{
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
+    }
+
+    public Long getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(Long deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 }

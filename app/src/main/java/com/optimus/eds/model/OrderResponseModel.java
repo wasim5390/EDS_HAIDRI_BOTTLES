@@ -27,7 +27,6 @@ public class OrderResponseModel extends BaseResponse{
     private Long orderDate;
     @Expose
     private List<OrderDetail> orderDetails;
-
     @Expose
     private List<UnitPriceBreakDown> priceBreakDown; // invoice level breakdown
     @Expose

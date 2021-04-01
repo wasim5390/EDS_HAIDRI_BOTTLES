@@ -33,6 +33,7 @@ import com.optimus.eds.model.WorkStatus;
 import com.optimus.eds.source.API;
 import com.optimus.eds.source.TokenResponse;
 import com.optimus.eds.utils.PreferenceUtil;
+import com.optimus.eds.utils.Util;
 
 
 import java.io.IOException;
@@ -175,6 +176,8 @@ public class HomeRepository {
                                 PreferenceUtil.getInstance(EdsApplication.getContext()).setHideCustomerInfo(response.body().getSystemConfiguration().getHideCustomerInfoInOrderingApp());
                                 PreferenceUtil.getInstance(EdsApplication.getContext()).setPunchOrderInUnits(response.body().getSystemConfiguration().getCanNotPunchOrderInUnits());
                                 PreferenceUtil.getInstance(EdsApplication.getContext()).setTargetAchievement(new Gson().toJson(response.body().getTargetVsAchievement()));
+                                if (response.body().getDeliveryDate() != null)
+                                PreferenceUtil.getInstance(EdsApplication.getContext()).setDeliveryDate(response.body().getDeliveryDate());
                             })).andThen(Completable.fromAction(() ->  routeDao.insertOutlets(response.body().getOutletList())))
                             .andThen(Completable.fromAction(() -> { routeDao.insertAssets(response.body().getAssetList());}))
                             .andThen(insertTasks(response.body().getTasksList()))

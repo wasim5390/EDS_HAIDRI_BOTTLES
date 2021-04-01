@@ -31,7 +31,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitHelper implements Constant {
 //     public static final String BASE_URL = "http://173.214.164.251:92/api/"; //volka UAT
-     public static final String BASE_URL = "http://173.214.164.251:91/"; // MEM UAT
+//     public static final String BASE_URL = "http://173.214.164.251:9001/api/"; // MEM UAT
+     public static final String BASE_URL = "http://173.214.164.251:91/"; // Testing Purpose
    // public static final String BASE_URL = "http://173.214.164.251:93/api/"; //Qarshi UAT
 
     // public static final String BASE_URL = "http://optimuseds.com/UATAPI/"; // staging

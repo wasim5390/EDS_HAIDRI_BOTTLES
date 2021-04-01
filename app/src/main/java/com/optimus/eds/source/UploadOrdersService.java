@@ -177,6 +177,7 @@ public class UploadOrdersService extends IntentService {
 
     private void uploadMasterData(MasterModel masterModel,int statusId) {
 
+        String masterModelGson = new Gson().toJson(masterModel);
 
         RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(response->{

@@ -30,6 +30,7 @@ import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import butterknife.BindView;
@@ -39,7 +40,7 @@ import butterknife.OnClick;
 import static com.optimus.eds.utils.Util.formatCurrency;
 
 
-public class CustomerInputActivity extends BaseActivity implements SignaturePad.OnSignedListener{
+public class CustomerInputActivity extends BaseActivity implements SignaturePad.OnSignedListener {
 
     @BindView(R.id.signaturePad)
     SignaturePad signaturePad;
@@ -66,16 +67,19 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
     @BindView(R.id.etCustomerRemarks)
     EditText etCustomerRemarks;
 
-    Bitmap signature=null;
+    Bitmap signature = null;
     private Long outletId;
+    private Integer statusId;
     private CustomerInputViewModel viewModel;
 
-    DatePickerDialog datePickerDialog ;
+    Date deliveryDate;
 
-    public static void start(Context context, Long outletId,int resCode) {
+    DatePickerDialog datePickerDialog;
+
+    public static void start(Context context, Long outletId, int resCode) {
         Intent starter = new Intent(context, CustomerInputActivity.class);
-        starter.putExtra("OutletId",outletId);
-        ((Activity)context).startActivityForResult(starter,resCode);
+        starter.putExtra("OutletId", outletId);
+        ((Activity) context).startActivityForResult(starter, resCode);
     }
 
     @Override
@@ -88,17 +92,19 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         ButterKnife.bind(this);
         setToolbar(getString(R.string.customer_input));
         viewModel = ViewModelProviders.of(this).get(CustomerInputViewModel.class);
-        outletId =  getIntent().getLongExtra("OutletId",0);
+        outletId = getIntent().getLongExtra("OutletId", 0);
         signaturePad.setMaxWidth(2);
         signaturePad.setOnSignedListener(this);
         setObserver();
 
+        if (PreferenceUtil.getInstance(this).getDeliveryDate() != -1)
+            etDeliveryDate.setText(Util.formatDate("dd/MM/yyyy", PreferenceUtil.getInstance(this).getDeliveryDate()));
 
     }
 
     @Override
     public void showProgress() {
-        super.showProgressD(this,false);
+        super.showProgressD(this, false);
     }
 
     @Override
@@ -106,41 +112,43 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         super.hideProgressD();
     }
 
-    private void setObserver(){
+    private void setObserver() {
         viewModel.loadOutlet(outletId).observe(this, this::onOutletLoaded);
         viewModel.findOrder(outletId);
         viewModel.order().observe(this, this::onOrderLoaded);
-        viewModel.getStartUploadService().observe(this,outletId -> {
-            if(outletId!=null)
-                UploadOrdersService.startUploadService(getApplication(),outletId);
+        viewModel.getStartUploadService().observe(this, outletId -> {
+            if (outletId != null)
+                UploadOrdersService.startUploadService(getApplication(), outletId);
         });
-        viewModel.orderSaved().observe(this,aBoolean -> {
+        viewModel.orderSaved().observe(this, aBoolean -> {
             if (aBoolean) {
                 setResult(RESULT_OK);
                 finish();
                 //CustomerComplaintsActivity.start(this);
-            }else
-            findViewById(R.id.btnNext).setEnabled(true);
+            } else
+                findViewById(R.id.btnNext).setEnabled(true);
         });
-        viewModel.isSaving().observe(this,this::setProgress);
-        viewModel.showMessage().observe(this,this::showMsg);
-       // LocalBroadcastManager.getInstance(this).registerReceiver(orderUploadSuccessReceiver,new IntentFilter(Constant.ACTION_ORDER_UPLOAD));
+        viewModel.isSaving().observe(this, this::setProgress);
+        viewModel.showMessage().observe(this, this::showMsg);
+        // LocalBroadcastManager.getInstance(this).registerReceiver(orderUploadSuccessReceiver,new IntentFilter(Constant.ACTION_ORDER_UPLOAD));
 
     }
 
 
     private void onOutletLoaded(Outlet outlet) {
 
-        tvOutletName.setText(outlet.getOutletName().concat(" - "+ outlet.getLocation()));
+        statusId = outlet.getStatusId();
 
-        if (PreferenceUtil.getInstance(this).getHideCustomerInfo() != null){
+        tvOutletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));
 
-            if (!PreferenceUtil.getInstance(this).getHideCustomerInfo()){
+        if (PreferenceUtil.getInstance(this).getHideCustomerInfo() != null) {
+
+            if (!PreferenceUtil.getInstance(this).getHideCustomerInfo()) {
 
                 etMobileNumber.setText(outlet.getMobileNumber());
                 etCnic.setText(outlet.getCnic());
                 etStrn.setText(outlet.getStrn());
-            }else{
+            } else {
                 etMobileNumber.setVisibility(View.GONE);
                 etCnic.setVisibility(View.GONE);
                 etStrn.setVisibility(View.GONE);
@@ -158,7 +166,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
     }
 
 
-    private void showMsg(String error){
+    private void showMsg(String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 
@@ -172,17 +180,30 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
 
 
     @OnClick(R.id.btnClearSignature)
-    public void clearSignatureClick(){
+    public void clearSignatureClick() {
         signaturePad.clear();
     }
 
     @OnClick(R.id.deliveryDateEditText)
-    public void deliveryDateClickListener(){
+    public void deliveryDateClickListener() {
 
-        final Calendar cldr = Calendar.getInstance();
-        int day = cldr.get(Calendar.DAY_OF_MONTH);
-        int month = cldr.get(Calendar.MONTH);
-        int year = cldr.get(Calendar.YEAR);
+        Calendar calendar = null;
+        int day, month, year;
+
+        if (PreferenceUtil.getInstance(this).getDeliveryDate() != -1)
+            calendar = Util.getCalendarFromMilliseconds(PreferenceUtil.getInstance(this).getDeliveryDate());
+
+        if (calendar == null) {
+            final Calendar cldr = Calendar.getInstance();
+            day = cldr.get(Calendar.DAY_OF_MONTH);
+            month = cldr.get(Calendar.MONTH);
+            year = cldr.get(Calendar.YEAR);
+        } else {
+
+            day = calendar.get(Calendar.DAY_OF_MONTH);
+            month = calendar.get(Calendar.MONTH);
+            year = calendar.get(Calendar.YEAR);
+        }
 
         // date picker dialog
         datePickerDialog = new DatePickerDialog(this,
@@ -190,19 +211,18 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
                     etDeliveryDate.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1);
 
                 }, year, month, day);
-        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
+        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
         datePickerDialog.show();
     }
 
     @OnClick(R.id.btnNext)
-    public void navigateToComplaints(){
-        if(signaturePad.isEmpty())
-        {
+    public void navigateToComplaints() {
+        if (signaturePad.isEmpty()) {
             Toast.makeText(this, "Please take customer signature", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (etDeliveryDate.getText().toString().isEmpty()){
+        if (etDeliveryDate.getText().toString().isEmpty()) {
             Toast.makeText(this, "Please select delivery date", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -213,9 +233,10 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         String base64Sign = Util.compressBitmap(signature);
         String deliveryDate = etDeliveryDate.getText().toString();
 
-        viewModel.saveOrder(mobileNumber,remarks,cnic,strn,base64Sign , deliveryDate);
+        viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDate, statusId);
         findViewById(R.id.btnNext).setEnabled(false);
     }
+
     @Override
     public void onStartSigning() {
 
@@ -231,7 +252,6 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
     public void onClear() {
         signature = null;
     }
-
 
 
     @Override

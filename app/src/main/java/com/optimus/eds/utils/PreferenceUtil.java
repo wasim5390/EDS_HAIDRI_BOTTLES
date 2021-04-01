@@ -36,6 +36,7 @@ public class PreferenceUtil {
     private static final String PUNCH_ORDER_IN_UNITS = "punch_order";
     private static final String ASSETS_SCANNED = "assets_scanned";
     private static final String ASSETS_SCANNED_IN_LAST_MONTH = "assets_scanned_in_last_month";
+    private static final String DELIVERY_DATE = "delivery_date";
     private String defaultAppMode = "Production";
 
     private static PreferenceUtil instance;
@@ -62,6 +63,17 @@ public class PreferenceUtil {
         editor.putBoolean(KEY_IS_SIGN_IN, value);
         editor.apply();
     }
+
+    public Long getDeliveryDate() {
+        return sPref.getLong(DELIVERY_DATE, -1);
+    }
+
+    public void setDeliveryDate(Long value) {
+        SharedPreferences.Editor editor = sPref.edit();
+        editor.putLong(DELIVERY_DATE, value);
+        editor.apply();
+    }
+
 
     public void setTargetAchievement(String targetAchievement) {
         SharedPreferences.Editor editor = sPref.edit();

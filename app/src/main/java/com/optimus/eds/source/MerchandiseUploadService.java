@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.optimus.eds.Constant;
 import com.optimus.eds.db.AppDatabase;
 import com.optimus.eds.db.entities.Merchandise;
@@ -24,6 +25,7 @@ public class MerchandiseUploadService extends JobService implements Constant {
 
     private final String iTAG = MerchandiseUploadService.class.getSimpleName();
     String token;
+    Integer statusId;
     public MerchandiseUploadService() {
 
     }
@@ -35,6 +37,7 @@ public class MerchandiseUploadService extends JobService implements Constant {
 
             final Long outletId = bundle.getLong(EXTRA_PARAM_OUTLET_ID);
             token = bundle.getString(TOKEN);
+            statusId = bundle.getInt("statusId");
             AppDatabase.getDatabase(getApplication())
                     .merchandiseDao().findMerchandiseByOutletId(outletId)
                     .map(merchandise -> {
@@ -77,6 +80,9 @@ public class MerchandiseUploadService extends JobService implements Constant {
     private void uploadMerchandise(Merchandise merchandise) {
 
         MerchandiseModel merchandiseModel  = new MerchandiseModel(merchandise);
+        merchandiseModel.setStatusId(statusId);
+
+        String merchandisingJson = new Gson().toJson(merchandiseModel);
 
         RetrofitHelper.getInstance().getApi().postMerchandise(merchandiseModel,token)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(baseResponse -> {
