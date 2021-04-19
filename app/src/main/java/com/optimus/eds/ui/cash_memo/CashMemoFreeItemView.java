@@ -78,10 +78,11 @@ public class CashMemoFreeItemView extends MaterialCardView {
             Integer freeUnits = item.getUnitQuantity()==null?0:item.getUnitQuantity();
 
             String free = "";
-            if(freeQuantityTypeId== Constant.PRIMARY)
+            if(freeQuantityTypeId== Constant.PRIMARY){
                 free = String.valueOf(freeCarton+" / "+freeUnits);
-            else if(selectedFreeCarton>0 || selectedFreeUnits>0)
+            } else if(selectedFreeCarton>0 || selectedFreeUnits>0){
                 free = String.valueOf(selectedFreeCarton+" / "+selectedFreeUnits);
+            }
 
                 productName.setText(item.getProductName());
             productQty.setText(free);

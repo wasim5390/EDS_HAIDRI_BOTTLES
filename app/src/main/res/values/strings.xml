@@ -151,6 +151,7 @@
     <string name="achieved_quantity">Achieved Quantity Percentage</string>
     <string name="achieved_amount">Achieved Amount Percentage</string>
     <string name="perDayQuantity">Per Day Required Sale Quantity</string>
+    <string name="mtdSales">MTD Sales</string>
     <string name="perDayAmount">Per Day Required Sale Amount</string>
     <string name="package_name">Package Name</string>
     <string name="delivery_date">Delivery Date</string>

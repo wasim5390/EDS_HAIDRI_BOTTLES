@@ -54,7 +54,6 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toEndOf="@+id/left_sep"
                 app:layout_constraintTop_toTopOf="@id/btnRemove"
-
                 android:text="SSRB-MIRINDA"
                 android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/light"

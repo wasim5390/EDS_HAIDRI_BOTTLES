@@ -51,6 +51,7 @@ import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
 
 import com.optimus.eds.location_services.GpsUtils;
+import com.optimus.eds.model.Configuration;
 import com.optimus.eds.model.CustomObject;
 import com.optimus.eds.source.UploadOrdersService;
 import com.optimus.eds.ui.AlertDialogManager;
@@ -137,6 +138,8 @@ public class OutletDetailActivity extends BaseActivity implements
         outletId =  getIntent().getLongExtra("OutletId",0);
         viewModel = ViewModelProviders.of(this).get(OutletDetailViewModel.class);
         showProgress();
+
+        PreferenceUtil.getInstance(this).setVisitTime(outletVisitStartTime);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -242,8 +245,16 @@ public class OutletDetailActivity extends BaseActivity implements
                     if (outletLatLng != null){
 
                         Double metre = checkMetre(currentLatLng , outletLatLng);
-                        if (metre > 100 ){
-                            showOutsideBoundaryDialog(0 , String.valueOf(metre));
+                        Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
+
+                        if (config.getGeoFenceMinRadius() != null){
+                            if (metre > config.getGeoFenceMinRadius() ){
+                                showOutsideBoundaryDialog(0 , String.valueOf(metre));
+                            }
+                        }else{
+                            if (metre > 100 ){
+                                showOutsideBoundaryDialog(0 , String.valueOf(metre));
+                            }
                         }
                     }
 

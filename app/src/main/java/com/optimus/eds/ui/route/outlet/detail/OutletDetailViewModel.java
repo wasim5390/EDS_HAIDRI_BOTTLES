@@ -171,6 +171,8 @@ public class OutletDetailViewModel extends AndroidViewModel {
                outlet = repository.getOutletByIdSingle(outletId).subscribeOn(Schedulers.io()).blockingGet();
             outlet.setSynced(false);
             outlet.setVisitStatus(outletStatus);
+            outlet.setStatusId(Constant.STATUS_NO_ORDER_FROM_BOOKING);
+            outlet.setSynced(true);
             repository.updateOutlet(outlet); // TODO remove this if below successful
             OrderStatus status = new OrderStatus(outlet.getOutletId(),outletStatus,false,0.0);
             // TODO here synced=> false is not working properly

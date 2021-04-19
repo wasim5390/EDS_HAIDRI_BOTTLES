@@ -249,4 +249,19 @@ public class CashMemoActivity extends BaseActivity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        if (this.orderModel.order.serverOrderId != null){
+
+            OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
+            orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
+            viewModel.updateStatus(orderStatus);
+        }
+
+        Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
+        intent.putExtras(getIntent());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        this.finish();
+    }
 }

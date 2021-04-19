@@ -72,6 +72,10 @@ public class MainActivity extends BaseActivity {
     TextView keyThree;
     @BindView(R.id.keyThreeValue)
     TextView keyThreeValue;
+    @BindView(R.id.keyFour)
+    TextView keyFour;
+    @BindView(R.id.keyFourValue)
+    TextView keyFourValue;
 
     private ActionBarDrawerToggle drawerToggle;
     HomeViewModel viewModel;
@@ -160,19 +164,7 @@ public class MainActivity extends BaseActivity {
 
     private void setTargetVsAchievement(TargetVsAchievement targetVsAchievement) {
 
-        if (targetVsAchievement.getTargetAmount() != null){
-
-            keyOne.setText(R.string.targetAmount);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetAmount() != null ? targetVsAchievement.getTargetAmount() : "0"));
-
-            keyTwo.setText(R.string.achieved_amount);
-            keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedAmountPercentage() != null ? targetVsAchievement.getAchievedAmountPercentage() : "0"));
-
-            keyThree.setText(R.string.perDayAmount);
-            keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleAmount() != null ? targetVsAchievement.getPerDayRequiredSaleAmount() : "0"));
-
-        }else if (targetVsAchievement.getTargetQuantity() != null){
-
+        if (targetVsAchievement != null){
             keyOne.setText(R.string.targetQuantity);
             keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetQuantity() != null ? targetVsAchievement.getTargetQuantity() : "0" ));
 
@@ -181,7 +173,34 @@ public class MainActivity extends BaseActivity {
 
             keyThree.setText(R.string.perDayQuantity);
             keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity()  != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : "0"));
+
+            keyFour.setText(R.string.mtdSales);
+            keyFourValue.setText(String.valueOf(targetVsAchievement.getMtdSales()  != null ? targetVsAchievement.getMtdSales() : "0"));
+
         }
+
+//        if (targetVsAchievement.getTargetAmount() != null){
+//
+//            keyOne.setText(R.string.targetAmount);
+//            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetAmount() != null ? targetVsAchievement.getTargetAmount() : "0"));
+//
+//            keyTwo.setText(R.string.achieved_amount);
+//            keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedAmountPercentage() != null ? targetVsAchievement.getAchievedAmountPercentage() : "0"));
+//
+//            keyThree.setText(R.string.perDayAmount);
+//            keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleAmount() != null ? targetVsAchievement.getPerDayRequiredSaleAmount() : "0"));
+//
+//        }else if (targetVsAchievement.getTargetQuantity() != null){
+//
+//            keyOne.setText(R.string.targetQuantity);
+//            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetQuantity() != null ? targetVsAchievement.getTargetQuantity() : "0" ));
+//
+//            keyTwo.setText(R.string.achieved_quantity);
+//            keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedQuantityPercentage() != null ? targetVsAchievement.getAchievedQuantityPercentage() : "0"));
+//
+//            keyThree.setText(R.string.perDayQuantity);
+//            keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity()  != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : "0"));
+//        }
 
     }
 

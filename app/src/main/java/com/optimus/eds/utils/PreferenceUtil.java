@@ -37,6 +37,7 @@ public class PreferenceUtil {
     private static final String ASSETS_SCANNED = "assets_scanned";
     private static final String ASSETS_SCANNED_IN_LAST_MONTH = "assets_scanned_in_last_month";
     private static final String DELIVERY_DATE = "delivery_date";
+    private static final String VISIT_TIME = "visit_time";
     private String defaultAppMode = "Production";
 
     private static PreferenceUtil instance;
@@ -61,6 +62,16 @@ public class PreferenceUtil {
     public void setSignIn(boolean value) {
         SharedPreferences.Editor editor = sPref.edit();
         editor.putBoolean(KEY_IS_SIGN_IN, value);
+        editor.apply();
+    }
+
+    public Long getVisitTime() {
+        return sPref.getLong(VISIT_TIME, 0L);
+    }
+
+    public void setVisitTime(Long value) {
+        SharedPreferences.Editor editor = sPref.edit();
+        editor.putLong(VISIT_TIME, value);
         editor.apply();
     }
 

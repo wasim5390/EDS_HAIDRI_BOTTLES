@@ -31,8 +31,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitHelper implements Constant {
 //     public static final String BASE_URL = "http://173.214.164.251:92/api/"; //volka UAT
-//     public static final String BASE_URL = "http://173.214.164.251:9001/api/"; // MEM UAT
-     public static final String BASE_URL = "http://173.214.164.251:91/"; // Testing Purpose
+     public static final String BASE_URL = "http://173.214.164.251:9001/api/"; // MEM UAT
+//     public static final String BASE_URL = "http://173.214.164.251:91/"; // Testing Purpose
    // public static final String BASE_URL = "http://173.214.164.251:93/api/"; //Qarshi UAT
 
     // public static final String BASE_URL = "http://optimuseds.com/UATAPI/"; // staging
@@ -103,8 +103,8 @@ public class RetrofitHelper implements Constant {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .readTimeout(40, TimeUnit.SECONDS)
-                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(httpLoggingInterceptor)
                 .addInterceptor(new AuthorizationInterceptor());

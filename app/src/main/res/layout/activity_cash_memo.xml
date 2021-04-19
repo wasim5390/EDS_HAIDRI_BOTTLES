@@ -113,7 +113,6 @@
                     android:fontFamily="@font/roboto_medium"
                     android:textColor="@color/white"
                     android:text="0.0"
-
                     android:layout_marginStart="5dp"
 
                     />

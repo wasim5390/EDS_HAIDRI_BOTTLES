@@ -291,27 +291,27 @@
                         app:layout_constraintLeft_toRightOf="@+id/keyThree"
                         app:layout_constraintRight_toRightOf="parent"/>
 
-<!--                    <TextView-->
-<!--                        android:id="@+id/key4"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="Key4"-->
-<!--                        android:padding="10dp"-->
-<!--                        android:layout_marginStart="10dp"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/key3Value"-->
-<!--                        app:layout_constraintLeft_toLeftOf="parent"/>-->
-<!--                    <TextView-->
-<!--                        android:id="@+id/key4Value"-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="Key4"-->
-<!--                        android:padding="10dp"-->
-<!--                        android:layout_marginStart="10dp"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/key3Value"-->
-<!--                        app:layout_constraintLeft_toRightOf="@+id/key1"-->
-<!--                        app:layout_constraintRight_toRightOf="parent"/>-->
+                    <TextView
+                        android:id="@+id/keyFour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintTop_toBottomOf="@+id/keyThreeValue"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                    <TextView
+                        android:id="@+id/keyFourValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintTop_toBottomOf="@+id/keyThreeValue"
+                        app:layout_constraintLeft_toRightOf="@+id/keyFour"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"/>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

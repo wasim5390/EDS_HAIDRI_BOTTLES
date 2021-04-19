@@ -434,10 +434,11 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
                     if (orderModel.order != null)
                         if (orderModel.order.serverOrderId != null) {
-                            for (int i = 0; i < orderResponseModel.getOrderDetails().size(); i++) {
+                            if ( orderResponseModel.getOrderDetails() != null)
+                                for (int i = 0; i < orderResponseModel.getOrderDetails().size(); i++) {
 
-                                orderModel.getOrderDetails().get(i).setOrderId(orderModel.getOrder().serverOrderId);
-                            }
+                                    orderModel.getOrderDetails().get(i).setOrderId(orderModel.getOrder().serverOrderId);
+                                }
                         }
 
 

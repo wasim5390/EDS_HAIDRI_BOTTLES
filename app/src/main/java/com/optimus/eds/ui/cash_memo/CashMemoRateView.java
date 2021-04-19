@@ -10,6 +10,7 @@ import com.optimus.eds.R;
 import com.optimus.eds.db.entities.CartonPriceBreakDown;
 import com.optimus.eds.db.entities.OrderDetail;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
+import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 import java.util.ArrayList;
@@ -81,7 +82,11 @@ public class CashMemoRateView extends LinearLayout {
                     type = ((UnitPriceBreakDown) breakDown).getPriceConditionType();
                 }
             }
-            rate.setText(formatCurrency(cartonPrice.doubleValue()) + " / " + formatCurrency(unitPrice.doubleValue()));
+
+            if (!PreferenceUtil.getInstance(getContext()).getPunchOrder())
+                rate.setText(formatCurrency(cartonPrice.doubleValue()) + " / " + formatCurrency(unitPrice.doubleValue()));
+            else
+                rate.setText(formatCurrency(cartonPrice.doubleValue()));
             title.setText(type);
             this.addView(rateView);
         }

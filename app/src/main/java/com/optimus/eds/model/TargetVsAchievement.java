@@ -9,8 +9,9 @@ public class TargetVsAchievement {
     private Integer targetQuantity ;
     private Integer targetAmount ;
     private Double achievedQuantityPercentage ;
+    private Integer mtdSaleQuantiy ;
     private Double achievedAmountPercentage ;
-    private Double perDayRequiredSaleQuantity ;
+    private Double perDayRequiredSaleQuantiy ;
     private Double perDayRequiredSaleAmount ;
 
     public Integer getTargetQuantity() {
@@ -46,11 +47,11 @@ public class TargetVsAchievement {
     }
 
     public Double getPerDayRequiredSaleQuantity() {
-        return perDayRequiredSaleQuantity;
+        return perDayRequiredSaleQuantiy;
     }
 
     public void setPerDayRequiredSaleQuantity(Double perDayRequiredSaleQuantity) {
-        this.perDayRequiredSaleQuantity = perDayRequiredSaleQuantity;
+        this.perDayRequiredSaleQuantiy = perDayRequiredSaleQuantity;
     }
 
     public Double getPerDayRequiredSaleAmount() {
@@ -59,5 +60,13 @@ public class TargetVsAchievement {
 
     public void setPerDayRequiredSaleAmount(Double perDayRequiredSaleAmount) {
         this.perDayRequiredSaleAmount = perDayRequiredSaleAmount;
+    }
+
+    public Integer getMtdSales() {
+        return mtdSaleQuantiy;
+    }
+
+    public void setMtdSales(Integer mtdSales) {
+        this.mtdSaleQuantiy = mtdSales;
     }
 }

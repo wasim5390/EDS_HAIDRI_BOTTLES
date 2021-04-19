@@ -91,4 +91,29 @@
         android:visibility="gone"
          />
 
+    <ImageView
+        android:id="@+id/star"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_star"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/noSale"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/gift"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_giftbox"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/noSale"
+        app:layout_constraintLeft_toRightOf="@+id/star"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
 </com.optimus.eds.ui.route.outlet.OutletListItemView>

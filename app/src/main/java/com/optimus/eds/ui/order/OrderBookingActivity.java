@@ -35,9 +35,11 @@ import com.optimus.eds.source.JobIdManager;
 import com.optimus.eds.ui.AlertDialogManager;
 import com.optimus.eds.ui.cash_memo.CashMemoActivity;
 import com.optimus.eds.ui.route.outlet.OutletListActivity;
+import com.optimus.eds.ui.route.outlet.detail.OutletDetailViewModel;
 import com.optimus.eds.utils.PreferenceUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -62,6 +64,7 @@ public class OrderBookingActivity extends BaseActivity {
 
     private Long outletId;
     private OrderBookingViewModel viewModel;
+    OutletDetailViewModel outletDetailViewModel ;
     //    private ProductGroup group;
     private Package _package;
 
@@ -85,6 +88,7 @@ public class OrderBookingActivity extends BaseActivity {
         setToolbar(getString(R.string.order_booking));
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         viewModel = ViewModelProviders.of(this).get(OrderBookingViewModel.class);
+        outletDetailViewModel = ViewModelProviders.of(this).get(OutletDetailViewModel.class);
         viewModel.setOutletId(outletId);
         viewModel.setDistributionId(PreferenceUtil.getInstance(this).getDistributionId());
         createNoOrderReasonList();
@@ -103,11 +107,17 @@ public class OrderBookingActivity extends BaseActivity {
 
     private void createNoOrderReasonList() {
         noOrderReasonList = new ArrayList<>();
-        noOrderReasonList.add(new CustomObject(1L, "Sufficient Stock"));
-        noOrderReasonList.add(new CustomObject(2L, "Price Variation"));
-        noOrderReasonList.add(new CustomObject(3L, "Buying from WS"));
-        noOrderReasonList.add(new CustomObject(4L, "Out of Cash"));
-        noOrderReasonList.add(new CustomObject(5L, "Dispute"));
+        noOrderReasonList.add(new CustomObject(1L , "Buying from WS"));
+        noOrderReasonList.add(new CustomObject(2L , "Converted to coke"));
+        noOrderReasonList.add(new CustomObject(3L , "No Funds"));
+        noOrderReasonList.add(new CustomObject(4L , "No Owner"));
+        noOrderReasonList.add(new CustomObject(5L , "Over Stock"));
+        noOrderReasonList.add(new CustomObject(6L , "Price Disparity"));
+//        noOrderReasonList.add(new CustomObject(1L, "Sufficient Stock"));
+//        noOrderReasonList.add(new CustomObject(2L, "Price Variation"));
+//        noOrderReasonList.add(new CustomObject(3L, "Buying from WS"));
+//        noOrderReasonList.add(new CustomObject(4L, "Out of Cash"));
+//        noOrderReasonList.add(new CustomObject(5L, "Dispute"));
     }
 
     private void setObservers() {
@@ -158,9 +168,7 @@ public class OrderBookingActivity extends BaseActivity {
 
     private void pickReasonForNoOrder() {
         AlertDialogManager.getInstance().showListAlertDialog(this, getString(R.string.no_order_reason),
-                object -> {
-                    onNoOrderReasonSelected(object);
-                }, noOrderReasonList);
+                this::onNoOrderReasonSelected, noOrderReasonList);
     }
 
 
@@ -268,12 +276,17 @@ public class OrderBookingActivity extends BaseActivity {
 
 
     private void onNoOrderReasonSelected(CustomObject object) {
-        Intent intent = getIntent();
-        intent.putExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER, object.getId());
-        intent.putExtra(Constant.EXTRA_PARAM_NO_ORDER_FROM_BOOKING, true);
-        intent.putExtra(Constant.EXTRA_PARAM_OUTLET_ID, outletId);
-        setResult(RESULT_OK, intent);
+
+        outletDetailViewModel.postEmptyCheckout(true , outletId , PreferenceUtil.getInstance(this).getVisitTime() , Calendar.getInstance().getTimeInMillis());
+        PreferenceUtil.getInstance(this).setVisitTime(0L);
         finish();
+
+        //        Intent intent = getIntent();
+//        intent.putExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER, object.getId());
+//        intent.putExtra(Constant.EXTRA_PARAM_NO_ORDER_FROM_BOOKING, true);
+//        intent.putExtra(Constant.EXTRA_PARAM_OUTLET_ID, outletId);
+//        setResult(RESULT_OK, intent);
+//        finish();
     }
 
 

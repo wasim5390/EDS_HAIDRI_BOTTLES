@@ -38,6 +38,7 @@ import com.optimus.eds.db.entities.LookUp;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.location_services.GpsUtils;
 import com.optimus.eds.model.AssetStatus;
+import com.optimus.eds.model.Configuration;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailActivity;
 import com.optimus.eds.ui.scanner.ScannerActivity;
 import com.optimus.eds.utils.PreferenceUtil;
@@ -191,9 +192,20 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                         if (outlet != null){
 
                             outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
-                            if (checkMetre(currentLatLng, outletLatLng) > 100) {
-                                showOutsideBoundaryDialog(0);
+
+                            Double metre = checkMetre(currentLatLng , outletLatLng);
+                            Configuration config = PreferenceUtil.getInstance(AssetsVerificationActivity.this).getConfig();
+
+                            if (config.getGeoFenceMinRadius() != null){
+                                if (metre > config.getGeoFenceMinRadius() ){
+                                    showOutsideBoundaryDialog(0);
+                                }
+                            }else{
+                                if (metre > 100 ){
+                                    showOutsideBoundaryDialog(0);
+                                }
                             }
+
                             if (barcode != null)
                                 if (!barcode.isEmpty())
                                     viewModel.verifyAsset(barcode);
