@@ -79,16 +79,18 @@ public class OutletListItemView extends ConstraintLayout {
                 setTotal();
             }
 
-            if (outletItem.getPromoTypeId() == 1){
-                star.setVisibility(VISIBLE);
-            }else if (outletItem.getPromoTypeId() == 2){
-                gift.setVisibility(VISIBLE);
-            }else if (outletItem.getPromoTypeId() == 3){
-                star.setVisibility(VISIBLE);
-                gift.setVisibility(VISIBLE);
-            }else{
-                gift.setVisibility(GONE);
-                star.setVisibility(GONE);
+            if(outletItem.getPromoTypeId() != null){
+                if (outletItem.getPromoTypeId() == 1){
+                    star.setVisibility(VISIBLE);
+                }else if (outletItem.getPromoTypeId() == 2){
+                    gift.setVisibility(VISIBLE);
+                }else if (outletItem.getPromoTypeId() == 3){
+                    star.setVisibility(VISIBLE);
+                    gift.setVisibility(VISIBLE);
+                }else{
+                    gift.setVisibility(GONE);
+                    star.setVisibility(GONE);
+                }
             }
 
 

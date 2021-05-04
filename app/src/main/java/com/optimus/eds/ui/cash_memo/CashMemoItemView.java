@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.OrderDetail;
+import com.optimus.eds.utils.PreferenceUtil;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -108,7 +109,12 @@ public class CashMemoItemView extends MaterialCardView {
                 free = "None";
 
             productName.setText(item.getProductName());
-            productQty.setText(order.getQuantity());
+
+            if (!PreferenceUtil.getInstance(getContext()).getPunchOrder())
+                productQty.setText(order.getQuantity());
+            else{
+                productQty.setText(order.getWithoutUnitQuantity());
+            }
             total.setText(formatCurrency(totalPrice));
 
             rateContainer.addView(addPricingView(item));

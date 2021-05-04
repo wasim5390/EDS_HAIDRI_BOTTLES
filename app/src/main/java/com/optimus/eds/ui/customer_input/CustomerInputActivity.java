@@ -3,6 +3,7 @@ package com.optimus.eds.ui.customer_input;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -226,15 +227,25 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
             Toast.makeText(this, "Please select delivery date", Toast.LENGTH_SHORT).show();
             return;
         }
-        String mobileNumber = etMobileNumber.getText().toString();
-        String remarks = etCustomerRemarks.getText().toString();
-        String cnic = etCnic.getText().toString();
-        String strn = etStrn.getText().toString();
-        String base64Sign = Util.compressBitmap(signature);
-        String deliveryDate = etDeliveryDate.getText().toString();
 
-        viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDate, statusId);
-        findViewById(R.id.btnNext).setEnabled(false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmation");
+        builder.setMessage("Are you sure you want to order?");
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            dialog.cancel();
+            String mobileNumber = etMobileNumber.getText().toString();
+            String remarks = etCustomerRemarks.getText().toString();
+            String cnic = etCnic.getText().toString();
+            String strn = etStrn.getText().toString();
+            String base64Sign = Util.compressBitmap(signature);
+            String deliveryDate = etDeliveryDate.getText().toString();
+
+            viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDate, statusId);
+            findViewById(R.id.btnNext).setEnabled(false);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+
     }
 
     @Override

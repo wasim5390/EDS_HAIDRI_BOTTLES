@@ -124,7 +124,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
         viewModel.isSaved().observe(this, aBoolean -> {
             if(aBoolean){
                 OrderBookingActivity.start(OutletMerchandiseActivity.this,outletId,REQUEST_CODE);
-                finish();
+//                finish();
             }
         });
         viewModel.isInProgress().observe(this, this::setProgress);

@@ -429,6 +429,11 @@ public class OrderDetail implements Cloneable{
         return (cQty==null?0:cQty)+"/"+(uQty==null?0:uQty);
     }
 
+    public String getWithoutUnitQuantity(){
+        Integer cQty = getCartonQuantity();
+        return String.valueOf(cQty==null?0:cQty);
+    }
+
     public void setCartonPriceBreakDown(List<CartonPriceBreakDown> cartonPriceBreakDown) {
         this.cartonPriceBreakDown = cartonPriceBreakDown;
     }

@@ -2,6 +2,7 @@ package com.optimus.eds.ui.order;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NavUtils;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
@@ -138,9 +139,10 @@ public class OrderBookingActivity extends BaseActivity {
         viewModel.orderSaved().observe(this, aBoolean -> {
             if (aBoolean) {
                 CashMemoActivity.start(OrderBookingActivity.this, outletId, RES_CODE);
-                finish();
+//                finish();
             }
         });
+
 
         viewModel.getPackages().observe(this, packages -> {
 
@@ -277,16 +279,17 @@ public class OrderBookingActivity extends BaseActivity {
 
     private void onNoOrderReasonSelected(CustomObject object) {
 
-        outletDetailViewModel.postEmptyCheckout(true , outletId , PreferenceUtil.getInstance(this).getVisitTime() , Calendar.getInstance().getTimeInMillis());
-        PreferenceUtil.getInstance(this).setVisitTime(0L);
-        finish();
-
-        //        Intent intent = getIntent();
-//        intent.putExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER, object.getId());
-//        intent.putExtra(Constant.EXTRA_PARAM_NO_ORDER_FROM_BOOKING, true);
-//        intent.putExtra(Constant.EXTRA_PARAM_OUTLET_ID, outletId);
-//        setResult(RESULT_OK, intent);
+//        outletDetailViewModel.postEmptyCheckout(true , outletId , PreferenceUtil.getInstance(this).getVisitTime() , Calendar.getInstance().getTimeInMillis());
+//        PreferenceUtil.getInstance(this).setVisitTime(0L);
+//
 //        finish();
+
+        Intent intent = getIntent();
+        intent.putExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER, object.getId());
+        intent.putExtra(Constant.EXTRA_PARAM_NO_ORDER_FROM_BOOKING, true);
+        intent.putExtra(Constant.EXTRA_PARAM_OUTLET_ID, outletId);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
 

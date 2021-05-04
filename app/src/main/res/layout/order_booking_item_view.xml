@@ -64,6 +64,7 @@
         android:textColor="@color/black"
         android:gravity="center"
         android:textSize="12sp"
+        android:hint="Avl Stock"
         android:background="@drawable/input_bg"
         android:padding="10dp"
         android:layout_marginStart="2dp"
@@ -87,10 +88,10 @@
         android:layout_weight="8"
         android:textSize="12sp"
         android:gravity="center"
-        android:background="@drawable/input_bg"
+        android:hint="@string/order"
+        android:background="@drawable/input_bg_order"
         android:padding="10dp"
         android:maxLines="1"
-
         android:maxLength="9"
         android:singleLine="true"
         />
