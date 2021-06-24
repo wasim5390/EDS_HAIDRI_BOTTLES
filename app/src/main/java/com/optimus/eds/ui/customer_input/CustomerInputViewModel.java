@@ -103,7 +103,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
     }
 
 
-    public void saveOrder(String mobileNumber,String remarks,String cnic,String strn,String base64Sign , String deliveryDate , Integer statusId){
+    public void saveOrder(String mobileNumber,String remarks,String cnic,String strn,String base64Sign , Long deliveryDate , Integer statusId){
         isSaving.postValue(true);
         Crashlytics.setBool("order_empty",orderModelLiveData.getValue()==null || orderModelLiveData.getValue().getOrder()==null);
         OrderModel orderModel = orderModelLiveData.getValue();
@@ -164,6 +164,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
         Gson gson  = new Gson();
         String json = gson.toJson(order);
         OrderResponseModel responseModel = gson.fromJson(json,OrderResponseModel.class);
+
         responseModel.setOrderDetails(orderModel.getOrderDetails());
         responseModel.setStartedDate(outletDetailRepository.getStartedDate());
         masterModel.setCustomerInput(customerInput);

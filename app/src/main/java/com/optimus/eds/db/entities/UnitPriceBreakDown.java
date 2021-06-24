@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName;
 
 
         }, indices = { @Index(value = "fk_modid")})
-public class UnitPriceBreakDown {
+public class    UnitPriceBreakDown {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pk_upbd")

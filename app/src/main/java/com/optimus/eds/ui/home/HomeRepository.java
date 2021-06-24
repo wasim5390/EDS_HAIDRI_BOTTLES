@@ -212,7 +212,6 @@ public class HomeRepository {
                                     orderStatus.setOutletVisitStartTime(0L);
 
 
-
                                     orderDao.insertOrderStatus(orderStatus);
                                 }
                             }))

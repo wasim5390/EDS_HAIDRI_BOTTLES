@@ -298,8 +298,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
             return;
         }
         viewModel.orderTaken(outlet.getOutletId()).observe(this,aBoolean -> {
-            if(aBoolean){
-                CashMemoActivity.start(this,outlet.getOutletId(),RES_CODE_DETAILS);
+            if(aBoolean && outlet.getStatusId() != 7){
+                CashMemoActivity.start(this,outlet.getOutletId(),RES_CODE_DETAILS , true , outlet.getStatusId());
             }else
                 OutletDetailActivity.start(this,outlet.getOutletId(),route.getRouteId(),RES_CODE_DETAILS);
         });

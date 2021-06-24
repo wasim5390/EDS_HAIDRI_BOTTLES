@@ -81,7 +81,7 @@ public class ReportsActivity extends BaseActivity {
             Float confirmQty = new BigDecimal(reportModel.getCartonConfirm()).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
             tvOrderQty.setText(String.valueOf(qty));
             tvConfirmedQty.setText(String.valueOf(confirmQty));
-            setRatio(reportModel);
+            setRatio(reportModel , qty);
             new Handler().postDelayed(() -> hideProgressD(),800);
 
         });
@@ -99,13 +99,13 @@ public class ReportsActivity extends BaseActivity {
         hideProgressD();
     }
 
-    private void setRatio(ReportModel summary){
+    private void setRatio(ReportModel summary , Float totalCasesOrder){
         int completed = summary.getCompletedOutletsCount();
         float planned  = summary.getPjpCount()==0?1:summary.getPjpCount();
         int productive = summary.getProductiveOutletCount();
 
         float avgSku = summary.getAvgSkuSize();
-        double dropSize = summary.getDropSize();
+        double dropSize =  totalCasesOrder/productive ;//summary.getDropSize();
 
         float compRate =(completed/planned)*100;
         float strikeRate = (productive/planned)*100;

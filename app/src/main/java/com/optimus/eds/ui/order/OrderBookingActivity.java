@@ -87,7 +87,9 @@ public class OrderBookingActivity extends BaseActivity {
         ButterKnife.bind(this);
         outletId = getIntent().getLongExtra("OutletId", 0);
         setToolbar(getString(R.string.order_booking));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(enableMerchandise);
+
         viewModel = ViewModelProviders.of(this).get(OrderBookingViewModel.class);
         outletDetailViewModel = ViewModelProviders.of(this).get(OutletDetailViewModel.class);
         viewModel.setOutletId(outletId);
@@ -138,7 +140,7 @@ public class OrderBookingActivity extends BaseActivity {
         });
         viewModel.orderSaved().observe(this, aBoolean -> {
             if (aBoolean) {
-                CashMemoActivity.start(OrderBookingActivity.this, outletId, RES_CODE);
+                CashMemoActivity.start(OrderBookingActivity.this, outletId, RES_CODE , false , 0);
 //                finish();
             }
         });
@@ -310,7 +312,7 @@ public class OrderBookingActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (outlet != null) {
-            if (outlet.getVisitStatus() == 1) {
+            if (outlet.getVisitStatus() == 1 && !enableMerchandise) {
                 Toast.makeText(this, "Complete order or checkout without order!", Toast.LENGTH_SHORT).show();
                 return;
             }

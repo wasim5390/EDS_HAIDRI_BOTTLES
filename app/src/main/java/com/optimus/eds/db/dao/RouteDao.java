@@ -56,7 +56,7 @@ public interface RouteDao extends MerchandiseDao{
     int getPjpCount();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status between 2 AND 8) OR (Outlet.statusId between 2 AND 8))" )
+            " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status between 2 AND 7) OR (Outlet.statusId between 2 AND 7))" )
     List<OutletOrderStatus> getVisitedOutletCount();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
@@ -67,15 +67,15 @@ public interface RouteDao extends MerchandiseDao{
     List<OutletOrderStatus> getVisitedOutletCount();*/
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  ((OrderStatus.status >=7) OR (Outlet.statusId >=7))")
+            " WHERE  Outlet.planned=1 AND  ((OrderStatus.status >=8) OR (Outlet.statusId >=8))")   // 7 to 8 change
     List<OutletOrderStatus> getProductiveOutletCount();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  ((OrderStatus.status >=7) OR (Outlet.statusId >=7))" )
+            " WHERE  Outlet.planned=1 AND  ((OrderStatus.status >=8) OR (Outlet.statusId >=8))" )
     Observable<List<OutletOrderStatus>> getProductiveOutlets();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
-            " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status between 2 AND 8) OR (Outlet.statusId between 2 AND 8))" )
+            " WHERE  Outlet.planned=1 AND  ( (OrderStatus.status between 2 AND 7) OR (Outlet.statusId between 2 AND 7))" )
     Observable<List<OutletOrderStatus>> getVisitedOutlets();
 
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.annotation.NonNull;
 import android.util.Log;
 
+import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Asset;
 import com.optimus.eds.db.entities.Merchandise;
 import com.optimus.eds.db.entities.Outlet;
@@ -149,9 +150,12 @@ public class MerchandiseViewModel extends AndroidViewModel {
 
     public void getImages(){
         List<String> stringList=new ArrayList<>();
-        stringList.add("/storage/emulated/0/EDS/Images/JPEG_20190429_165907_1469908208.jpg");
-        stringList.add("/storage/emulated/0/EDS/Images/JPEG_20190429_165907_1469908208.jpg");
+//        stringList.add("/storage/emulated/0/EDS/Images/JPEG_20190429_165907_1469908208.jpg");
+//        stringList.add("/storage/emulated/0/EDS/Images/JPEG_20190429_165907_1469908208.jpg");
 
+        stringList.add(String.valueOf(R.drawable.traditional_trade));
+        stringList.add(String.valueOf(R.drawable.modern_trade));
+        stringList.add(String.valueOf(R.drawable.double_door_trade));
         mPlanogram.setValue(stringList);
     }
 

@@ -1,10 +1,12 @@
 package com.optimus.eds.ui.merchandize;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -68,7 +70,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
     int type=0;
     ImageDialog dialogFragment;
 
-    boolean isAssets = true;
+    boolean isAssets = true , assetsVerified = true;
 
     public static void start(Context context,Long outletId, int requestCode) {
         Intent starter = new Intent(context, OutletMerchandiseActivity.class);
@@ -122,9 +124,16 @@ public class OutletMerchandiseActivity extends BaseActivity {
 
 
         viewModel.isSaved().observe(this, aBoolean -> {
-            if(aBoolean){
+            if(aBoolean && assetsVerified){
                 OrderBookingActivity.start(OutletMerchandiseActivity.this,outletId,REQUEST_CODE);
 //                finish();
+            }else{
+                Intent intent = getIntent();
+                intent.putExtra(WITHOUT_VERIFICATION, true);
+                intent.putExtra(Constant.EXTRA_PARAM_NO_ORDER_FROM_BOOKING, true);
+                intent.putExtra(Constant.EXTRA_PARAM_OUTLET_ID, outletId);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
         viewModel.isInProgress().observe(this, this::setProgress);
@@ -210,7 +219,46 @@ public class OutletMerchandiseActivity extends BaseActivity {
                 viewModel.updateOutlet(outlet);
                 viewModel.insertMerchandiseIntoDB(outletId,remarks , outlet.getStatusId());
             } else{
-                Toast.makeText(this, "Please scan assets", Toast.LENGTH_SHORT).show();
+
+                if (!PreferenceUtil.getInstance(this).getAssetWithOutVerified()){
+                    new AlertDialog.Builder(this)
+                            .setTitle("Info")
+                            .setMessage("Please scan all assets to proceed.")
+
+                            .setPositiveButton("Scan Again", (dialog, which) -> {
+                                dialog.dismiss();
+                                AssetsVerificationActivity.start(this,outletId);
+                            })
+                            .setNegativeButton("Back to PJP", (dialog, which) -> {
+
+                                dialog.dismiss();
+                                new AlertDialog.Builder(this)
+                                        .setTitle("Confirmation")
+                                        .setMessage("Are you sure you want to Back to PJP")
+
+                                        .setPositiveButton("CANCEL", (dialog1, which1) -> {
+                                            dialog1.dismiss();
+                                        })
+                                        .setNegativeButton("OK", (dialog1, which1) -> {
+
+                                            dialog1.dismiss();
+
+                                            String remarks = etRemarks.getText().toString();
+
+                                            PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(true);
+                                            viewModel.updateOutlet(outlet);
+                                            viewModel.insertMerchandiseIntoDB(outletId,remarks , outlet.getStatusId());
+
+                                            assetsVerified = false;
+
+
+                                        })
+                                        .show();
+                            })
+                            .show();
+                }else{
+                    Toast.makeText(this, "Please scan all assets", Toast.LENGTH_SHORT).show();
+                }
             }
         }else{
             String remarks = etRemarks.getText().toString();

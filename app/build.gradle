@@ -6,8 +6,8 @@ android {
         applicationId "com.optimus.eds"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 11
-        versionName "1.0.9"
+        versionCode 15
+        versionName "1.0.15"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -15,6 +15,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "version"
+    productFlavors {
+        mem_uat {
+            buildConfigField "String", "BASE_URL", '"http://173.214.164.251:9001/api/"'
+        }
+        new_uat{
+            buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
         }
     }
 

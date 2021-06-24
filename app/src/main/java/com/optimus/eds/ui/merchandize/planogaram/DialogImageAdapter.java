@@ -30,8 +30,10 @@ public class DialogImageAdapter extends PagerAdapter {
         View imageLayout = inflater.inflate(R.layout.slider_image_view, collection, false);
         assert imageLayout != null;
         ImageView imageView = (ImageView) imageLayout.findViewById(R.id.imageView);
-        File imgFile = new File(urls.get(position));
-        Picasso.get().load(imgFile).placeholder(R.drawable.cooler).into(imageView);
+
+        imageView.setImageResource(Integer.parseInt(urls.get(position)));
+//        File imgFile = new File(urls.get(position));
+//        Picasso.get().load(imgFile).placeholder(R.drawable.cooler).into(imageView);
         collection.addView(imageLayout, 0);
 
         return imageLayout;

@@ -76,14 +76,19 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
         AssetsListHolder assetsListHolder = (AssetsListHolder) holder;
         Asset asset = assetList.get(position);
 //        List<String> reasons = getReasons(asset.getVerified());
-        ((AssetsListHolder) holder).codeTv.setText(String.valueOf(asset.getAssetId()));
+        ((AssetsListHolder) holder).codeTv.setText(String.valueOf(asset.getSerialNumber()));
         ((AssetsListHolder) holder).statusTextView.setText(asset.getVerified()?"Verified":"Pending");
+
         ArrayAdapter<AssetStatus> spinnerArrayAdapter = new ArrayAdapter<AssetStatus>
                 (mContext, R.layout.spinner_item, assetStatuses);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout
                 .simple_spinner_dropdown_item);
 
         assetsListHolder.reasonsSpinner.setAdapter(spinnerArrayAdapter);
+
+        if (asset.getVerified()){
+            assetsListHolder.reasonsSpinner.setEnabled(false);
+        }
 
 //        String reason = asset.getReason();
         Integer statusId = asset.getStatusid();
@@ -131,6 +136,8 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
                     }else if (!asset.getStatusid().equals(COOLER_SCANNED) && asset.getVerified()){
                         Toast.makeText(mContext, "You have already scan the asset", Toast.LENGTH_SHORT).show();
                         assetsListHolder.reasonsSpinner.setSelection(COOLER_SCANNED);
+                    }else if (!asset.getStatusid().equals(COOLER_SCANNED)){
+                        assetScanning--;
                     }
                     Log.i("Errorrrr!!!", positionListener + "");
                 }else{
@@ -156,6 +163,10 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
 
     public int getAssetScanning() {
         return assetScanning;
+    }
+
+    public List<Asset> getAssetList() {
+        return assetList;
     }
 
     public int getAssetIndex(Integer key){

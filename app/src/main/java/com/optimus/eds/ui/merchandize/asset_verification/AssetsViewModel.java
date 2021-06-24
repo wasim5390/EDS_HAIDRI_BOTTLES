@@ -62,7 +62,6 @@ public class AssetsViewModel extends AndroidViewModel {
             for(Asset asset:assets){
                 if(asset.getSerialNumber().equals(barcode)){
                     asset.setVerified(true);
-
                 }
             }
             mAssets.postValue(assets);

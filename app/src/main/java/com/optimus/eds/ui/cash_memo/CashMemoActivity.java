@@ -75,11 +75,15 @@ public class CashMemoActivity extends BaseActivity {
 
     private CashMemoAdapter cartAdapter;
     private CashMemoViewModel viewModel;
-    private boolean cashMemoEditable;
+    private boolean cashMemoEditable , fromOutlet;
     BottomSheetDialog bottomSheetDialog;
-    public static void start(Context context, Long outletId,int resCode) {
+    private Integer statusId ;
+
+    public static void start(Context context, Long outletId,int resCode ,Boolean fromOutlet , Integer statusId) {
         Intent starter = new Intent(context, CashMemoActivity.class);
         starter.putExtra("OutletId",outletId);
+        starter.putExtra("fromOutlet",fromOutlet);
+        starter.putExtra("statusId",statusId);
         ((Activity)context).startActivityForResult(starter,resCode);
     }
 
@@ -92,6 +96,8 @@ public class CashMemoActivity extends BaseActivity {
     @Override
     public void created(Bundle savedInstanceState) {
         outletId =  getIntent().getLongExtra("OutletId",0);
+        statusId =  getIntent().getIntExtra("statusId",0);
+        fromOutlet =  getIntent().getBooleanExtra("fromOutlet",false);
         ButterKnife.bind(this);
         setToolbar(getString(R.string.cash_memo));
         viewModel = ViewModelProviders.of(this).get(CashMemoViewModel.class);
@@ -228,17 +234,19 @@ public class CashMemoActivity extends BaseActivity {
     @OnClick(R.id.btnEditOrder)
     public void upNavigate(){
 
-        if (this.orderModel.order.serverOrderId != null){
+        if (statusId != 7){
+            if (this.orderModel.order.serverOrderId != null){
 
-            OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
-            orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
-            viewModel.updateStatus(orderStatus);
+                OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
+                orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
+                viewModel.updateStatus(orderStatus);
+            }
+
+            Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
+            intent.putExtras(getIntent());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         }
-
-        Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
-        intent.putExtras(getIntent());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
         this.finish();
     }
 
@@ -252,17 +260,20 @@ public class CashMemoActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (this.orderModel.order.serverOrderId != null){
 
-            OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
-            orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
-            viewModel.updateStatus(orderStatus);
+        if (!fromOutlet){
+            if (this.orderModel.order.serverOrderId != null){
+
+                OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
+                orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
+                viewModel.updateStatus(orderStatus);
+            }
+
+            Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
+            intent.putExtras(getIntent());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         }
-
-        Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
-        intent.putExtras(getIntent());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
         this.finish();
     }
 }

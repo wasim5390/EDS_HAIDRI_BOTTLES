@@ -23,6 +23,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import com.optimus.eds.BuildConfig;
 
 
 /**
@@ -31,12 +32,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitHelper implements Constant {
 //     public static final String BASE_URL = "http://173.214.164.251:92/api/"; //volka UAT
-     public static final String BASE_URL = "http://173.214.164.251:9001/api/"; // MEM UAT
+//     public static final String BASE_URL = "http://173.214.164.251:9001/api/"; // MEM UAT
+//     public static final String BASE_URL = "http://115.186.182.57:81/API/"; // New UAT
 //     public static final String BASE_URL = "http://173.214.164.251:91/"; // Testing Purpose
    // public static final String BASE_URL = "http://173.214.164.251:93/api/"; //Qarshi UAT
 
     // public static final String BASE_URL = "http://optimuseds.com/UATAPI/"; // staging
 //      public static final String BASE_URL = "http://optimuseds.com/API/";
+      public static final String BASE_URL = BuildConfig.BASE_URL;
 
     private static RetrofitHelper instance;
     private Retrofit retrofit;

@@ -36,6 +36,7 @@ public class PreferenceUtil {
     private static final String PUNCH_ORDER_IN_UNITS = "punch_order";
     private static final String ASSETS_SCANNED = "assets_scanned";
     private static final String ASSETS_SCANNED_IN_LAST_MONTH = "assets_scanned_in_last_month";
+    private static final String ASSETS_SCANNED_WITHOUT_VERIFIED = "assets_scanned_without_verified";
     private static final String DELIVERY_DATE = "delivery_date";
     private static final String VISIT_TIME = "visit_time";
     private String defaultAppMode = "Production";
@@ -127,6 +128,16 @@ public class PreferenceUtil {
 
     public Boolean getAssetScannedInLastMonth() {
         return sPref.getBoolean(ASSETS_SCANNED_IN_LAST_MONTH, false);
+
+    }
+    public void setAssetsScannedWithoutVerified(Boolean assetsScannedInLastMonth) {
+        SharedPreferences.Editor editor = sPref.edit();
+        editor.putBoolean(ASSETS_SCANNED_WITHOUT_VERIFIED, assetsScannedInLastMonth);
+        editor.apply();
+    }
+
+    public Boolean getAssetWithOutVerified() {
+        return sPref.getBoolean(ASSETS_SCANNED_WITHOUT_VERIFIED, true);
 
     }
 

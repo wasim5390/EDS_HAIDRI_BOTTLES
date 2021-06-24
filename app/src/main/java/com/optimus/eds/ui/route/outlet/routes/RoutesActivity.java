@@ -41,6 +41,11 @@ public class RoutesActivity extends BaseActivity {
 
     public void onRouteListLoaded(List<Route> routes) {
 
+        if (routes.size() == 1){
+            startActivity(new Intent(this , OutletListActivity.class).putExtra("route" , (Route)routes.get(0)));
+            finish();
+        }
+
         RouteAdapter routeAdapter = new RouteAdapter(routes , object -> {
 
             startActivity(new Intent(this , OutletListActivity.class).putExtra("route" , (Route)object));

@@ -299,6 +299,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     }
 
     public void permissionCheck(){
+
         Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
                 .withListener(new MultiplePermissionsListener() {
@@ -324,8 +325,29 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     @Override
     public void onBackPressed() {
 
-        if (assetsVerificationAdapter.getAssetScanning() == assetList.size()){
+        int verified = 0 , notVerified = 0 , statusWithOutVerified = 0 ;
+        if (assetsVerificationAdapter.getAssetList().size() > 0){
+
+            for (Asset asset : assetsVerificationAdapter.getAssetList()){
+
+                if (asset.getStatusid() != null && asset.getVerified()){
+                    verified++;
+                }else if (asset.getStatusid() != null){
+                    notVerified++;
+                }else{
+                    statusWithOutVerified++;
+                }
+            }
+        }
+
+        if (statusWithOutVerified > 0){
+            PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(true);
+        }else if (notVerified > 0){
+            PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(false);
+            PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(false);
+        }else if (verified == assetsVerificationAdapter.getAssetList().size()){
             PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(true);
+            PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(true);
         }
         finish();
     }

@@ -41,6 +41,7 @@ public interface Constant {
     String EXTRA_PARAM_PRESELLER_LAT = "param_preseller_lat" ;
     String EXTRA_PARAM_PRESELLER_LNG = "param_preseller_lng" ;
     String EXTRA_PARAM_NO_ORDER_FROM_BOOKING="no_order";
+    String WITHOUT_VERIFICATION="without_verification";
     String TOKEN = "token";
     int PRIMARY = 1;
     int SECONDARY=2;

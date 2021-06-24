@@ -32,6 +32,8 @@ public class OutletListItemView extends ConstraintLayout {
     ImageView star;
     @BindView(R.id.gift)
     ImageView gift;
+    @BindView(R.id.pepsi)
+    ImageView pepsi;
     @BindView(R.id.outletView)
     ConstraintLayout outletView;
 
@@ -79,19 +81,35 @@ public class OutletListItemView extends ConstraintLayout {
                 setTotal();
             }
 
-            if(outletItem.getPromoTypeId() != null){
-                if (outletItem.getPromoTypeId() == 1){
-                    star.setVisibility(VISIBLE);
-                }else if (outletItem.getPromoTypeId() == 2){
-                    gift.setVisibility(VISIBLE);
-                }else if (outletItem.getPromoTypeId() == 3){
-                    star.setVisibility(VISIBLE);
-                    gift.setVisibility(VISIBLE);
-                }else{
-                    gift.setVisibility(GONE);
-                    star.setVisibility(GONE);
-                }
-            }
+
+            if (outletItem.getHasHTHDiscount())
+                gift.setVisibility(VISIBLE);
+            else
+                gift.setVisibility(GONE);
+
+            if (outletItem.getHasRentalDiscount())
+                star.setVisibility(VISIBLE);
+            else
+                star.setVisibility(GONE);
+
+            if (outletItem.getHasExclusivityFee())
+                pepsi.setVisibility(VISIBLE);
+            else
+                pepsi.setVisibility(GONE);
+
+//            if(outletItem.getPromoTypeId() != null){
+//                if (outletItem.getPromoTypeId() == 1){
+//                    star.setVisibility(VISIBLE);
+//                }else if (outletItem.getPromoTypeId() == 2){
+//                    gift.setVisibility(VISIBLE);
+//                }else if (outletItem.getPromoTypeId() == 3){
+//                    star.setVisibility(VISIBLE);
+//                    gift.setVisibility(VISIBLE);
+//                }else{
+//                    gift.setVisibility(GONE);
+//                    star.setVisibility(GONE);
+//                }
+//            }
 
 
             if (outletItem.getVisitStatus() != 0)
@@ -127,7 +145,7 @@ public class OutletListItemView extends ConstraintLayout {
         Integer resourceId;
         if (visitStatus < 1)
             resourceId = null;
-        else if (((visitStatus > 1 && visitStatus <= 6) || visitStatus > 7) && outletItem.getSynced()) {
+        else if (((visitStatus > 1 && visitStatus <= 6) || visitStatus >= 7) && outletItem.getSynced()) {
             resourceId = R.drawable.ic_tick_green;
         } else {
             resourceId = R.drawable.ic_tick_red;

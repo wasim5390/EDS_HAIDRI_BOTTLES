@@ -73,7 +73,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
     private Integer statusId;
     private CustomerInputViewModel viewModel;
 
-    Date deliveryDate;
+    Long deliveryDateInMillis = 0L;
 
     DatePickerDialog datePickerDialog;
 
@@ -98,9 +98,10 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         signaturePad.setOnSignedListener(this);
         setObserver();
 
-        if (PreferenceUtil.getInstance(this).getDeliveryDate() != -1)
+        if (PreferenceUtil.getInstance(this).getDeliveryDate() != -1) {
+            deliveryDateInMillis = PreferenceUtil.getInstance(this).getDeliveryDate();
             etDeliveryDate.setText(Util.formatDate("dd/MM/yyyy", PreferenceUtil.getInstance(this).getDeliveryDate()));
-
+        }
     }
 
     @Override
@@ -209,7 +210,11 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         // date picker dialog
         datePickerDialog = new DatePickerDialog(this,
                 (view, year1, monthOfYear, dayOfMonth) -> {
-                    etDeliveryDate.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1);
+                    etDeliveryDate.setText( (monthOfYear + 1) + "/"+ dayOfMonth   + "/" + year1);
+
+                    final Calendar cldr = Calendar.getInstance();
+                    cldr.set(year , (monthOfYear + 1) , dayOfMonth);
+                    deliveryDateInMillis = cldr.getTimeInMillis();
 
                 }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
@@ -238,9 +243,8 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
             String cnic = etCnic.getText().toString();
             String strn = etStrn.getText().toString();
             String base64Sign = Util.compressBitmap(signature);
-            String deliveryDate = etDeliveryDate.getText().toString();
 
-            viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDate, statusId);
+            viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDateInMillis, statusId);
             findViewById(R.id.btnNext).setEnabled(false);
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());

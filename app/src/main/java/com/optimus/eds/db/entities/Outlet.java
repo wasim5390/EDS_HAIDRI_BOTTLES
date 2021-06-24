@@ -68,6 +68,12 @@ public class Outlet implements Serializable {
 
     @SerializedName("mobileNumber")
     private String mobileNumber;
+    @SerializedName("hasHTHDiscount")
+    private Boolean hasHTHDiscount;
+    @SerializedName("hasRentalDiscount")
+    private Boolean hasRentalDiscount;
+    @SerializedName("hasExclusivityFee")
+    private Boolean hasExclusivityFee;
 
     @SerializedName("lastOrder")
     @TypeConverters(LastOrderConverter.class)
@@ -79,7 +85,7 @@ public class Outlet implements Serializable {
     private Boolean synced;
     @SerializedName("statusId")
     private Integer statusId;
-    @SerializedName("isZeroSaleOutlet")
+        @SerializedName("isZeroSaleOutlet")
     private boolean isZeroSaleOutlet;
     @SerializedName("promoTypeId")
     private Integer promoTypeId;
@@ -344,4 +350,28 @@ public class Outlet implements Serializable {
     public Integer getPromoTypeId() { return promoTypeId; }
 
     public void setPromoTypeId(Integer promoTypeId) { this.promoTypeId = promoTypeId; }
+
+    public Boolean getHasHTHDiscount() {
+        return hasHTHDiscount;
+    }
+
+    public void setHasHTHDiscount(Boolean hasHTHDiscount) {
+        this.hasHTHDiscount = hasHTHDiscount;
+    }
+
+    public Boolean getHasRentalDiscount() {
+        return hasRentalDiscount;
+    }
+
+    public void setHasRentalDiscount(Boolean hasRentalDiscount) {
+        this.hasRentalDiscount = hasRentalDiscount;
+    }
+
+    public Boolean getHasExclusivityFee() {
+        return hasExclusivityFee;
+    }
+
+    public void setHasExclusivityFee(Boolean hasExclusivityFee) {
+        this.hasExclusivityFee = hasExclusivityFee;
+    }
 }

@@ -430,8 +430,12 @@ public class OutletDetailActivity extends BaseActivity implements
                 case REQUEST_CODE:
                     if(data !=null && data.getExtras()!=null && data.hasExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING)){
                         boolean noOrderFromOrderBooking = data.getBooleanExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING,false);
+                        boolean without_verification = data.getBooleanExtra(WITHOUT_VERIFICATION,false);
                         reasonForNoSale = String.valueOf(data.getLongExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER,1L));
-                        viewModel.postEmptyCheckout(noOrderFromOrderBooking,outletId,outletVisitStartTime,Calendar.getInstance().getTimeInMillis());
+                        if (!without_verification)
+                            viewModel.postEmptyCheckout(noOrderFromOrderBooking,outletId,outletVisitStartTime,Calendar.getInstance().getTimeInMillis());
+                        else
+                            viewModel.postEmptyCheckoutWithoutAssetVerification(noOrderFromOrderBooking,outletId,outletVisitStartTime,Calendar.getInstance().getTimeInMillis());
                     }
                     else{
                         setResult(RESULT_OK);

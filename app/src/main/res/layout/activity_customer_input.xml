@@ -243,7 +243,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:background="@drawable/input_bg"
-                            android:hint="01-01-2012"
+                            android:hint="01/01/2012"
                             android:maxLines="1"
                             android:singleLine="true"
                             android:textSize="14sp"
