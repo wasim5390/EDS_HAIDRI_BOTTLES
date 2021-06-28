@@ -13,6 +13,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import com.google.gson.GsonBuilder;
 import com.optimus.eds.Constant;
+import com.optimus.eds.db.entities.Asset;
 import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.model.Configuration;
 import com.optimus.eds.db.entities.OrderStatus;
@@ -21,6 +22,7 @@ import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.model.OrderResponseModel;
 import com.optimus.eds.model.PackageProductResponseModel;
 import com.optimus.eds.source.StatusRepository;
+import com.optimus.eds.ui.merchandize.MerchandiseRepository;
 
 import java.util.Calendar;
 import java.util.List;
@@ -28,11 +30,13 @@ import java.util.List;
 
 public class OutletDetailViewModel extends AndroidViewModel {
 
+    MerchandiseRepository repositoryMerchandise ;
     private final OutletDetailRepository repository;
     private final StatusRepository statusRepository;
     private MutableLiveData<Boolean> startUploadService;
     private final MutableLiveData<Location> outletNearbyPos;
     private final MutableLiveData<Boolean> uploadStatus;
+    private MutableLiveData<List<Asset>> mAssets;
 
 
     private int outletStatus=1;
@@ -42,10 +46,12 @@ public class OutletDetailViewModel extends AndroidViewModel {
     public OutletDetailViewModel(@NonNull Application application) {
         super(application);
         repository = new OutletDetailRepository(application);
+        repositoryMerchandise = new MerchandiseRepository(application);
         statusRepository = StatusRepository.singleInstance(application);
         uploadStatus = new MutableLiveData<>();
         outletNearbyPos = new MutableLiveData<>();
         startUploadService = new MutableLiveData<>();
+        mAssets = new MutableLiveData<>();
         repository.loadProductsFromServer();
 
     }
@@ -118,6 +124,13 @@ public class OutletDetailViewModel extends AndroidViewModel {
     }
 
 
+    public void loadAssets(Long outletId){
+        repositoryMerchandise.loadAssets(outletId).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io()).subscribe(assets -> {
+            mAssets.postValue(assets);
+        });
+
+    }
 
 
     public void updateOutletStatusCode(int code){
@@ -232,6 +245,10 @@ public class OutletDetailViewModel extends AndroidViewModel {
 
     public LiveData<Location> getOutletNearbyPos() {
         return outletNearbyPos;
+    }
+
+    public LiveData<List<Asset>> getAssets(){
+        return mAssets;
     }
 
 

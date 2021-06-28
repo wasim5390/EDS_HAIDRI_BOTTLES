@@ -310,6 +310,19 @@ public class ImageCropperActivity extends BaseActivity {
         if (requestCode == REQUEST_CODE_TAKE_PICTURE) {
             if (resultCode == RESULT_OK) {
                 mImageView.setImageUriAsync(mImageUri);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+                    createWaterMark(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Intent intent = new Intent();
+                intent.putExtra(Constant.IntentExtras.IMAGE_PATH, mImagePath);
+                setResult(RESULT_OK, intent);
+                finish();
+
             } else if (resultCode == RESULT_CANCELED) {
                 userCancelled();
             } else {

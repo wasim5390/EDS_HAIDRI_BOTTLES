@@ -105,6 +105,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
             updateMerchandiseList(merchandise.getMerchandiseImages());
 
         });
+
         viewModel.getAssets().observe(this,assets -> {
             if(assets.isEmpty()){
                 findViewById(R.id.btnAssetVerification).setClickable(false);
@@ -118,7 +119,6 @@ public class OutletMerchandiseActivity extends BaseActivity {
         });
 
         viewModel.getMerchandiseImages().observe(this, merchandiseItems -> {
-            
             updateMerchandiseList(merchandiseItems);
         });
 

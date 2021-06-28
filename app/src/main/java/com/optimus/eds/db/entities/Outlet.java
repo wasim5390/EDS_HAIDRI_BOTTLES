@@ -66,6 +66,9 @@ public class Outlet implements Serializable {
     @SerializedName("strn")
     private String strn;
 
+    @SerializedName("mtdSale")
+    private Double mtdSale;
+
     @SerializedName("mobileNumber")
     private String mobileNumber;
     @SerializedName("hasHTHDiscount")
@@ -373,5 +376,13 @@ public class Outlet implements Serializable {
 
     public void setHasExclusivityFee(Boolean hasExclusivityFee) {
         this.hasExclusivityFee = hasExclusivityFee;
+    }
+
+    public Double getMtdSale() {
+        return mtdSale;
+    }
+
+    public void setMtdSale(Double mtdSale) {
+        this.mtdSale = mtdSale;
     }
 }

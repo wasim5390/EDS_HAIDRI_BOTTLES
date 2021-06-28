@@ -156,7 +156,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/roboto_regular"
-                        android:text="@string/total_visits"
+                        android:text="Number of Asset: "
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -215,7 +215,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/lastOrder"
+                android:id="@+id/mtdSaleOrder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
@@ -224,6 +224,63 @@
                 app:cardUseCompatPadding="true"
                 app:contentPadding="5dp"
                 app:layout_constraintTop_toBottomOf="@+id/popStatus">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/mtdSale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MTD Sales"
+                        android:padding="5dp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/monthlySales"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Month to Date Sales: "
+                        android:padding="5dp"
+                        app:layout_constraintTop_toBottomOf="@+id/mtdSale"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/monthlySalesText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not Available"
+                        android:padding="5dp"
+                        app:layout_constraintTop_toBottomOf="@+id/mtdSale"
+                        app:layout_constraintLeft_toRightOf="@+id/monthlySales"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"/>
+
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/lastOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="3dp"
+                app:cardUseCompatPadding="true"
+                app:contentPadding="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/mtdSaleOrder">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -247,7 +304,7 @@
                         android:id="@+id/lastOrderPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="RS. 0"
+                        android:text="RS. Not available"
                         android:paddingHorizontal="5dp"
                         android:paddingBottom="5dp"
                         app:layout_constraintTop_toBottomOf="@+id/lastOrderText"
@@ -271,7 +328,7 @@
                         android:id="@+id/lastOrderQuantityText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0"
+                        android:text="Not available"
                         android:paddingHorizontal="5dp"
                         android:paddingBottom="5dp"
                         app:layout_constraintTop_toBottomOf="@+id/lastOrderPrice"
@@ -283,7 +340,7 @@
                         android:id="@+id/lastOrderTaken"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Taken on "
+                        android:text="Taken on: "
                         android:paddingHorizontal="5dp"
                         android:paddingBottom="5dp"
                         app:layout_constraintTop_toBottomOf="@+id/lastOrderQuantity"
@@ -294,7 +351,7 @@
                         android:id="@+id/lastOrderTakenDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="08 Dec , 2018"
+                        android:text="Not available"
                         android:paddingHorizontal="5dp"
                         android:paddingBottom="5dp"
                         app:layout_constraintTop_toBottomOf="@+id/lastOrderQuantity"
@@ -304,6 +361,8 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
+
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/promotions"

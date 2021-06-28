@@ -1,10 +1,13 @@
 package com.optimus.eds.ui.order;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +30,14 @@ public class PackageSection extends StatelessSection {
     private final String title;
     private final List<Product> list;
     private final QtySelectionCallback mCallback;
+    private Context context;
 
-    PackageSection(PackageModel pkg, QtySelectionCallback callback) {
+    PackageSection(Context context  , PackageModel pkg, QtySelectionCallback callback) {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.order_booking_item_view)
                 .headerResourceId(R.layout.section_header)
                 .build());
+        this.context = context;
         this.title = pkg.getPackageName();
         this.list = pkg.getProducts();
         this.mCallback = callback;
@@ -60,6 +65,13 @@ public class PackageSection extends StatelessSection {
         Product product = list.get(position);
 
         itemHolder.tvItemName.setText(product.getName());
+
+        if (position == 0){
+            itemHolder.etOrderQty.requestFocus();
+            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+
 
 //        itemHolder.whStock.setText(String.valueOf(Util.convertStockToDecimalQuantity(product.getCartonStockInHand(),product.getUnitStockInHand())));
         itemHolder.whStock.setText(String.valueOf(product.getCartonStockInHand()));

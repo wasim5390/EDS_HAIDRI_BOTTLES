@@ -1,6 +1,7 @@
 package com.optimus.eds.ui.route.outlet.detail;
 
 
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -93,6 +94,8 @@ public class OutletDetailActivity extends BaseActivity implements
 
     @BindView(R.id.tvTotalVisit)
     TextView outletVisits;
+    @BindView(R.id.monthlySalesText)
+    TextView monthlySalesText;
     @BindView(R.id.pop_spinner)
     AppCompatSpinner popSpinner;
     @BindView(R.id.btnOk)
@@ -176,6 +179,11 @@ public class OutletDetailActivity extends BaseActivity implements
                 UploadOrdersService.startUploadService(getApplication(), outletId);
                 finish();
             }
+        });
+
+        viewModel.loadAssets(outletId);
+        viewModel.getAssets().observe(this,assets -> {
+            outletVisits.setText(String.valueOf(assets.size()));
         });
 
        /* viewModel.stockLoaded().observe(this,responseModel -> {
@@ -351,8 +359,10 @@ public class OutletDetailActivity extends BaseActivity implements
                 lastOrderPrice.setText(String.valueOf("RS. " + outlet.getLastOrder().getOrderTotal()));
                 lastOrderQuantity.setText(String.valueOf(outlet.getLastOrder().getOrderQuantity()));
                 lastOrderTakenDate.setText(Util.formatDate(Util.DATE_FORMAT, outlet.getLastOrder().getLastSaleDate()));
-            }else{
-                lastOrderCard.setVisibility(View.GONE);
+            }
+
+            if (outlet.getMtdSale() != null){
+                monthlySalesText.setText(String.valueOf(outlet.getMtdSale()));
             }
 
             outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
@@ -410,7 +420,8 @@ public class OutletDetailActivity extends BaseActivity implements
 
     @OnClick(R.id.lastOrder)
     public void onLastOrderCLick(){
-        AlertDialogManager.getInstance().showLastOrderDialog(this , outlet.getLastOrder());
+        if(outlet.getLastOrder() != null)
+            AlertDialogManager.getInstance().showLastOrderDialog(this , outlet.getLastOrder());
     }
 
     @OnClick(R.id.btnOk)
