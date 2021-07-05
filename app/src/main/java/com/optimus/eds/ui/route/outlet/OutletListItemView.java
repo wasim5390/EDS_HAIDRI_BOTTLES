@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +37,8 @@ public class OutletListItemView extends ConstraintLayout {
     ImageView pepsi;
     @BindView(R.id.outletView)
     ConstraintLayout outletView;
+@BindView(R.id.noSaleView)
+View noSaleView;
 
     private OutletListAdapter.Callback callback;
     private Outlet outletItem;
@@ -125,10 +128,12 @@ public class OutletListItemView extends ConstraintLayout {
                 ivStatus.setVisibility(GONE);
 
             if (outletItem.getZeroSaleOutlet()) {
-                outletView.setBackgroundColor(getResources().getColor(R.color.colorBackgorund));
+                noSaleView.setVisibility(VISIBLE);
+//                outletView.setBackgroundColor(getResources().getColor(R.color.colorBackgorund));
                 noSale.setVisibility(VISIBLE);
             } else {
-                outletView.setBackgroundColor(getResources().getColor(R.color.white));
+                noSaleView.setVisibility(GONE);
+//                outletView.setBackgroundColor(getResources().getColor(R.color.white));
                 noSale.setVisibility(GONE);
             }
         }

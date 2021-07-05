@@ -237,12 +237,13 @@ public class HomeRepository {
                         public void onComplete() {
                             // if(onDayStart)
                             //     loadPricing();
-
+                            isLoading.postValue(false);
                             targetVsAchievement.postValue(PreferenceUtil.getInstance(EdsApplication.getContext()).getTargetAchievement() != null);
                         }
 
                         @Override
                         public void onError(Throwable e) {
+                            isLoading.postValue(false);
                             Log.e(TAG,e.getMessage());
                             e.printStackTrace();
                         }
@@ -250,10 +251,12 @@ public class HomeRepository {
 
                 }
                 else{
+                    isLoading.postValue(false);
                     msg.postValue(Constant.GENERIC_ERROR);
                 }
 
             } catch (IOException e) {
+                isLoading.postValue(false);
                 e.printStackTrace();
                 Log.e(TAG,e.getMessage()+"");
                 msg.postValue(Constant.GENERIC_ERROR);
@@ -378,7 +381,6 @@ public class HomeRepository {
 
                     @Override
                     public void onSuccess(LogModel logModel) {
-                        isLoading.postValue(false);
                         if(logModel.isSuccess()){
                             WorkStatus status = preferenceUtil.getWorkSyncData();
                             status.setDayStarted(1);
@@ -389,6 +391,7 @@ public class HomeRepository {
                                 fetchTodayData(isStart);
                             }
                         }else {
+                            isLoading.postValue(false);
                             msg.postValue(logModel.getErrorCode()==2?logModel.getResponseMsg(): Constant.GENERIC_ERROR);
                         }
                     }

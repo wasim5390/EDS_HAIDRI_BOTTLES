@@ -35,7 +35,7 @@ public class OutletListViewModel extends AndroidViewModel {
     private final OutletListRepository repository;
     private final StatusRepository statusRepository;
     private final MutableLiveData<List<Outlet>> outletList;
-    private final MutableLiveData<List<OutletOrderStatus>> outletOrderList;
+    private final MutableLiveData<List<OutletOrderStatus>> pendingOutletList , visitedOutletList  , productiveOutletList;
     private final MutableLiveData<Boolean> isLoading;
     private final MutableLiveData<String> errorMsg;
     private final List<Outlet> allOutlets;
@@ -51,7 +51,9 @@ public class OutletListViewModel extends AndroidViewModel {
         super(application);
         repository = OutletListRepository.getInstance(application);
         statusRepository = StatusRepository.singleInstance(application);
-        outletOrderList = new MutableLiveData<>();
+        pendingOutletList = new MutableLiveData<>();
+        visitedOutletList = new MutableLiveData<>();
+        productiveOutletList = new MutableLiveData<>();
         outletList = new MutableLiveData<>();
         disposable = new CompositeDisposable();
         errorMsg = new MutableLiveData<>();
@@ -176,7 +178,7 @@ public class OutletListViewModel extends AndroidViewModel {
         disposable.add(repository.getVisitedOutlets()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(outletOrderList::postValue));
+                        .subscribe(visitedOutletList::postValue));
     }
 
     public void getProductiveOutlets(){
@@ -184,7 +186,7 @@ public class OutletListViewModel extends AndroidViewModel {
         disposable.add(repository.getProductiveOutlets()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(outletOrderList::postValue));
+                .subscribe(productiveOutletList::postValue));
     }
 
     public void getPendingOutlets(){
@@ -192,7 +194,7 @@ public class OutletListViewModel extends AndroidViewModel {
         disposable.add(repository.getPendingOutlets()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(outletOrderList::postValue));
+                .subscribe(pendingOutletList::postValue));
     }
 
 
@@ -227,8 +229,17 @@ public class OutletListViewModel extends AndroidViewModel {
         return repository.getProductiveCount();
     }
 
+    public MutableLiveData<List<OutletOrderStatus>> getPendingOutletList() {
+        return pendingOutletList;
+    }
 
-    public LiveData<List<OutletOrderStatus>> getOutletOrderStatus(){return outletOrderList;}
+    public MutableLiveData<List<OutletOrderStatus>> getVisitedOutletList() {
+        return visitedOutletList;
+    }
+
+    public MutableLiveData<List<OutletOrderStatus>> getProductiveOutletList() {
+        return productiveOutletList;
+    }
 
     public MutableLiveData<Boolean> isLoading() {
         return isLoading;

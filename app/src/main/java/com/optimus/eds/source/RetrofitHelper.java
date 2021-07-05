@@ -80,14 +80,14 @@ public class RetrofitHelper implements Constant {
             response = chain.proceed(request);
 
             if (response.code()== 401 && !preferenceUtil.getUsername().isEmpty()) {
+                response.close();
                 API tokenApi =  getRetrofit().create(API.class);
                 retrofit2.Response<TokenResponse> tokenResponse= tokenApi.refreshToken("password",preferenceUtil.getUsername(),preferenceUtil.getPassword()).execute();
                 if(tokenResponse.isSuccessful()){
                     TokenResponse tokenResponseObj=tokenResponse.body();
 
                     try {
-                        response.close();
-                        request= request.newBuilder()
+                        request = request.newBuilder()
                                 .header("Authorization", "Bearer " + tokenResponseObj.getAccessToken()).build();
                         response = chain.proceed(request);
                         PreferenceUtil.getInstance(EdsApplication.getContext()).saveToken(tokenResponseObj.getAccessToken());
@@ -98,6 +98,7 @@ public class RetrofitHelper implements Constant {
                     // goto Login as we cannot refresh token
                 }
             }
+
             return response;
         }
     }
@@ -106,8 +107,8 @@ public class RetrofitHelper implements Constant {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .readTimeout(60, TimeUnit.SECONDS)
-                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(httpLoggingInterceptor)
                 .addInterceptor(new AuthorizationInterceptor());

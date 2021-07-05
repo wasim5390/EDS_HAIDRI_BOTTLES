@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +68,7 @@ import com.optimus.eds.utils.Util;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -150,10 +152,10 @@ public class OutletDetailActivity extends BaseActivity implements
         mapFragment.getMapAsync(this);
 
         setToolbar(getString(R.string.outlet_summary));
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item);
-        adapter.addAll(getResources().getStringArray(R.array.pop_array));
-        popSpinner.setAdapter(adapter);
-        popSpinner.setOnItemSelectedListener(this);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item);
+//        adapter.addAll(getResources().getStringArray(R.array.pop_array));
+//        popSpinner.setAdapter(adapter);
+//        popSpinner.setOnItemSelectedListener(this);
         viewModel.findOutlet(outletId).observe(this, outlet -> {
             this.outlet = outlet;
             updateUI(outlet);
@@ -426,7 +428,39 @@ public class OutletDetailActivity extends BaseActivity implements
 
     @OnClick(R.id.btnOk)
     public void onOkClick(){
+        viewModel.updateOutletStatusCode(1);
         viewModel.onNextClick(currentLocation,outletVisitStartTime);
+    }
+
+    @OnClick(R.id.btnNotFlow)
+    public void notFlowClick(View v){
+        PopupMenu menu = new PopupMenu(this, v);
+
+        HashMap<String, Integer> hashMap = new HashMap<>();
+        hashMap.put("Outlet Closed" , 2);
+        hashMap.put("No Time" , 3 );
+
+        menu.getMenu().add("Outlet Closed");
+        menu.getMenu().add("No Time");
+        menu.show();
+
+        menu.setOnMenuItemClickListener(item -> {
+
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle(R.string.warning);
+            builderSingle.setMessage("Are you sure you want to take an action?");
+            builderSingle.setCancelable(true);
+            builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
+                dialog1.dismiss();
+                int code = hashMap.get(item.getTitle().toString());
+                viewModel.updateOutletStatusCode(code);
+                viewModel.onNextClick(currentLocation,outletVisitStartTime);
+            });
+
+            builderSingle.show();
+
+            return true;
+        });
     }
 
     @SuppressLint("MissingPermission")

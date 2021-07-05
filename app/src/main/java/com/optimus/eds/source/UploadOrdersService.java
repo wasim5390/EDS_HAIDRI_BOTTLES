@@ -1,56 +1,32 @@
 package com.optimus.eds.source;
 
 import android.app.IntentService;
-import android.app.job.JobParameters;
-import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.optimus.eds.Constant;
-import com.optimus.eds.db.entities.CustomerInput;
-import com.optimus.eds.db.entities.Order;
-import com.optimus.eds.db.entities.OrderDetail;
 import com.optimus.eds.db.entities.OrderStatus;
-import com.optimus.eds.db.entities.Outlet;
-import com.optimus.eds.model.BaseResponse;
 import com.optimus.eds.model.MasterModel;
-import com.optimus.eds.model.OrderDetailAndPriceBreakdown;
-import com.optimus.eds.model.OrderModel;
-import com.optimus.eds.model.OrderResponseModel;
-import com.optimus.eds.ui.customer_input.CustomerInputRepository;
 import com.optimus.eds.ui.order.OrderBookingRepository;
-import com.optimus.eds.ui.order.OrderManager;
 import com.optimus.eds.ui.route.outlet.OutletListRepository;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.NotificationUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 
-import static com.optimus.eds.Constant.ACTION_ORDER_UPLOAD;
 import static com.optimus.eds.Constant.EXTRA_PARAM_OUTLET_ID;
-import static com.optimus.eds.Constant.EXTRA_PARAM_OUTLET_VISIT_END_TIME;
-import static com.optimus.eds.Constant.TOKEN;
 
 public class UploadOrdersService extends IntentService {
 

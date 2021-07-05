@@ -109,7 +109,8 @@ public class ReportsActivity extends BaseActivity {
 
         float compRate =(completed/planned)*100;
         float strikeRate = (productive/planned)*100;
-        tvCompRate.setText(String.format("%.01f", compRate)+" %");
+        float completionRate = ((planned - (planned - (productive + completed)) )*100)/planned;
+        tvCompRate.setText(String.format("%.01f", completionRate)+" %");
         tvStrikeRate.setText(String.format("%.01f", strikeRate)+" %");
         tvAvgSku.setText(String.format("%.01f", avgSku));
         tvDropSize.setText(String.format("%.01f", dropSize));

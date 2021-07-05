@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.optimus.eds.BuildConfig;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.CartonPriceBreakDown;
 import com.optimus.eds.db.entities.OrderDetail;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
+import com.optimus.eds.model.PricingModel;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
@@ -27,7 +29,6 @@ import butterknife.ButterKnife;
 import static com.optimus.eds.utils.Util.formatCurrency;
 
 public class CashMemoRateView extends LinearLayout {
-
 
     public CashMemoRateView(Context context) {
         super(context);
@@ -59,7 +60,7 @@ public class CashMemoRateView extends LinearLayout {
         HashMap<BreakDownKey, List<Object>> listHashMap = calculate(cartonPriceBreakDowns, unitPriceBreakDowns);
 
         // Sort method needs a List, so let's first convert HashList to List in Java
-        List<Map.Entry<BreakDownKey,List<Object>>> listOfEntries = new ArrayList<>(listHashMap.entrySet());
+        List<Map.Entry<BreakDownKey, List<Object>>> listOfEntries = new ArrayList<>(listHashMap.entrySet());
 
         Collections.sort(listOfEntries, (o1, o2) -> o1.getKey().getConditionOrder().compareTo(o2.getKey().conditionOrder));
 
@@ -70,7 +71,6 @@ public class CashMemoRateView extends LinearLayout {
             TextView rate = rateView.findViewById(R.id.tvProductRate);
             Double unitPrice = 0.0, cartonPrice = 0.0;
             String type = "";
-
 
             for (Object breakDown : entry.getValue()) {
 
@@ -83,6 +83,7 @@ public class CashMemoRateView extends LinearLayout {
                 }
             }
 
+
             if (!PreferenceUtil.getInstance(getContext()).getPunchOrder())
                 rate.setText(formatCurrency(cartonPrice.doubleValue()) + " / " + formatCurrency(unitPrice.doubleValue()));
             else
@@ -94,20 +95,76 @@ public class CashMemoRateView extends LinearLayout {
     }
 
 
-    public HashMap<BreakDownKey,List<Object>> calculate(List<CartonPriceBreakDown> cartonPriceBreakDownList,List<UnitPriceBreakDown> unitPriceBreakDownList){
+    private HashMap<String, Object> cashMemoPricing(Object breakDown) {
+
+        HashMap<String, Object> returnHashMap = new HashMap<>();
+        if (BuildConfig.FLAVOR.equals("mem_uat")) {
+            if (breakDown instanceof CartonPriceBreakDown) {
+                returnHashMap.put("cartonPrice", ((CartonPriceBreakDown) breakDown).getBlockPrice());
+                returnHashMap.put("type", ((CartonPriceBreakDown) breakDown).getPriceConditionType());
+                returnHashMap.put("unitPrice", 0.0);
+//                cartonPrice ((CartonPriceBreakDown) breakDown).getBlockPrice();
+//                type = ((CartonPriceBreakDown) breakDown).getPriceConditionType();
+            } else {
+                returnHashMap.put("cartonPrice", 0.0);
+                returnHashMap.put("unitPrice", ((UnitPriceBreakDown) breakDown).getBlockPrice());
+                returnHashMap.put("type", ((UnitPriceBreakDown) breakDown).getPriceConditionType());
+//                unitPrice = ((UnitPriceBreakDown) breakDown).getBlockPrice();
+//                type = ((UnitPriceBreakDown) breakDown).getPriceConditionType();
+            }
+        } else if (BuildConfig.FLAVOR.equals("pepsi_uat")) {
+
+            PricingModel pricingModel = new PricingModel();
+
+            if (breakDown instanceof CartonPriceBreakDown) {
+                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("retailer margin")) {
+                    pricingModel.setTradePrice(pricingModel.getTradePrice() + ((CartonPriceBreakDown) breakDown).getTotalPrice());
+                }
+                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("market discount hth") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("rental discount")) {
+                    pricingModel.setDiscounts(pricingModel.getDiscounts() + ((CartonPriceBreakDown) breakDown).getBlockPrice());
+                }
+                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("consumer rate off") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("promotions")) {
+                    pricingModel.setPromos(pricingModel.getPromos() + ((CartonPriceBreakDown) breakDown).getBlockPrice());
+                }
+                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("tax")) {
+                    pricingModel.setTax(pricingModel.getPromos() + ((CartonPriceBreakDown) breakDown).getBlockPrice());
+                }
+            } else {
+                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("retailer margin")) {
+                    pricingModel.setTradePrice(pricingModel.getTradePrice() + ((UnitPriceBreakDown) breakDown).getTotalPrice());
+                }
+                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("market discount hth") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("rental discount")) {
+                    pricingModel.setDiscounts(pricingModel.getDiscounts() + ((UnitPriceBreakDown) breakDown).getBlockPrice());
+                }
+                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("consumer rate off") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("promotions")) {
+                    pricingModel.setPromos(pricingModel.getPromos() + ((UnitPriceBreakDown) breakDown).getBlockPrice());
+                }
+                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("tax")) {
+                    pricingModel.setTax(pricingModel.getPromos() + ((UnitPriceBreakDown) breakDown).getBlockPrice());
+                }
+            }
+
+            returnHashMap.put("pricingModel", pricingModel);
+
+        }
+
+        return returnHashMap;
+    }
+
+
+    public HashMap<BreakDownKey, List<Object>> calculate(List<CartonPriceBreakDown> cartonPriceBreakDownList, List<UnitPriceBreakDown> unitPriceBreakDownList) {
 
         List<Object> breakDowns = new ArrayList<>();
-        breakDowns.addAll(cartonPriceBreakDownList==null?new ArrayList<>():cartonPriceBreakDownList);
-        breakDowns.addAll(unitPriceBreakDownList==null?new ArrayList<>():unitPriceBreakDownList);
+        breakDowns.addAll(cartonPriceBreakDownList == null ? new ArrayList<>() : cartonPriceBreakDownList);
+        breakDowns.addAll(unitPriceBreakDownList == null ? new ArrayList<>() : unitPriceBreakDownList);
 
         HashMap<BreakDownKey, List<Object>> hashMap = new HashMap<>();
-        for (Object breakDown:breakDowns){
+        for (Object breakDown : breakDowns) {
             BreakDownKey key;
-            if(breakDown instanceof CartonPriceBreakDown) {
-                key = new BreakDownKey(((CartonPriceBreakDown) breakDown).getPriceConditionId(),((CartonPriceBreakDown) breakDown).getPriceConditionClassOrder());
-            }
-            else {
-                key = new BreakDownKey(((UnitPriceBreakDown) breakDown).getPriceConditionId(),((UnitPriceBreakDown) breakDown).getPriceConditionClassOrder());
+            if (breakDown instanceof CartonPriceBreakDown) {
+                key = new BreakDownKey(((CartonPriceBreakDown) breakDown).getPriceConditionId(), ((CartonPriceBreakDown) breakDown).getPriceConditionClassOrder());
+            } else {
+                key = new BreakDownKey(((UnitPriceBreakDown) breakDown).getPriceConditionId(), ((UnitPriceBreakDown) breakDown).getPriceConditionClassOrder());
             }
 
             if (!hashMap.containsKey(key)) {
@@ -121,14 +178,15 @@ public class CashMemoRateView extends LinearLayout {
         return hashMap;
     }
 
-    public class BreakDownKey{
+    public class BreakDownKey {
 
         int priceConditionId;
         int conditionOrder;
+
         public BreakDownKey(int priceConditionId, int conditionOrder) {
             this.priceConditionId = priceConditionId;
             this.conditionOrder = conditionOrder;
-            if(conditionOrder<1)
+            if (conditionOrder < 1)
                 this.conditionOrder = priceConditionId;
         }
 

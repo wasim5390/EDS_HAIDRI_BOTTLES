@@ -1,5 +1,6 @@
 package com.optimus.eds.ui.route.outlet;
 
+import android.app.Activity;
 import android.app.SearchManager;
 
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabItem;
@@ -63,6 +65,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
     TabLayout tabLayout;
     @BindView(R.id.selectedPjp)
     TabLayout selectedPjp;
+    @BindView(R.id.progress)
+    ProgressBar progressBar;
 
     SearchView searchView;
     private OutletListAdapter outletListAdapter;
@@ -105,6 +109,10 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
         onRouteListLoaded();
 
         viewModel.getOutletList().observe(this, outlets -> {
+
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+
             if (SELECTED_TAB == 1){
                 Collections.sort(outlets,(o1, o2) -> o1.getSequenceNumber().compareTo(o2.getSequenceNumber()));
                 updateOutletsList(outlets);
@@ -113,12 +121,12 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
         });
 
-        viewModel.isLoading().observe(this,aBoolean -> {
-            if(aBoolean)
-                showProgress();
-            else
-                hideProgress();
-        });
+//        viewModel.isLoading().observe(this,aBoolean -> {
+//            if(aBoolean)
+//                showProgress();
+//            else
+//                hideProgress();
+//        });
 
 
         // Pending Count
@@ -196,9 +204,12 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
                     selectedPjp.setVisibility(View.GONE);
 
                 if(route!=null){
-                    if (SELECTED_TAB == 1)
+                    if (SELECTED_TAB == 1){
+                        progressBar.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                         AsyncTask.execute(() -> viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1));
-                    else{
+
+                    } else{
                        pjpTab();
                     }
                 }
@@ -222,7 +233,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
                 SELECTED_PJP_TAB = tab.getPosition();
 
-                showProgress();
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
                 pjpTab();
             }
 
@@ -238,20 +250,61 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
         });
 
 
-        viewModel.getOutletOrderStatus().observe(this , outletOrderStatuses -> {
+        viewModel.getVisitedOutletList().observe(this , outletOrderStatuses -> {
 
-            this.outletOrderStatuses.clear();
-            hideProgress();
+            if (SELECTED_PJP_TAB == 1){
+                this.outletOrderStatuses.clear();
 
-            if (outletOrderStatuses.size() > 0){
-                this.outletOrderStatuses.addAll(outletOrderStatuses);
+                if (outletOrderStatuses.size() > 0 ){
+                    this.outletOrderStatuses.addAll(outletOrderStatuses);
+                }
+                outletListAdapter.populateOutletOrderStatus(outletOrderStatuses , true);
+
+                new GetPendingOutletCount().execute();
+                new GetVisitedOutletCount().execute();
+                new GetProductiveOutletCount().execute();
+
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
             }
+        });
 
-            outletListAdapter.populateOutletOrderStatus(outletOrderStatuses , true);
+        viewModel.getProductiveOutletList().observe(this , outletOrderStatuses -> {
 
-            new GetPendingOutletCount().execute();
-            new GetVisitedOutletCount().execute();
-            new GetProductiveOutletCount().execute();
+            if (SELECTED_PJP_TAB == 2){
+                this.outletOrderStatuses.clear();
+
+                if (outletOrderStatuses.size() > 0 ){
+                    this.outletOrderStatuses.addAll(outletOrderStatuses);
+                }
+                outletListAdapter.populateOutletOrderStatus(outletOrderStatuses , true);
+
+                new GetPendingOutletCount().execute();
+                new GetVisitedOutletCount().execute();
+                new GetProductiveOutletCount().execute();
+
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        viewModel.getPendingOutletList().observe(this , outletOrderStatuses -> {
+
+            if (SELECTED_PJP_TAB == 0){
+                this.outletOrderStatuses.clear();
+
+                if (outletOrderStatuses.size() > 0 ){
+                    this.outletOrderStatuses.addAll(outletOrderStatuses);
+                }
+                outletListAdapter.populateOutletOrderStatus(outletOrderStatuses , true);
+
+                new GetPendingOutletCount().execute();
+                new GetVisitedOutletCount().execute();
+                new GetProductiveOutletCount().execute();
+
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
         });
 
     }
@@ -278,8 +331,6 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
         }finally {
             new Handler().postDelayed(() -> hideProgress(), 1);
         }
-
-
     }
 
 
@@ -347,7 +398,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 //                }
 //            });
 
-            showProgress();
+            progressBar.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
             viewModel.getPendingOutlets();
         }
 
@@ -450,11 +502,17 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(route!=null)
-            if (SELECTED_TAB == 0)
-               pjpTab();
-            else
-                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+        if(resultCode == Activity.RESULT_OK){
+            if(route!=null){
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+//            if (SELECTED_TAB == 0)
+//                pjpTab();
+//            else
+//                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+            }
+        }
+
     }
 
     protected BroadcastReceiver orderUploadSuccessReceiver = new BroadcastReceiver() {
@@ -463,11 +521,14 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
             if(intent.getAction()==Constant.ACTION_ORDER_UPLOAD){
                 MasterModel response = (MasterModel) intent.getSerializableExtra("Response");
                 Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
-                if(route!=null)
-                    if (SELECTED_TAB == 0)
-                        pjpTab();
-                    else
-                        viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+//                if(route!=null)
+//                    if (SELECTED_TAB == 0)
+//                        pjpTab();
+//                    else
+//                        viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         }
     };

@@ -242,15 +242,19 @@ public class MainActivity extends BaseActivity {
             case R.id.btnStartDay:
                 if(PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
                     showMessage(getString(R.string.already_started_day));
-                else
+                else{
+                    showProgress();
                     viewModel.startDay();
+                }
                 break;
             case R.id.btnDownload:
                 AlertDialogManager.getInstance().showVerificationAlertDialog(this,getString(R.string.update_routes_title),
                         getString(R.string.update_routes_msg)
                         ,verified -> {
-                            if(verified)
+                            if(verified){
+//                                showProgress();
                                 viewModel.download();
+                            }
                         });
 
                 break;
@@ -305,8 +309,7 @@ public class MainActivity extends BaseActivity {
                 findViewById(R.id.btnStartDay).setClickable(false);
                 findViewById(R.id.btnStartDay).setAlpha(0.5f);
                 String date = Util.formatDate(Util.DATE_FORMAT_3,PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate());
-                AlertDialogManager.getInstance().
-                        showAlertDialog(this, "Day Started! ( " + date+" )", "Your day has been started");
+                AlertDialogManager.getInstance().showAlertDialog(this, "Day Started! ( " + date+" )", "Your day has been started");
 
                 tvRunningDay.setText("( "+date+" )");
                 tvRunningDay.setVisibility(View.VISIBLE);
@@ -323,6 +326,8 @@ public class MainActivity extends BaseActivity {
 
 
         viewModel.getTargetVsAchievement().observe(this  , aBoolean -> {
+
+            hideProgress();
             if (aBoolean)
                 setTargetVsAchievement(new Gson().fromJson(PreferenceUtil.getInstance(this).getTargetAchievement() , TargetVsAchievement.class));
         });

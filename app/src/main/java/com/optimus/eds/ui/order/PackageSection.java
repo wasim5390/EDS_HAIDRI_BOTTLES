@@ -31,6 +31,7 @@ public class PackageSection extends StatelessSection {
     private final List<Product> list;
     private final QtySelectionCallback mCallback;
     private Context context;
+    private int focusPosition = 0;
 
     PackageSection(Context context  , PackageModel pkg, QtySelectionCallback callback) {
         super(SectionParameters.builder()
@@ -57,6 +58,7 @@ public class PackageSection extends StatelessSection {
     public RecyclerView.ViewHolder getItemViewHolder(View view) {
         return new ItemViewHolder(view);
     }
+
 
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {

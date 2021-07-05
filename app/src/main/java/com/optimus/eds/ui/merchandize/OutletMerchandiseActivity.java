@@ -2,18 +2,26 @@ package com.optimus.eds.ui.merchandize;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +29,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.optimus.eds.BaseActivity;
+import com.optimus.eds.BuildConfig;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Outlet;
@@ -31,9 +45,16 @@ import com.optimus.eds.ui.merchandize.asset_verification.AssetsVerificationActiv
 import com.optimus.eds.ui.merchandize.planogaram.ImageDialog;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
+import com.watermark.androidwm.WatermarkBuilder;
+import com.watermark.androidwm.bean.WatermarkText;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -71,6 +92,11 @@ public class OutletMerchandiseActivity extends BaseActivity {
     ImageDialog dialogFragment;
 
     boolean isAssets = true , assetsVerified = true;
+
+    private String mImagePath;
+    private Uri mImageUri = null;
+    //File for capturing camera images
+    private File mFileTemp;
 
     public static void start(Context context,Long outletId, int requestCode) {
         Intent starter = new Intent(context, OutletMerchandiseActivity.class);
@@ -301,10 +327,140 @@ public class OutletMerchandiseActivity extends BaseActivity {
      * @param action
      */
     private void actionPic(String action) {
-        Intent intent = new  Intent(this, ImageCropperActivity.class);
-        intent.putExtra("ACTION", action);
-        startActivityForResult(intent, REQUEST_CODE_IMAGE);
+//        Intent intent = new  Intent(this, ImageCropperActivity.class);
+//        intent.putExtra("ACTION", action);
+//        startActivityForResult(intent, REQUEST_CODE_IMAGE);
+
+        requestCameraPermission();
     }
+
+    private void requestCameraPermission() {
+        Dexter.withActivity(this)
+                .withPermissions(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ,Manifest.permission.READ_EXTERNAL_STORAGE
+                ).withListener(new MultiplePermissionsListener() {
+            @Override
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
+                // check if all permissions are granted
+                if (report.areAllPermissionsGranted()) {
+                    takePic();
+                }
+
+                // check for permanent denial of any permission
+                if (report.isAnyPermissionPermanentlyDenied()) {
+                    // show alert dialog navigating to Settings
+                    showSettingsDialog(OutletMerchandiseActivity.this);
+                }
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                token.continuePermissionRequest();
+            }
+        })
+                .onSameThread()
+                .check();
+
+    }
+
+    private void takePic() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+
+            // Continue only if the File was successfully created
+            mFileTemp = createImageFile();
+            if (mFileTemp != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        mFileTemp);
+                mImageUri = photoURI;
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                takePictureIntent.putExtra("return-data",true);
+
+                startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE);
+            }
+        }
+    }
+
+    private File createImageFile() {
+        try {
+            // Create an image file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+
+            String folder = Environment.getExternalStorageDirectory() + File.separator + "EDS/Images/";
+            //Create Dir folder if it does not exist
+            File storageDir = new File(folder);
+
+            if (!storageDir.exists()) {
+                storageDir.mkdirs();
+            }
+
+            File  image = File.createTempFile(imageFileName, ".jpg", storageDir);
+            mImagePath = image.getAbsolutePath();
+            return image;
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+
+        }
+        return null;
+    }
+
+    public void createWaterMark(Bitmap imageBitmap){
+
+        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        String date = simpleDateFormat.format(new Date());
+        WatermarkText watermarkText = new WatermarkText(date)
+                .setTextColor(Color.RED)
+                .setTextAlpha(150)
+                .setTextSize(20);
+//
+        Bitmap bitmap = WatermarkBuilder
+                .create(this, imageBitmap)
+                .loadWatermarkText(watermarkText)
+                .getWatermark()
+                .getOutputImage();
+
+        saveImageToExternalStorage(bitmap);
+
+    }
+
+    public void saveImageToExternalStorage(Bitmap image) {
+        String fullPath = mFileTemp.getAbsolutePath() ;
+        try
+        {
+            File dir = new File(fullPath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            OutputStream fOut = null;
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+
+
+            File file = new File(fullPath);
+            if(file.exists())
+                file.delete();
+            file.createNewFile();
+            fOut = new FileOutputStream(file);
+            // 100 means no compression, the lower you go, the stronger the compression
+            image.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+
+            mImagePath = file.getAbsolutePath();
+        }
+        catch (Exception e)
+        {
+            Log.e("saveToExternalStorage()", e.getMessage());
+        }
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -314,9 +470,16 @@ public class OutletMerchandiseActivity extends BaseActivity {
             switch (requestCode){
 
                 case REQUEST_CODE_IMAGE:
-                    String imagePath = data.getStringExtra(Constant.IntentExtras.IMAGE_PATH);
-                    if(imagePath!=null) {
-                        compress(imagePath,type);
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+                        createWaterMark(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+//                    String imagePath = data.getStringExtra(Constant.IntentExtras.IMAGE_PATH);
+                    if(mImagePath!=null) {
+                        compress(mImagePath,type);
                     }
                     break;
                 case REQUEST_CODE:

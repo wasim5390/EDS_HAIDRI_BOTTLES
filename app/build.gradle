@@ -6,8 +6,8 @@ android {
         applicationId "com.optimus.eds"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 15
-        versionName "1.0.15"
+        versionCode 17
+        versionName "1.0.17"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -23,7 +23,7 @@ android {
         mem_uat {
             buildConfigField "String", "BASE_URL", '"http://173.214.164.251:9001/api/"'
         }
-        new_uat{
+        pepsi_uat{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
         }
     }

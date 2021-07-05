@@ -1,6 +1,8 @@
 package com.optimus.eds.ui.order;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.NavUtils;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -16,7 +18,9 @@ import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -62,6 +66,7 @@ public class OrderBookingActivity extends BaseActivity {
     AppCompatSpinner spinner;
     @BindView(R.id.tvName)
     TextView tvOutletName;
+
     private SectionedRecyclerViewAdapter sectionAdapter;
     private Outlet outlet;
 
@@ -99,8 +104,7 @@ public class OrderBookingActivity extends BaseActivity {
         createNoOrderReasonList();
         setObservers();
 
-        InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) imm.showSoftInput(rvProducts , InputMethodManager.SHOW_IMPLICIT);
+
     }
 
     @Override
@@ -251,6 +255,7 @@ public class OrderBookingActivity extends BaseActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvProducts.setLayoutManager(linearLayoutManager);
         rvProducts.setAdapter(sectionAdapter);
+
     }
 
 
