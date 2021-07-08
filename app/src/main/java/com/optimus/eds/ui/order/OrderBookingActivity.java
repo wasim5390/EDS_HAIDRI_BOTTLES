@@ -104,7 +104,6 @@ public class OrderBookingActivity extends BaseActivity {
         createNoOrderReasonList();
         setObservers();
 
-
     }
 
     @Override

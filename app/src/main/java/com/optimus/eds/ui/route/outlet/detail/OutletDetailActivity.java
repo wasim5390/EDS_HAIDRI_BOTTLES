@@ -1,27 +1,19 @@
 package com.optimus.eds.ui.route.outlet.detail;
 
 
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.widget.ContentLoadingProgressBar;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.widget.AppCompatSpinner;
-
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -32,7 +24,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -48,10 +39,7 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.R;
-
-import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
-
 import com.optimus.eds.location_services.GpsUtils;
 import com.optimus.eds.model.Configuration;
 import com.optimus.eds.model.CustomObject;
@@ -60,10 +48,8 @@ import com.optimus.eds.ui.AlertDialogManager;
 import com.optimus.eds.ui.merchandize.OutletMerchandiseActivity;
 import com.optimus.eds.ui.order.OrderBookingActivity;
 import com.optimus.eds.ui.route.outlet.tasks.OutletTasksDialogFragment;
-import com.optimus.eds.utils.NetworkManager;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
-
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -71,6 +57,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
