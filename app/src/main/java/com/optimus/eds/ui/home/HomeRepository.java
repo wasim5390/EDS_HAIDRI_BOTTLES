@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.optimus.eds.Constant;
 import com.optimus.eds.EdsApplication;
@@ -114,7 +114,7 @@ public class HomeRepository {
                     @Override
                     public void onSuccess(TokenResponse tokenResponse) {
                         preferenceUtil.saveToken(tokenResponse.getAccessToken());
-                        Crashlytics.setUserName(username);
+                        FirebaseCrashlytics.getInstance().setCustomKey("Username",username);
 
                         updateWorkStatus(true);
                     }
@@ -151,8 +151,8 @@ public class HomeRepository {
                         return;
                     }
                     //
-                    Crashlytics.setString("dist_id",response.body().getDistributionId()+"");
-                    Crashlytics.setUserIdentifier(response.body().getEmployeeName());
+                    FirebaseCrashlytics.getInstance().setCustomKey("dist_id",response.body().getDistributionId()+"");
+                    FirebaseCrashlytics.getInstance().setUserId(response.body().getEmployeeName());
                     if(response.body() != null)
                         preferenceUtil.saveDistributionId(response.body().getDistributionId());
                     preferenceUtil.saveConfig(response.body().getConfiguration());

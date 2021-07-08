@@ -197,10 +197,10 @@ public class CashMemoActivity extends BaseActivity {
 
         cartAdapter.populateCartItems(products, productsWithFreeItem -> {
             viewModel.updateOrder(productsWithFreeItem);
-        },isAvailable -> {
-            if(cashMemoEditable) {
+        }, isAvailable -> {
+            if (cashMemoEditable) {
                 btnNext.setVisibility(isAvailable ? View.VISIBLE : View.GONE);
-                if(!isAvailable) {
+                if (!isAvailable) {
                     AlertDialogManager.getInstance()
                             .showVerificationAlertDialog(this, "Oops!", Constant.PRICING_CASHMEMO_ERROR, verified -> {
                                 if (verified)

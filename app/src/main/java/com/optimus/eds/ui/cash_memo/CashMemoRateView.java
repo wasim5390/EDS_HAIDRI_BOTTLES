@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.optimus.eds.BuildConfig;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.CartonPriceBreakDown;
 import com.optimus.eds.db.entities.OrderDetail;
+import com.optimus.eds.db.entities.PriceBreakDown;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
 import com.optimus.eds.model.PricingModel;
 import com.optimus.eds.utils.PreferenceUtil;
@@ -50,21 +52,26 @@ public class CashMemoRateView extends LinearLayout {
     }
 
     public void setRates(OrderDetail orderDetail) {
+
         if (Util.isListEmpty(orderDetail.getUnitPriceBreakDown()) && Util.isListEmpty(orderDetail.getCartonPriceBreakDown()))
             return;
-        List<CartonPriceBreakDown> cartonPriceBreakDowns = orderDetail.getCartonPriceBreakDown();
-        List<UnitPriceBreakDown> unitPriceBreakDowns = orderDetail.getUnitPriceBreakDown();
+        Gson gson = new Gson();
+        List<CartonPriceBreakDown> cartonPriceBreakDowns = orderDetail.getCartonPriceBreakDown()==null?new ArrayList<>():orderDetail.getCartonPriceBreakDown();
+        List<UnitPriceBreakDown> unitPriceBreakDowns = orderDetail.getUnitPriceBreakDown()==null?new ArrayList<>():orderDetail.getUnitPriceBreakDown();
+
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
-        HashMap<BreakDownKey, List<Object>> listHashMap = calculate(cartonPriceBreakDowns, unitPriceBreakDowns);
+        List<PriceBreakDown> breakDowns =  gson.fromJson(gson.toJson(cartonPriceBreakDowns),new TypeToken<List<PriceBreakDown>>() {}.getType());
+        breakDowns.addAll(gson.fromJson(gson.toJson(unitPriceBreakDowns),new TypeToken<List<PriceBreakDown>>() {}.getType()));
+        HashMap<PriceBreakDown, List<PriceBreakDown>> listHashMap = calculate(breakDowns);
 
         // Sort method needs a List, so let's first convert HashList to List in Java
-        List<Map.Entry<BreakDownKey, List<Object>>> listOfEntries = new ArrayList<>(listHashMap.entrySet());
+        List<Map.Entry<PriceBreakDown, List<PriceBreakDown>>> listOfEntries = new ArrayList<>(listHashMap.entrySet());
 
-        Collections.sort(listOfEntries, (o1, o2) -> o1.getKey().getConditionOrder().compareTo(o2.getKey().conditionOrder));
+        Collections.sort(listOfEntries, (o1, o2) -> o1.getKey().getPriceConditionClassOrder().compareTo(o2.getKey().getPriceConditionClassOrder()));
 
-        for (Map.Entry<BreakDownKey, List<Object>> entry : listOfEntries) {
+        for (Map.Entry<PriceBreakDown, List<PriceBreakDown>> entry : listOfEntries) {
 
             LinearLayout rateView = (LinearLayout) inflater.inflate(R.layout.rate_child_layout, null);
             TextView title = rateView.findViewById(R.id.productRate);
@@ -72,15 +79,10 @@ public class CashMemoRateView extends LinearLayout {
             Double unitPrice = 0.0, cartonPrice = 0.0;
             String type = "";
 
-            for (Object breakDown : entry.getValue()) {
-
-                if (breakDown instanceof CartonPriceBreakDown) {
-                    cartonPrice = ((CartonPriceBreakDown) breakDown).getBlockPrice();
-                    type = ((CartonPriceBreakDown) breakDown).getPriceConditionType();
-                } else {
-                    unitPrice = ((UnitPriceBreakDown) breakDown).getBlockPrice();
-                    type = ((UnitPriceBreakDown) breakDown).getPriceConditionType();
-                }
+            for (PriceBreakDown breakDown : entry.getValue()) {
+                cartonPrice = breakDown.getBlockPrice()==null?0:breakDown.getBlockPrice();
+                unitPrice = breakDown.getBlockPrice()==null?0:breakDown.getBlockPrice();
+                type =  breakDown.getPriceConditionType();
             }
 
 
@@ -90,133 +92,89 @@ public class CashMemoRateView extends LinearLayout {
                 rate.setText(formatCurrency(cartonPrice.doubleValue()));
             title.setText(type);
             this.addView(rateView);
-        }
 
+        }
     }
 
 
-    private HashMap<String, Object> cashMemoPricing(Object breakDown) {
 
-        HashMap<String, Object> returnHashMap = new HashMap<>();
-        if (BuildConfig.FLAVOR.equals("mem_uat")) {
-            if (breakDown instanceof CartonPriceBreakDown) {
-                returnHashMap.put("cartonPrice", ((CartonPriceBreakDown) breakDown).getBlockPrice());
-                returnHashMap.put("type", ((CartonPriceBreakDown) breakDown).getPriceConditionType());
-                returnHashMap.put("unitPrice", 0.0);
-//                cartonPrice ((CartonPriceBreakDown) breakDown).getBlockPrice();
-//                type = ((CartonPriceBreakDown) breakDown).getPriceConditionType();
-            } else {
-                returnHashMap.put("cartonPrice", 0.0);
-                returnHashMap.put("unitPrice", ((UnitPriceBreakDown) breakDown).getBlockPrice());
-                returnHashMap.put("type", ((UnitPriceBreakDown) breakDown).getPriceConditionType());
-//                unitPrice = ((UnitPriceBreakDown) breakDown).getBlockPrice();
-//                type = ((UnitPriceBreakDown) breakDown).getPriceConditionType();
+    public HashMap<PriceBreakDown, List<PriceBreakDown>> calculate(List<PriceBreakDown> priceBreakDownList) {
+
+        PriceBreakDown promos=null, discount=null, tax=null,tradePrice=null;
+        HashMap<PriceBreakDown, List<PriceBreakDown>> hashMap = new HashMap<>();
+
+        for (PriceBreakDown breakDown : priceBreakDownList) {
+
+
+            if(!(breakDown.getmPriceConditionClass().toLowerCase().equalsIgnoreCase("retailer margin")
+                    ||breakDown.getmPriceConditionClass().toLowerCase().equalsIgnoreCase("market discount hth")
+                    || breakDown.getmPriceConditionClass().toLowerCase().equalsIgnoreCase("rental discount")
+                    ||breakDown.getmPriceConditionClass().toLowerCase().equalsIgnoreCase("promotions")
+                    ||breakDown.getmPriceConditionClass().toLowerCase().equalsIgnoreCase("consumer rate off")
+                    ||breakDown.getmPriceConditionClass().toLowerCase().equalsIgnoreCase("tax")))
+                continue;
+
+            // add updated list items here......
+            if (breakDown.getmPriceConditionClass().toLowerCase().equals("retailer margin")) {
+
+                breakDown.mBlockPrice = Double.valueOf( breakDown.getTotalPrice());
+                breakDown.setPriceConditionType("Trade Price");
+                tradePrice = breakDown;
+                tradePrice.setPriceConditionClassOrder(1);
+
             }
-        } else if (BuildConfig.FLAVOR.equals("pepsi_uat")) {
-
-            PricingModel pricingModel = new PricingModel();
-
-            if (breakDown instanceof CartonPriceBreakDown) {
-                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("retailer margin")) {
-                    pricingModel.setTradePrice(pricingModel.getTradePrice() + ((CartonPriceBreakDown) breakDown).getTotalPrice());
-                }
-                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("market discount hth") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("rental discount")) {
-                    pricingModel.setDiscounts(pricingModel.getDiscounts() + ((CartonPriceBreakDown) breakDown).getBlockPrice());
-                }
-                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("consumer rate off") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("promotions")) {
-                    pricingModel.setPromos(pricingModel.getPromos() + ((CartonPriceBreakDown) breakDown).getBlockPrice());
-                }
-                if (((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("tax")) {
-                    pricingModel.setTax(pricingModel.getPromos() + ((CartonPriceBreakDown) breakDown).getBlockPrice());
-                }
-            } else {
-                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("retailer margin")) {
-                    pricingModel.setTradePrice(pricingModel.getTradePrice() + ((UnitPriceBreakDown) breakDown).getTotalPrice());
-                }
-                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("market discount hth") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("rental discount")) {
-                    pricingModel.setDiscounts(pricingModel.getDiscounts() + ((UnitPriceBreakDown) breakDown).getBlockPrice());
-                }
-                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("consumer rate off") || ((CartonPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("promotions")) {
-                    pricingModel.setPromos(pricingModel.getPromos() + ((UnitPriceBreakDown) breakDown).getBlockPrice());
-                }
-                if (((UnitPriceBreakDown) breakDown).mPriceConditionClass.toLowerCase().equals("tax")) {
-                    pricingModel.setTax(pricingModel.getPromos() + ((UnitPriceBreakDown) breakDown).getBlockPrice());
-                }
+            if (breakDown.getmPriceConditionClass().toLowerCase().equals("market discount hth") || breakDown.getmPriceConditionClass().toLowerCase().equals("rental discount")) {
+                breakDown.setPriceConditionType("Discounts");
+                if(discount!=null)
+                    discount.addBlockPrice(breakDown.mBlockPrice);
+                else
+                    discount = breakDown;
+                discount.setPriceConditionClassOrder(2);
             }
+            if (breakDown.getmPriceConditionClass().toLowerCase().equals("consumer rate off") || breakDown.getmPriceConditionClass().toLowerCase().equals("promotions")) {
+                breakDown.setPriceConditionType("Promos");
+                if(promos!=null)
+                    promos.addBlockPrice(breakDown.mBlockPrice);
+                else
+                    promos = breakDown;
 
-            returnHashMap.put("pricingModel", pricingModel);
-
-        }
-
-        return returnHashMap;
-    }
-
-
-    public HashMap<BreakDownKey, List<Object>> calculate(List<CartonPriceBreakDown> cartonPriceBreakDownList, List<UnitPriceBreakDown> unitPriceBreakDownList) {
-
-        List<Object> breakDowns = new ArrayList<>();
-        breakDowns.addAll(cartonPriceBreakDownList == null ? new ArrayList<>() : cartonPriceBreakDownList);
-        breakDowns.addAll(unitPriceBreakDownList == null ? new ArrayList<>() : unitPriceBreakDownList);
-
-        HashMap<BreakDownKey, List<Object>> hashMap = new HashMap<>();
-        for (Object breakDown : breakDowns) {
-            BreakDownKey key;
-            if (breakDown instanceof CartonPriceBreakDown) {
-                key = new BreakDownKey(((CartonPriceBreakDown) breakDown).getPriceConditionId(), ((CartonPriceBreakDown) breakDown).getPriceConditionClassOrder());
-            } else {
-                key = new BreakDownKey(((UnitPriceBreakDown) breakDown).getPriceConditionId(), ((UnitPriceBreakDown) breakDown).getPriceConditionClassOrder());
+                promos.setPriceConditionClassOrder(3);
+            }
+            if (breakDown.getmPriceConditionClass().toLowerCase().equals("tax")) {
+                breakDown.setPriceConditionType("Tax");
+                if(tax!=null)
+                    tax.addBlockPrice(breakDown.mBlockPrice);
+                else
+                    tax = breakDown;
+                tax.setPriceConditionClassOrder(4);
             }
 
-            if (!hashMap.containsKey(key)) {
-                List<Object> list = new ArrayList<>();
+
+
+
+            //.........................
+
+
+        /*    if (!hashMap.containsKey(breakDown)) {
+                List<PriceBreakDown> list = new ArrayList<>();
                 list.add(breakDown);
-                hashMap.put(key, list);
+                hashMap.put(breakDown, list);
             } else {
-                hashMap.get(key).add(breakDown);
-            }
+                hashMap.get(breakDown).add(breakDown);
+            }*/
         }
+        tradePrice = tradePrice==null?new PriceBreakDown(1,"Trade Price"):tradePrice;
+        discount = discount==null?new PriceBreakDown(2,"Discounts"):discount;
+        promos = promos==null?new PriceBreakDown(3, "Promos"):promos;
+        tax = tax==null?new PriceBreakDown(4,"Tax"):tax;
+
+        hashMap.put(tradePrice, new ArrayList<>(Collections.singleton(tradePrice)));
+        hashMap.put(discount, new ArrayList<>(Collections.singleton(discount)));
+        hashMap.put(promos, new ArrayList<>(Collections.singleton(promos)));
+        hashMap.put(tax, new ArrayList<>(Collections.singleton(tax)));
+
         return hashMap;
     }
 
-    public class BreakDownKey {
-
-        int priceConditionId;
-        int conditionOrder;
-
-        public BreakDownKey(int priceConditionId, int conditionOrder) {
-            this.priceConditionId = priceConditionId;
-            this.conditionOrder = conditionOrder;
-            if (conditionOrder < 1)
-                this.conditionOrder = priceConditionId;
-        }
-
-        public Integer getConditionOrder() {
-            return conditionOrder;
-        }
-
-        //Depends only on account number
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + priceConditionId;
-            return result;
-        }
-
-        //Compare only account numbers
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            BreakDownKey other = (BreakDownKey) obj;
-            if (priceConditionId != other.priceConditionId)
-                return false;
-            return true;
-        }
-    }
 
 }

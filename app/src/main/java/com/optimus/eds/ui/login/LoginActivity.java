@@ -15,9 +15,11 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.installations.InstallationTokenResult;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
@@ -187,21 +189,16 @@ public class LoginActivity extends BaseActivity {
         if(imei==null)
             return;
         // generate if token is not saved yet.
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w(TAG, "getInstanceId failed", task.getException());
-                        return;
-                    }
+        FirebaseInstallations.getInstance().getToken(true).addOnSuccessListener(new OnSuccessListener<InstallationTokenResult>() {
+            @Override
+            public void onSuccess(InstallationTokenResult installationTokenResult) {
+                String token = installationTokenResult.getToken();
+                saveImeiAndToken(token,imei);
+                Log.d(TAG, token);
 
-                    // Get new Instance ID token
-                    String token = task.getResult().getToken();
-                    saveImeiAndToken(token,imei);
-                    Log.d(TAG, token);
+            }
+        });
 
-
-
-                });
     }
 
     /**

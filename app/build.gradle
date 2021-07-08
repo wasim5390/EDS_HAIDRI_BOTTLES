@@ -6,8 +6,8 @@ android {
         applicationId "com.optimus.eds"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 17
-        versionName "1.0.17"
+        versionCode 18
+        versionName "1.1.18"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -20,10 +20,10 @@ android {
 
     flavorDimensions "version"
     productFlavors {
-        mem_uat {
+        hbl_testing_internal {
             buildConfigField "String", "BASE_URL", '"http://173.214.164.251:9001/api/"'
         }
-        pepsi_uat{ // For PEPSI
+        hbl_testing_client{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
         }
     }
@@ -57,7 +57,7 @@ dependencies {
 
     //Locations and Places
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.maps.android:android-maps-utils:0.6.2'
     implementation 'com.google.android.gms:play-services-places:17.0.0'
     implementation 'com.google.android.libraries.places:places:2.4.0'
@@ -69,9 +69,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'com.google.android.material:material:1.0.0-beta01'
-    implementation 'com.google.firebase:firebase-messaging:20.0.0'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.firebase:firebase-messaging:22.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.1.0'
     implementation 'com.kaopiz:kprogresshud:1.0.2'
 }
 apply plugin: 'com.google.gms.google-services'

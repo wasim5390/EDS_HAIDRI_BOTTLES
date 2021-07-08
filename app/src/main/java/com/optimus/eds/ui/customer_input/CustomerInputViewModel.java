@@ -15,7 +15,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.annotation.NonNull;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.optimus.eds.Constant;
@@ -86,7 +86,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
         Maybe<OrderModel> orderSingle = orderRepository.findOrder(outletId);
         Disposable orderDisposable = orderSingle
                 .map(orderModel -> {
-                    Crashlytics.setBool("Order_Exist_Before_Saving",orderModel!=null);
+                    FirebaseCrashlytics.getInstance().setCustomKey("Order_Exist_Before_Saving",orderModel!=null);
                     List<OrderDetail> orderDetails = new ArrayList<>();
                     for(OrderDetailAndPriceBreakdown orderDetail:orderModel.getOrderDetailAndCPriceBreakdowns()){
                         orderDetail.getOrderDetail().setCartonPriceBreakDown(orderDetail.getCartonPriceBreakDownList());
@@ -105,7 +105,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
 
     public void saveOrder(String mobileNumber,String remarks,String cnic,String strn,String base64Sign , Long deliveryDate , Integer statusId){
         isSaving.postValue(true);
-        Crashlytics.setBool("order_empty",orderModelLiveData.getValue()==null || orderModelLiveData.getValue().getOrder()==null);
+        FirebaseCrashlytics.getInstance().setCustomKey("order_empty",orderModelLiveData.getValue()==null || orderModelLiveData.getValue().getOrder()==null);
         OrderModel orderModel = orderModelLiveData.getValue();
         if(orderModel!=null && orderModel.getOrder()!=null) {
             // @TODO have to change logic for livedata value as it gets null on some devices

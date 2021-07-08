@@ -25,6 +25,8 @@ public class CashMemoAdapter extends
     private  FreeItemListener mListener;
     private ItemLevelPriceListener itemLevelPriceListener;
 
+    private double totalPrice=0;
+
     public CashMemoAdapter(Context context) {
         this.mContext = context;
         this.products = new ArrayList<>();
@@ -77,8 +79,9 @@ public class CashMemoAdapter extends
                     removeUnitFreeItems(product, freeItem);
             }
         }, isAvailable -> {
-            if(itemLevelPriceListener!=null)
-            itemLevelPriceListener.onPriceAvailable(isAvailable);
+            if (itemLevelPriceListener != null)
+                itemLevelPriceListener.onPriceAvailable(isAvailable);
+
 
         });
     }
@@ -160,5 +163,9 @@ public class CashMemoAdapter extends
 
     public interface ItemLevelPriceListener{
         void onPriceAvailable(boolean isAvailable);
+    }
+
+    public interface TotalPriceListener{
+        void onTotalPriceCalculate(double totalCalculatedPrice);
     }
 }
