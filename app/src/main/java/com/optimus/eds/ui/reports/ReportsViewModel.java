@@ -49,6 +49,7 @@ public class ReportsViewModel extends AndroidViewModel {
     private int completedCount = 0;
     private int productiveCount = 0;
     private int confirmedOrderCount = 0;
+    private float totalSku = 0;
     public ReportsViewModel(@NonNull Application application) {
         super(application);
         repository = OutletListRepository.getInstance(application);
@@ -103,6 +104,7 @@ public class ReportsViewModel extends AndroidViewModel {
                             cQty= cQty!=null?cQty:0;
                             uQty = uQty!=null?uQty:0;
 
+
                             float quantity =   OrderManager.instance()
                                     .calculateQtyInCartons(orderItem.getCartonSize(),uQty,cQty);
                             Quantity qty = new Quantity(orderItem.getProductId(),quantity);
@@ -111,9 +113,10 @@ public class ReportsViewModel extends AndroidViewModel {
                                 int pos = orderDetailList.indexOf(new Quantity(orderItem.getProductId()));
                                 Quantity savedItem = orderDetailList.get(pos);
                                 float newQty = savedItem.getQuantity()+quantity;
+                                totalSku = totalSku + quantity;
                                 orderDetailList.get(pos).setQuantity(newQty);
-
                             }else{
+                                totalSku = totalSku + quantity;
                                 orderDetailList.add(qty);
                             }
 
@@ -124,7 +127,6 @@ public class ReportsViewModel extends AndroidViewModel {
                                     Quantity savedItem = confirmedOrderDetailList.get(pos);
                                     float newQty = savedItem.getQuantity()+quantity;
                                     confirmedOrderDetailList.get(pos).setQuantity(newQty);
-
                                 }else{
                                     confirmedOrderDetailList.add(confirmQty);
                                 }
@@ -136,7 +138,7 @@ public class ReportsViewModel extends AndroidViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("ReportsViewModel",e.getMessage());
-                        summaryMutable.postValue(setSummary(total,confirmedTotal,carton,confirmedCarton,totalOrder,confirmedOrderCount,orderDetailList.size()));
+                        summaryMutable.postValue(setSummary(total,confirmedTotal,carton,confirmedCarton,totalOrder,confirmedOrderCount, totalSku)); // orderDetailList.size()
                     }
 
                     @Override
@@ -149,20 +151,21 @@ public class ReportsViewModel extends AndroidViewModel {
                             confirmedCarton+=item.getQuantity()!=null?item.getQuantity():0;
                         }
 
-                        summaryMutable.postValue(setSummary(total,confirmedTotal,carton,confirmedCarton,totalOrder,confirmedOrderCount,orderDetailList.size()));
+                        summaryMutable.postValue(setSummary(total,confirmedTotal,carton,confirmedCarton,totalOrder,confirmedOrderCount, totalSku)); // orderDetailList.size()
                     }
                 }));
 
 
     }
 
-    private ReportModel setSummary(Double total,Double confirmedTotal,Float carton,Float confirmedCartons,int totalOrder,int confirmedOrder,int skuSize){
+    private ReportModel setSummary(Double total,Double confirmedTotal,Float carton,Float confirmedCartons,int totalOrder,int confirmedOrder,float totalSku){ //skuSize
 
         reportModel.setTotalSale(total);
         reportModel.setTotalSaleConfirm(confirmedTotal);
         reportModel.setCarton(carton);
         reportModel.setCartonConfirm(confirmedCartons);
-        reportModel.setSkuSize(skuSize);
+//        reportModel.setSkuSize(skuSize);
+        reportModel.setTotalSku(totalSku);
         reportModel.setTotalOrders(totalOrder);
         reportModel.setTotalConfirmOrders(confirmedOrder);
         return reportModel;

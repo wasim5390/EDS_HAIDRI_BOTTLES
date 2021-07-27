@@ -38,6 +38,7 @@ import com.optimus.eds.utils.Util;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -56,7 +57,7 @@ import retrofit2.Response;
 
 public class HomeRepository {
 
-    private final String TAG=HomeRepository.class.getSimpleName();
+    private final String TAG = HomeRepository.class.getSimpleName();
     private static HomeRepository repository;
     private final PreferenceUtil preferenceUtil;
 
@@ -74,9 +75,9 @@ public class HomeRepository {
     private API webService;
     private Executor executor;
 
-    public static HomeRepository singleInstance(Application application, API api, Executor executor){
-        if(repository==null)
-            repository = new HomeRepository(application,api,executor);
+    public static HomeRepository singleInstance(Application application, API api, Executor executor) {
+        if (repository == null)
+            repository = new HomeRepository(application, api, executor);
         return repository;
     }
 
@@ -94,7 +95,7 @@ public class HomeRepository {
         webService = api;
         this.executor = executor;
         WorkStatus syncDate = preferenceUtil.getWorkSyncData();
-        onDayStartLiveData.postValue(syncDate.getDayStarted()!=0);
+        onDayStartLiveData.postValue(syncDate.getDayStarted() != 0);
 
         // Added by Husnain
         targetVsAchievement = new MutableLiveData<>();
@@ -104,11 +105,11 @@ public class HomeRepository {
     /**
      * Get User Token from server
      */
-    public void getToken(){
+    public void getToken() {
         isLoading.setValue(true);
         String username = preferenceUtil.getUsername();
         String password = preferenceUtil.getPassword();
-        webService.getToken("password",username,password)
+        webService.getToken("password", username, password)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableSingleObserver<TokenResponse>() {
                     @Override
@@ -122,7 +123,7 @@ public class HomeRepository {
                     @Override
                     public void onError(Throwable e) {
                         isLoading.postValue(false);
-                        if(e instanceof HttpException || e instanceof SocketTimeoutException)
+                        if (e instanceof HttpException || e instanceof SocketTimeoutException)
                             msg.postValue(Constant.NETWORK_ERROR);
                         else
                             msg.postValue(e.getMessage());
@@ -133,34 +134,35 @@ public class HomeRepository {
 
     /**
      * Fetch current day Routes/Outlets
+     *
      * @param onDayStart {True for onDayStart, False for Download click}
      */
-    public void fetchTodayData(boolean onDayStart){
+    public void fetchTodayData(boolean onDayStart) {
+
+        List<Long> outletIds = new ArrayList<>();
 
         executor.execute(() -> {
             try {
                 Response<RouteOutletResponseModel> response = webService.loadTodayRouteOutlets().execute();
-                if(response.isSuccessful()){
-                    if(!response.body().isSuccess())
-                    {
+                if (response.isSuccessful()) {
+                    if (!response.body().isSuccess()) {
 
-                        if(response.body().getResponseMsg()!=null)
+                        if (response.body().getResponseMsg() != null)
                             msg.postValue(response.body().getResponseMsg());
                         else
                             msg.postValue(Constant.GENERIC_ERROR);
                         return;
                     }
                     //
-                    Crashlytics.setString("dist_id",response.body().getDistributionId()+"");
+                    Crashlytics.setString("dist_id", response.body().getDistributionId() + "");
                     Crashlytics.setUserIdentifier(response.body().getEmployeeName());
-                    if(response.body() != null)
+                    if (response.body() != null)
                         preferenceUtil.saveDistributionId(response.body().getDistributionId());
                     preferenceUtil.saveConfig(response.body().getConfiguration());
                     deleteAllRoutesAssets()
                             .andThen(deleteAllOutlets(onDayStart))
                             .andThen(Completable.fromAction(() -> {
-                                if(onDayStart)
-                                {
+                                if (onDayStart) {
                                     routeDao.deleteAllMerchandise();
                                     customerDao.deleteAllCustomerInput();
                                     taskDao.deleteAllTask();
@@ -177,24 +179,35 @@ public class HomeRepository {
                                 PreferenceUtil.getInstance(EdsApplication.getContext()).setPunchOrderInUnits(response.body().getSystemConfiguration().getCanNotPunchOrderInUnits());
                                 PreferenceUtil.getInstance(EdsApplication.getContext()).setTargetAchievement(new Gson().toJson(response.body().getTargetVsAchievement()));
                                 if (response.body().getDeliveryDate() != null)
-                                PreferenceUtil.getInstance(EdsApplication.getContext()).setDeliveryDate(response.body().getDeliveryDate());
-                            })).andThen(Completable.fromAction(() ->  routeDao.insertOutlets(response.body().getOutletList())))
-                            .andThen(Completable.fromAction(() -> { routeDao.insertAssets(response.body().getAssetList());}))
+                                    PreferenceUtil.getInstance(EdsApplication.getContext()).setDeliveryDate(response.body().getDeliveryDate());
+                            }))
+                            .andThen(Completable.fromAction(() -> {
+                                routeDao.insertOutlets(response.body().getOutletList());
+
+                                for (Outlet outlet : response.body().getOutletList()) {
+                                    outletIds.add(outlet.getOutletId());
+                                }
+                            }))
+                            .andThen(Completable.fromAction(() -> {
+                                routeDao.insertAssets(response.body().getAssetList());
+                            }))
                             .andThen(insertTasks(response.body().getTasksList()))
                             .andThen(insertPromotion(response.body().getPromosAndFOC()))
                             .andThen(insertLookUp(response.body().getLookUp()))
                             .andThen(Completable.fromAction(() -> {
                                 long mobileOrderId = 1;
-                                for (Order order: response.body().getOrders()){
-
+                                for (Order order : response.body().getOrders()) {
+                                    if (!outletIds.contains(order.outletId))
+                                        continue;
                                     order.setLocalOrderId(mobileOrderId);
                                     orderDao.insertOrder(order);
                                     mobileOrderId++;
                                 }
                             })) // added By Husanin
                             .andThen(Completable.fromAction(() -> { // added By Husanin
-                                for (Order order : response.body().getOrders()){
-
+                                for (Order order : response.body().getOrders()) {
+                                    if (!outletIds.contains(order.outletId))
+                                        continue;
 
                                     OrderStatus orderStatus = new OrderStatus();
                                     orderStatus.setOrderId(order.getOrderId());
@@ -217,8 +230,10 @@ public class HomeRepository {
                             }))
                             .andThen(Completable.fromAction(() -> { // added By Husanin
                                 long mobileOrderId = 1;
-                                for (Order order : response.body().getOrders()){
-                                    for (OrderDetail orderDetail : order.getOrderDetails()){
+                                for (Order order : response.body().getOrders()) {
+                                    if (!outletIds.contains(order.outletId))
+                                        continue;
+                                    for (OrderDetail orderDetail : order.getOrderDetails()) {
 
                                         orderDetail.setLocalOrderId(mobileOrderId);
                                         orderDao.insertOrderItem(orderDetail);
@@ -237,20 +252,18 @@ public class HomeRepository {
                         public void onComplete() {
                             // if(onDayStart)
                             //     loadPricing();
-                            isLoading.postValue(false);
                             targetVsAchievement.postValue(PreferenceUtil.getInstance(EdsApplication.getContext()).getTargetAchievement() != null);
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             isLoading.postValue(false);
-                            Log.e(TAG,e.getMessage());
+                            Log.e(TAG, e.getMessage());
                             e.printStackTrace();
                         }
                     });
 
-                }
-                else{
+                } else {
                     isLoading.postValue(false);
                     msg.postValue(Constant.GENERIC_ERROR);
                 }
@@ -258,13 +271,12 @@ public class HomeRepository {
             } catch (IOException e) {
                 isLoading.postValue(false);
                 e.printStackTrace();
-                Log.e(TAG,e.getMessage()+"");
+                Log.e(TAG, e.getMessage() + "");
                 msg.postValue(Constant.GENERIC_ERROR);
             }
 
 
         });
-
 
 
         executor.execute(() -> {
@@ -298,16 +310,16 @@ public class HomeRepository {
     }
 
 
-    public Completable deleteAllRoutesAssets(){
-        return Completable.fromAction(()->{
+    public Completable deleteAllRoutesAssets() {
+        return Completable.fromAction(() -> {
             routeDao.deleteAllRoutes();
             routeDao.deleteAllAssets();
 
         });
     }
 
-    private Completable insertTasks(List<Task> tasks){
-        return Completable.fromAction(()->{
+    private Completable insertTasks(List<Task> tasks) {
+        return Completable.fromAction(() -> {
             //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
             AsyncTask.execute(() -> taskDao.insertTasks(tasks));
 
@@ -315,24 +327,25 @@ public class HomeRepository {
     }
 
 
-    private Completable insertPromotion(List<Promotion> promotions){
-        return Completable.fromAction(()->{
+    private Completable insertPromotion(List<Promotion> promotions) {
+        return Completable.fromAction(() -> {
             //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
             AsyncTask.execute(() -> routeDao.insertPromotion(promotions));
 
         });
     }
 
-    private Completable insertLookUp(LookUp lookUp){
-        return Completable.fromAction(()->{
+    private Completable insertLookUp(LookUp lookUp) {
+        return Completable.fromAction(() -> {
             //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
             AsyncTask.execute(() -> routeDao.insertLookUp(lookUp));
 
         });
     }
+
     // Added By Husnain
-    private Completable insertOrder(List<Order> order){
-        return Completable.fromAction(()->{
+    private Completable insertOrder(List<Order> order) {
+        return Completable.fromAction(() -> {
             //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
 //            AsyncTask.execute(() -> orderDao.insertOrders(order));
             orderDao.insertOrders(order);
@@ -340,37 +353,37 @@ public class HomeRepository {
         });
     }
 
-    private Completable insertOrderDetail(List<OrderDetail> orderDetails){
-        return Completable.fromAction(()->{
+    private Completable insertOrderDetail(List<OrderDetail> orderDetails) {
+        return Completable.fromAction(() -> {
             //AsyncTask.execute(() -> taskDao.insertTasks(generateTasks()));
             AsyncTask.execute(() -> orderDao.insertOrderItems(orderDetails));
 
         });
     }
 
-    public Completable deleteAllOutlets(boolean onStartDay){
-        if(onStartDay)
-            return Completable.fromAction(()->routeDao.deleteAllOutlets());
+    public Completable deleteAllOutlets(boolean onStartDay) {
+        if (onStartDay)
+            return Completable.fromAction(() -> routeDao.deleteAllOutlets());
         return Completable.complete();
     }
 
-    public Completable deleteAllMerchandise(){
-        return Completable.fromAction(()->routeDao.deleteAllMerchandise());
+    public Completable deleteAllMerchandise() {
+        return Completable.fromAction(() -> routeDao.deleteAllMerchandise());
     }
 
-    public Completable deleteAllCustomerInput(){
+    public Completable deleteAllCustomerInput() {
         return Completable.fromAction(() -> customerDao.deleteAllCustomerInput());
     }
 
 
-
     /**
      * Save Work status on server {Day started/ Day end}
+     *
      * @param isStart {True for dayStart, False for dayEnd}
      */
-    public void updateWorkStatus(boolean isStart){
+    public void updateWorkStatus(boolean isStart) {
         HashMap<String, Integer> map = new HashMap<>();
-        map.put("operationTypeId",isStart?1:2);
+        map.put("operationTypeId", isStart ? 1 : 2);
         webService.updateStartEndStatus(map).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new SingleObserver<LogModel>() {
@@ -381,18 +394,20 @@ public class HomeRepository {
 
                     @Override
                     public void onSuccess(LogModel logModel) {
-                        if(logModel.isSuccess()){
+                        if (logModel.isSuccess()) {
                             WorkStatus status = preferenceUtil.getWorkSyncData();
                             status.setDayStarted(1);
                             status.setSyncDate(logModel.getStartDay());
                             preferenceUtil.saveWorkSyncData(status);
                             onDayStartLiveData.postValue(isStart);
-                            if(isStart) {
-                                fetchTodayData(isStart);
+                            if (isStart) {
+                                fetchTodayData(true);
+                            } else {
+                                isLoading.postValue(false);
                             }
-                        }else {
+                        } else {
                             isLoading.postValue(false);
-                            msg.postValue(logModel.getErrorCode()==2?logModel.getResponseMsg(): Constant.GENERIC_ERROR);
+                            msg.postValue(logModel.getErrorCode() == 2 ? logModel.getResponseMsg() : Constant.GENERIC_ERROR);
                         }
                     }
 
@@ -404,7 +419,7 @@ public class HomeRepository {
                 });
     }
 
-    public Single<AppUpdateModel> updateApp(){
+    public Single<AppUpdateModel> updateApp() {
         return webService.checkAppUpdate();
     }
 
@@ -413,7 +428,7 @@ public class HomeRepository {
         return isLoading;
     }
 
-    public MutableLiveData<Boolean> startDay(){
+    public MutableLiveData<Boolean> startDay() {
         return onDayStartLiveData;
     }
 

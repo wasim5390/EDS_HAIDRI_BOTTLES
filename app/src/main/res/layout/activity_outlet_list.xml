@@ -103,7 +103,7 @@
             app:tabTextColor="@color/black"
             app:layout_collapseMode="pin"
             app:tabBackground="@color/white"
-            app:tabTextAppearance="@style/TextAppearance.AppCompat.Menu"
+            app:tabTextAppearance="@style/MineCustomTabText"
             app:tabIndicatorColor="@color/colorPrimary"
             android:id="@+id/selectedPjp"
             >
@@ -117,7 +117,7 @@
                 android:id="@+id/visited"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/visited"
+                android:text="Non Productive"
                 />
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/productive"

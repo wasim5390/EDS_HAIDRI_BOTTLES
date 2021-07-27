@@ -66,8 +66,7 @@ import butterknife.OnClick;
 import static com.optimus.eds.location_services.GpsUtils.GPS_REQUEST;
 
 public class OutletDetailActivity extends BaseActivity implements
-        AdapterView.OnItemSelectedListener , OnMapReadyCallback
-{
+        AdapterView.OnItemSelectedListener, OnMapReadyCallback {
 
 
     private static final String TAG = OutletDetailActivity.class.getName();
@@ -90,6 +89,8 @@ public class OutletDetailActivity extends BaseActivity implements
     AppCompatSpinner popSpinner;
     @BindView(R.id.btnOk)
     Button btnOk;
+    @BindView(R.id.btnNotFlow)
+    Button btnNotFlow;
     @BindView(R.id.btnTasks)
     Button btnTasks;
 
@@ -103,21 +104,22 @@ public class OutletDetailActivity extends BaseActivity implements
     @BindView(R.id.lastOrder)
     MaterialCardView lastOrderCard;
 
-    Outlet outlet ;
+    Outlet outlet;
 
     OutletDetailViewModel viewModel;
-    private String  reasonForNoSale="";
+    private String reasonForNoSale = "";
 
-    private GoogleMap mMap ;
+    private GoogleMap mMap;
     private Long outletVisitStartTime = Calendar.getInstance().getTimeInMillis();
     private Location currentLocation = new Location("CurrentLocation");
-    private LatLng outletLatLng , currentLatLng ;
+    private LatLng outletLatLng, currentLatLng;
+    private boolean isFakeLocation = false;
 
-    public static void start(Context context, Long outletId,Long routeId,int code) {
+    public static void start(Context context, Long outletId, Long routeId, int code) {
         Intent starter = new Intent(context, OutletDetailActivity.class);
-        starter.putExtra("OutletId",outletId);
-        starter.putExtra("RouteId",routeId);
-        ((Activity)context).startActivityForResult(starter,code);
+        starter.putExtra("OutletId", outletId);
+        starter.putExtra("RouteId", routeId);
+        ((Activity) context).startActivityForResult(starter, code);
     }
 
     @Override
@@ -128,7 +130,7 @@ public class OutletDetailActivity extends BaseActivity implements
     @Override
     public void created(Bundle savedInstanceState) {
         ButterKnife.bind(this);
-        outletId =  getIntent().getLongExtra("OutletId",0);
+        outletId = getIntent().getLongExtra("OutletId", 0);
         viewModel = ViewModelProviders.of(this).get(OutletDetailViewModel.class);
         showProgress();
 
@@ -148,31 +150,31 @@ public class OutletDetailActivity extends BaseActivity implements
             this.outlet = outlet;
             updateUI(outlet);
         });
-        viewModel.getOutletNearbyPos().observe(this,outletLocation -> {
-            AlertDialogManager.getInstance().showLocationMissMatchAlertDialog(OutletDetailActivity.this,currentLocation,outletLocation);
+        viewModel.getOutletNearbyPos().observe(this, outletLocation -> {
+            AlertDialogManager.getInstance().showLocationMissMatchAlertDialog(OutletDetailActivity.this, currentLocation, outletLocation);
         });
-        viewModel.getUploadStatus().observe(this,aBoolean -> {
-            if(aBoolean){
-                viewModel.uploadStatus(outletId,currentLocation,outletVisitStartTime ,Calendar.getInstance().getTimeInMillis(),reasonForNoSale);
-            }else{
-                if(enableMerchandise)
+        viewModel.getUploadStatus().observe(this, aBoolean -> {
+            if (aBoolean) {
+                viewModel.uploadStatus(outletId, currentLocation, outletVisitStartTime, Calendar.getInstance().getTimeInMillis(), reasonForNoSale);
+            } else {
+                if (enableMerchandise)
                     OutletMerchandiseActivity.start(this, outletId, REQUEST_CODE);
                 else
-                    OrderBookingActivity.start(this,outletId,REQUEST_CODE);
+                    OrderBookingActivity.start(this, outletId, REQUEST_CODE);
 
 //                finish();
             }
         });
 
-        viewModel.startUploadService().observe(this,aBoolean -> {
-            if(aBoolean) {
+        viewModel.startUploadService().observe(this, aBoolean -> {
+            if (aBoolean) {
                 UploadOrdersService.startUploadService(getApplication(), outletId);
                 finish();
             }
         });
 
         viewModel.loadAssets(outletId);
-        viewModel.getAssets().observe(this,assets -> {
+        viewModel.getAssets().observe(this, assets -> {
             outletVisits.setText(String.valueOf(assets.size()));
         });
 
@@ -185,8 +187,8 @@ public class OutletDetailActivity extends BaseActivity implements
             else hideProgress();
         });
 
-        viewModel.viewTasks().observe(this,exist -> {
-            btnTasks.setVisibility(exist?View.VISIBLE:View.GONE);
+        viewModel.viewTasks().observe(this, exist -> {
+            btnTasks.setVisibility(exist ? View.VISIBLE : View.GONE);
         });
 
         updateBtn(false);
@@ -201,8 +203,8 @@ public class OutletDetailActivity extends BaseActivity implements
         new GpsUtils(this, LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY))
                 .turnGPSOn(isGPSEnable -> {
                     // turn on GPS
-                    if(isGPSEnable) {
-                        locationProviderClient.requestLocationUpdates(locationRequest,locationCallback,Looper.getMainLooper());
+                    if (isGPSEnable) {
+                        locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
                     }
                 });
 
@@ -210,15 +212,14 @@ public class OutletDetailActivity extends BaseActivity implements
 
     protected void createLocationRequest() {
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
+        locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
         locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
     }
 
-    private LocationCallback locationCallback = new LocationCallback(){
+    private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             if (locationResult == null) {
@@ -227,56 +228,57 @@ public class OutletDetailActivity extends BaseActivity implements
             for (Location location : locationResult.getLocations()) {
                 if (location != null) {
 
-                    currentLocation = location;
 
-                    currentLatLng = new LatLng(currentLocation.getLatitude() , currentLocation.getLongitude());
+                    isFakeLocation = location.isFromMockProvider();
+
+                    currentLocation = location;
+                    currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+
+
                     // Toast.makeText(OutletDetailActivity.this, "Location Received!", Toast.LENGTH_SHORT).show();
                     if (locationProviderClient != null) {
                         locationProviderClient.removeLocationUpdates(locationCallback);
                     }
 
-                    if (location.isFromMockProvider()){
-                        Toast.makeText(OutletDetailActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                    if (outletLatLng != null) {
 
-                    if (outletLatLng != null){
-
-                        Double metre = checkMetre(currentLatLng , outletLatLng);
+                        Double metre = checkMetre(currentLatLng, outletLatLng);
                         Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
 
-                        if (config.getGeoFenceMinRadius() != null){
-                            if (metre > config.getGeoFenceMinRadius() ){
-                                showOutsideBoundaryDialog(0 , String.valueOf(metre));
+                        if (config.getGeoFenceMinRadius() != null) {
+                            if (metre > config.getGeoFenceMinRadius()) {
+                                showOutsideBoundaryDialog(0, String.valueOf(metre));
                             }
-                        }else{
-                            if (metre > 100 ){
-                                showOutsideBoundaryDialog(0 , String.valueOf(metre));
+                        } else {
+                            if (metre > 100) {
+                                showOutsideBoundaryDialog(0, String.valueOf(metre));
                             }
                         }
                     }
 
                     updateBtn(true);
+
+
                 }
             }
 
         }
     };
 
-    public void showOutsideBoundaryDialog( int repeat , String metres){
+    public void showOutsideBoundaryDialog(int repeat, String metres) {
 
-        if (repeat != 5){
+        if (repeat != 5) {
 
-                final int repeatLocal = ++repeat ;
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-                builderSingle.setTitle(R.string.warning);
-                builderSingle.setMessage("You are "+ metres +" meters away from the retailer\'s defined boundary.\nPress Ok to continue");
-                builderSingle.setCancelable(false);
-                builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
-                    dialog1.dismiss();
-                    showOutsideBoundaryDialog(repeatLocal , metres);
-                });
-            if (!OutletDetailActivity.this.isFinishing()){
+            final int repeatLocal = ++repeat;
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle(R.string.warning);
+            builderSingle.setMessage("You are " + metres + " meters away from the retailer\'s defined boundary.\nPress Ok to continue");
+            builderSingle.setCancelable(false);
+            builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) -> {
+                dialog1.dismiss();
+                showOutsideBoundaryDialog(repeatLocal, metres);
+            });
+            if (!OutletDetailActivity.this.isFinishing()) {
                 builderSingle.show();
             }
 
@@ -284,8 +286,8 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
 
-    public Double checkMetre(LatLng from , LatLng to){
-        return Double.parseDouble(new DecimalFormat("##.##").format(SphericalUtil.computeDistanceBetween(from , to )));
+    public Double checkMetre(LatLng from, LatLng to) {
+        return Double.parseDouble(new DecimalFormat("##.##").format(SphericalUtil.computeDistanceBetween(from, to)));
     }
 
 
@@ -295,18 +297,16 @@ public class OutletDetailActivity extends BaseActivity implements
         Log.d(TAG, "onStart fired ..............");
 
 
-
         Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()){
-                            locationProviderClient.requestLocationUpdates(locationRequest,locationCallback,Looper.getMainLooper());
-                        }
-                        else{
-                            if(report.isAnyPermissionPermanentlyDenied())
+                        if (report.areAllPermissionsGranted()) {
+                            locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+                        } else {
+                            if (report.isAnyPermissionPermanentlyDenied())
                                 openLocationSettings();
                         }
                     }
@@ -320,10 +320,9 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
 
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        int code =  getOutletPopCode(popSpinner.getSelectedItem().toString());
+        int code = getOutletPopCode(popSpinner.getSelectedItem().toString());
         viewModel.updateOutletStatusCode(code);
 
     }
@@ -335,30 +334,29 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
 
-
     private void updateUI(Outlet outlet) {
-        if(outlet !=null) {
+        if (outlet != null) {
             setTitle(outlet.getOutletName());
-            outletAddress.setText(!outlet.getAddress().isEmpty()? outlet.getAddress() : "");
+            outletAddress.setText(!outlet.getAddress().isEmpty() ? outlet.getAddress() : "");
             outletChannel.setText(String.valueOf(outlet.getChannelName()));
             outletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));
             outletVisits.setText(String.valueOf(outlet.getVisitFrequency()));
             viewModel.setOutlet(outlet);
 
-            if (outlet.getLastOrder()  != null){
+            if (outlet.getLastOrder() != null) {
                 lastOrderPrice.setText(String.valueOf("RS. " + outlet.getLastOrder().getOrderTotal()));
                 lastOrderQuantity.setText(String.valueOf(outlet.getLastOrder().getOrderQuantity()));
                 lastOrderTakenDate.setText(Util.formatDate(Util.DATE_FORMAT, outlet.getLastOrder().getLastSaleDate()));
             }
 
-            if (outlet.getMtdSale() != null){
+            if (outlet.getMtdSale() != null) {
                 monthlySalesText.setText(String.valueOf(outlet.getMtdSale()));
             }
 
-            outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
-            if (mMap!= null && outlet != null){
-                mMap.addMarker(new MarkerOptions().position(outletLatLng).title(outlet.getOutletName()!=null?outlet.getOutletName() : ""));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(outletLatLng , 15));
+            outletLatLng = new LatLng(outlet.getLatitude(), outlet.getLongitude());
+            if (mMap != null && outlet != null) {
+                mMap.addMarker(new MarkerOptions().position(outletLatLng).title(outlet.getOutletName() != null ? outlet.getOutletName() : ""));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(outletLatLng, 15));
                 mMap.getUiSettings().setScrollGesturesEnabled(false);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
             }
@@ -366,13 +364,19 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
 
-    private void updateBtn(boolean enable){
+    private void updateBtn(boolean enable) {
         btnOk.setEnabled(enable);
-        btnOk.setAlpha(enable?1.0f:0.5f);
+        btnOk.setAlpha(enable ? 1.0f : 0.5f);
+
+        btnNotFlow.setEnabled(enable);
+        btnNotFlow.setAlpha(enable ? 1.0f : 0.5f);
+
+
+
     }
 
     @OnClick(R.id.btnPromotions)
-    public void onPromotionsClick(){
+    public void onPromotionsClick() {
         List<CustomObject> objects = new ArrayList<>();
 //        objects.add(new CustomObject(125L,"16 Free-345 ml with jumbo case"));
 //        AlertDialogManager.getInstance().showListAlertDialog(this,getString(R.string.promotions),
@@ -380,11 +384,11 @@ public class OutletDetailActivity extends BaseActivity implements
 //                    Toast.makeText(this, object.getText(), Toast.LENGTH_SHORT).show();
 //                },objects);
 
-        viewModel.getPromos(outletId).observe(this , promotions -> {
+        viewModel.getPromos(outletId).observe(this, promotions -> {
 
-            if (promotions.size() > 0){
-                AlertDialogManager.getInstance().showPromotionsDialog(this,promotions);
-            }else{
+            if (promotions.size() > 0) {
+                AlertDialogManager.getInstance().showPromotionsDialog(this, promotions);
+            } else {
                 Toast.makeText(this, "No Promotions", Toast.LENGTH_SHORT).show();
             }
         });
@@ -392,10 +396,10 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
     @OnClick(R.id.navigation)
-    public void onNavigationClick(){
+    public void onNavigationClick() {
 
-        if (outletLatLng != null){
-            Uri navigation = Uri.parse("google.navigation:q="+outletLatLng.latitude+","+outletLatLng.longitude+"");
+        if (outletLatLng != null) {
+            Uri navigation = Uri.parse("google.navigation:q=" + outletLatLng.latitude + "," + outletLatLng.longitude + "");
             Intent navigationIntent = new Intent(Intent.ACTION_VIEW, navigation);
             navigationIntent.setPackage("com.google.android.apps.maps");
             startActivity(navigationIntent);
@@ -403,52 +407,71 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
     @OnClick(R.id.btnTasks)
-    public void onViewTasksClick(){
-        OutletTasksDialogFragment.newInstance(outletId).show(getSupportFragmentManager(),"TaskFragmentDialog");
+    public void onViewTasksClick() {
+        OutletTasksDialogFragment.newInstance(outletId).show(getSupportFragmentManager(), "TaskFragmentDialog");
 
     }
 
     @OnClick(R.id.lastOrder)
-    public void onLastOrderCLick(){
-        if(outlet.getLastOrder() != null)
-            AlertDialogManager.getInstance().showLastOrderDialog(this , outlet.getLastOrder());
+    public void onLastOrderCLick() {
+        if (outlet.getLastOrder() != null)
+            AlertDialogManager.getInstance().showLastOrderDialog(this, outlet.getLastOrder());
     }
 
+    @SuppressLint("MissingPermission")
     @OnClick(R.id.btnOk)
-    public void onOkClick(){
-        viewModel.updateOutletStatusCode(1);
-        viewModel.onNextClick(currentLocation,outletVisitStartTime);
+    public void onOkClick() {
+        if (!isFakeLocation) {
+            viewModel.updateOutletStatusCode(1);
+            if (currentLatLng != null)
+                viewModel.onNextClick(currentLocation, outletVisitStartTime);
+            else{
+                locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
+            }
+        } else {
+            Toast.makeText(this, "You are using fake GPS", Toast.LENGTH_SHORT).show();
+        }
     }
 
+    @SuppressLint("MissingPermission")
     @OnClick(R.id.btnNotFlow)
-    public void notFlowClick(View v){
-        PopupMenu menu = new PopupMenu(this, v);
+    public void notFlowClick(View v) {
 
-        HashMap<String, Integer> hashMap = new HashMap<>();
-        hashMap.put("Outlet Closed" , 2);
-        hashMap.put("No Time" , 3 );
+        if (!isFakeLocation) {
+            PopupMenu menu = new PopupMenu(this, v);
 
-        menu.getMenu().add("Outlet Closed");
-        menu.getMenu().add("No Time");
-        menu.show();
+            HashMap<String, Integer> hashMap = new HashMap<>();
+            hashMap.put("Outlet Closed", 2);
+            hashMap.put("No Time", 3);
 
-        menu.setOnMenuItemClickListener(item -> {
+            menu.getMenu().add("Outlet Closed");
+            menu.getMenu().add("No Time");
+            menu.show();
 
-            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-            builderSingle.setTitle(R.string.warning);
-            builderSingle.setMessage("Are you sure you want to take an action?");
-            builderSingle.setCancelable(true);
-            builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
-                dialog1.dismiss();
-                int code = hashMap.get(item.getTitle().toString());
-                viewModel.updateOutletStatusCode(code);
-                viewModel.onNextClick(currentLocation,outletVisitStartTime);
+            menu.setOnMenuItemClickListener(item -> {
+
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+                builderSingle.setTitle(R.string.warning);
+                builderSingle.setMessage("Are you sure you want to take an action?");
+                builderSingle.setCancelable(true);
+                builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) -> {
+                    dialog1.dismiss();
+                    int code = hashMap.get(item.getTitle().toString());
+                    viewModel.updateOutletStatusCode(code);
+                    if (currentLatLng != null)
+                        viewModel.onNextClick(currentLocation, outletVisitStartTime);
+                    else{
+                        locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
+                    }
+                });
+
+                builderSingle.show();
+
+                return true;
             });
-
-            builderSingle.show();
-
-            return true;
-        });
+        } else {
+            Toast.makeText(this, "You are using fake GPS", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -456,21 +479,22 @@ public class OutletDetailActivity extends BaseActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode){
+            switch (requestCode) {
                 case GPS_REQUEST:
-                    locationProviderClient.requestLocationUpdates(locationRequest,locationCallback,Looper.getMainLooper());
+                    locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
                     break;
                 case REQUEST_CODE:
-                    if(data !=null && data.getExtras()!=null && data.hasExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING)){
-                        boolean noOrderFromOrderBooking = data.getBooleanExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING,false);
-                        boolean without_verification = data.getBooleanExtra(WITHOUT_VERIFICATION,false);
-                        reasonForNoSale = String.valueOf(data.getLongExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER,1L));
-                        if (!without_verification)
-                            viewModel.postEmptyCheckout(noOrderFromOrderBooking,outletId,outletVisitStartTime,Calendar.getInstance().getTimeInMillis());
-                        else
-                            viewModel.postEmptyCheckoutWithoutAssetVerification(noOrderFromOrderBooking,outletId,outletVisitStartTime,Calendar.getInstance().getTimeInMillis());
-                    }
-                    else{
+                    if (data != null && data.getExtras() != null && data.hasExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING)) {
+                        boolean noOrderFromOrderBooking = data.getBooleanExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING, false);
+                        boolean without_verification = data.getBooleanExtra(WITHOUT_VERIFICATION, false);
+                        reasonForNoSale = String.valueOf(data.getLongExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER, 1L));
+                        if (!without_verification){
+                            viewModel.postEmptyCheckout(noOrderFromOrderBooking, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
+                            viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken());
+
+                        } else
+                            viewModel.postEmptyCheckoutWithoutAssetVerification(noOrderFromOrderBooking, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
+                    } else {
                         setResult(RESULT_OK);
                         finish();
                     }
@@ -482,7 +506,7 @@ public class OutletDetailActivity extends BaseActivity implements
 
     @Override
     public void showProgress() {
-        showProgressD(this,true);
+        showProgressD(this, true);
     }
 
     @Override
@@ -493,6 +517,6 @@ public class OutletDetailActivity extends BaseActivity implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        mMap = googleMap ;
+        mMap = googleMap;
     }
 }

@@ -25,7 +25,6 @@
                 app:contentInsetStart="0dp"
                 app:contentInsetEnd="0dp"
                 android:overScrollMode="never"
-
                 >
 
                 <com.google.android.material.card.MaterialCardView

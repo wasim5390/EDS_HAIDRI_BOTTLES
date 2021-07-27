@@ -9,6 +9,7 @@ public class ReportModel {
     private Double mGrandTotal;
     private Double mGrandTotalConfirm;
     private Integer mSkuSize;
+    private Float totalSku;
     private Integer totalOrders;
     private Integer totalConfirmOrders;
 
@@ -105,6 +106,14 @@ public class ReportModel {
 
     public Integer getProductiveOutletCount() {
         return productiveOutletCount==null?0:productiveOutletCount;
+    }
+
+    public Float getTotalSku() {
+        return totalSku != null ? totalSku : 0;
+    }
+
+    public void setTotalSku(Float totalSku) {
+        this.totalSku = totalSku;
     }
 
     public void setProductiveOutletCount(Integer productiveOutletCount) {

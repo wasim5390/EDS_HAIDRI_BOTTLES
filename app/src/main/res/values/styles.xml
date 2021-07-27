@@ -19,6 +19,11 @@
         </item>
     </style>
 
+    <style name="MineCustomTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <style name="PositiveButton" parent="Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/white</item>
         <item name="android:colorButtonNormal">@color/light</item>

@@ -1,9 +1,15 @@
 package com.optimus.eds.ui.route.outlet.detail;
 
 import android.app.Application;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.location.Location;
+import android.os.PersistableBundle;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.annotation.NonNull;
@@ -21,6 +27,8 @@ import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.model.OrderResponseModel;
 import com.optimus.eds.model.PackageProductResponseModel;
+import com.optimus.eds.source.JobIdManager;
+import com.optimus.eds.source.MerchandiseUploadService;
 import com.optimus.eds.source.StatusRepository;
 import com.optimus.eds.ui.merchandize.MerchandiseRepository;
 
@@ -175,6 +183,22 @@ public class OutletDetailViewModel extends AndroidViewModel {
         }
 
 
+    }
+
+    // schedule
+    public void scheduleMerchandiseJob(Context context, Long outletId, String token) {
+        PersistableBundle extras = new PersistableBundle();
+        extras.putLong(Constant.EXTRA_PARAM_OUTLET_ID,outletId);
+        extras.putString(Constant.TOKEN, "Bearer "+token);
+        extras.putInt("statusId", 6);
+        ComponentName serviceComponent = new ComponentName(context, MerchandiseUploadService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(JobIdManager.getJobId(JobIdManager.JOB_TYPE_MERCHANDISE_UPLOAD,outletId.intValue()), serviceComponent);
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require any network
+        builder.setOverrideDeadline(1000);
+        builder.setMinimumLatency(1000);
+        builder.setExtras(extras);
+        JobScheduler jobScheduler = ContextCompat.getSystemService(context,JobScheduler.class);
+        jobScheduler.schedule(builder.build());
     }
 
     public void postEmptyCheckout(boolean noOrderFromBooking,Long outletId,Long outletVisitStartTime,Long outletVisitEndTime){

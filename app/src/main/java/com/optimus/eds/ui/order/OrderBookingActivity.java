@@ -137,7 +137,6 @@ public class OrderBookingActivity extends BaseActivity {
 
         //viewModel.getProductGroupList().observe(this, this::onProductGroupsLoaded);
 
-
         viewModel.getProductList().observe(this, this::setSectionedAdapter);
 
         viewModel.isSaving().observe(this, aBoolean -> {
@@ -251,6 +250,7 @@ public class OrderBookingActivity extends BaseActivity {
             sectionAdapter.addSection(pkg.getPackageName(), new PackageSection(this , pkg,
                     () -> Toast.makeText(OrderBookingActivity.this, "You cannot enter above maximum qty", Toast.LENGTH_LONG).show()));
         }
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvProducts.setLayoutManager(linearLayoutManager);
         rvProducts.setAdapter(sectionAdapter);

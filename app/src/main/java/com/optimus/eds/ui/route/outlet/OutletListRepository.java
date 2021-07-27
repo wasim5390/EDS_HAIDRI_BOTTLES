@@ -45,7 +45,7 @@ public class OutletListRepository  extends OrderBookingRepository {
 
     public Flowable<List<Outlet>> getOutletsWithNoVisits(){
         // get All planned outlet calls
-        return routeDao.findOutletsWithPendingTasks(1);
+        return routeDao.findOutletsWithPendingTasks(); //1
     }
 
     public Single<List<OrderStatus>> getOrderStatus(){

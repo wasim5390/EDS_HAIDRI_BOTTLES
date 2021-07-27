@@ -70,7 +70,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void download(){
         isLoading().postValue(true);
-        repository.fetchTodayData(false);
+        repository.fetchTodayData(true);
     }
 
     public void startDay(){

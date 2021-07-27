@@ -163,7 +163,7 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
 
-            selectedPjp.getTabAt(VISITED).setText(getString(R.string.visited) +"( " +integer + " )");
+            selectedPjp.getTabAt(VISITED).setText("Non Productive" +"( " +integer + " )");
         }
     }
 

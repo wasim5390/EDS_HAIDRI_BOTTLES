@@ -104,7 +104,7 @@ public class ReportsActivity extends BaseActivity {
         float planned  = summary.getPjpCount()==0?1:summary.getPjpCount();
         int productive = summary.getProductiveOutletCount();
 
-        float avgSku = summary.getAvgSkuSize();
+        float avgSku =  summary.getTotalSku()/summary.getTotalOrders(); //summary.getAvgSkuSize();
         double dropSize =  totalCasesOrder/productive ;//summary.getDropSize();
 
         float compRate =(completed/planned)*100;

@@ -43,8 +43,10 @@ public interface RouteDao extends MerchandiseDao{
     @Query("SELECT * FROM Outlet WHERE mRouteId=:routeId AND planned=:planned ORDER BY sequenceNumber")
     Single<List<Outlet>> findAllOutletsForRoute(Long routeId,int planned);
 
-    @Query("SELECT * FROM Outlet WHERE planned=:planned AND mVisitStatus<=1")
-    Flowable<List<Outlet>> findOutletsWithPendingTasks( int planned);
+    //@Query("SELECT * FROM Outlet WHERE planned=:planned AND mVisitStatus<=1")
+    @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
+            " WHERE  Outlet.planned=1 AND  ( ( OrderStatus.status < 2) OR ( Outlet.statusId < 2 ) ) "  )
+    Flowable<List<Outlet>> findOutletsWithPendingTasks(); // int planned
 
     @Query("SELECT * FROM Outlet WHERE mOutletId in (:outletsIds)")
     Single<List<Outlet>> findOutletsWithPendingOrderToSync(List<Long> outletsIds);
