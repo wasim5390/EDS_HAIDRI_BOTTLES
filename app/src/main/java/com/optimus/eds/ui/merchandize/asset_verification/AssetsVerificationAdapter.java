@@ -12,11 +12,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Asset;
+import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.model.AssetStatus;
+import com.optimus.eds.model.Configuration;
 import com.optimus.eds.utils.PreferenceUtil;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +55,8 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
         this.assetList = assets;
         notifyDataSetChanged();
     }
+
+
 
     public List<String> getReasons(boolean approved){
         List<String> reasons = new ArrayList<>();
@@ -121,6 +128,7 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
             public void onItemSelected(AdapterView<?> parent, View view, int positionListener, long id) {
 //                if(++check > 1) {
 
+
                 if (!((TextView) view).getText().toString().isEmpty()){
                     if (assetList.get(position).getStatusid() == null){
                         assetScanning++;
@@ -178,6 +186,10 @@ public class AssetsVerificationAdapter extends RecyclerView.Adapter<RecyclerView
             count++;
         }
         return -1;
+    }
+
+    public Double checkMetre(LatLng from , LatLng to){
+        return Double.parseDouble(new DecimalFormat("##.##").format(SphericalUtil.computeDistanceBetween(from , to )));
     }
 
     @Override

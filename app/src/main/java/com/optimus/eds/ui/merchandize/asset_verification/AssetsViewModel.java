@@ -1,6 +1,8 @@
 package com.optimus.eds.ui.merchandize.asset_verification;
 
 import android.app.Application;
+import android.widget.Toast;
+
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -58,12 +60,17 @@ public class AssetsViewModel extends AndroidViewModel {
 
     public void verifyAsset(String barcode){
         List<Asset> assets = mAssets.getValue();
+        boolean isExist = false;
         if(assets!=null){
             for(Asset asset:assets){
                 if(asset.getSerialNumber().equals(barcode)){
                     asset.setVerified(true);
+                    isExist = true;
+                    break;
                 }
             }
+            if (!isExist)
+                Toast.makeText(getApplication().getApplicationContext(), "Barcode ("+ barcode + ") not exist", Toast.LENGTH_SHORT).show();
             mAssets.postValue(assets);
             repository.updateAssets(assets);
         }

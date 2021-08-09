@@ -104,16 +104,16 @@ public class ReportsActivity extends BaseActivity {
         float planned  = summary.getPjpCount()==0?1:summary.getPjpCount();
         int productive = summary.getProductiveOutletCount();
 
-        float avgSku =  summary.getTotalSku()/summary.getTotalOrders(); //summary.getAvgSkuSize();
-        double dropSize =  totalCasesOrder/productive ;//summary.getDropSize();
+        Float avgSku =  summary.getTotalSku()/summary.getTotalOrders(); //summary.getAvgSkuSize();
+        Float dropSize =  totalCasesOrder/productive ;//summary.getDropSize();
 
         float compRate =(completed/planned)*100;
         float strikeRate = (productive/planned)*100;
         float completionRate = ((planned - (planned - (productive + completed)) )*100)/planned;
         tvCompRate.setText(String.format("%.01f", completionRate)+" %");
         tvStrikeRate.setText(String.format("%.01f", strikeRate)+" %");
-        tvAvgSku.setText(String.format("%.01f", avgSku));
-        tvDropSize.setText(String.format("%.01f", dropSize));
+        tvAvgSku.setText(String.format("%.01f", avgSku.isNaN() ?0 : avgSku));
+        tvDropSize.setText(String.format("%.01f", dropSize.isNaN()? 0 : dropSize));
     }
 
     @Override

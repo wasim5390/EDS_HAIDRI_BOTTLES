@@ -26,10 +26,9 @@
             app:columnCount="4"
             app:rowCount="2"
             android:padding="1dp"
-
             android:background="@color/white">
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_columnWeight="1"
                 app:layout_rowWeight="1"
@@ -40,10 +39,10 @@
                 android:paddingBottom="5dp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/roboto_medium"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:text="@string/planned"/>
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 app:layout_columnWeight="1"
                 app:layout_rowWeight="1"
@@ -52,10 +51,11 @@
                 android:layout_marginEnd="1dp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/roboto_medium"
-                android:textSize="16sp"
-                android:text="@string/completed"/>
+                android:textSize="14sp"
+
+                android:text="Non Productive"/>
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 app:layout_columnWeight="1"
                 app:layout_rowWeight="1"
@@ -64,10 +64,10 @@
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:fontFamily="@font/roboto_medium"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:text="@string/productive"/>
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 app:layout_columnWeight="1"
                 app:layout_rowWeight="1"
@@ -75,7 +75,7 @@
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:fontFamily="@font/roboto_medium"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:text="Pending"/>
             <TextView
                 android:id="@+id/tvPlannedCount"

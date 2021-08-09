@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,6 +47,7 @@ import com.optimus.eds.utils.PreferenceUtil;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -65,19 +67,19 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
     AssetsViewModel viewModel;
 
-    List<Asset> assetList ;
+    List<Asset> assetList;
 
-    String barcode ="";
+    String barcode = "";
 
-    LatLng currentLatLng , outletLatLng ;
+    LatLng currentLatLng, outletLatLng;
     private LocationRequest locationRequest;
     private FusedLocationProviderClient locationProviderClient;
-    private LocationCallback locationCallback ;
-    Outlet outlet ;
+    private LocationCallback locationCallback;
+    Outlet outlet;
 
-    public static void start(Context context,Long outletId) {
+    public static void start(Context context, Long outletId) {
         Intent starter = new Intent(context, AssetsVerificationActivity.class);
-        starter.putExtra("OutletId",outletId);
+        starter.putExtra("OutletId", outletId);
         context.startActivity(starter);
     }
 
@@ -91,16 +93,18 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         ButterKnife.bind(this);
         setToolbar(getString(R.string.asset_verification));
 
-        outletId =  getIntent().getLongExtra("OutletId",0);
+        outletId = getIntent().getLongExtra("OutletId", 0);
         viewModel = ViewModelProviders.of(this).get(AssetsViewModel.class);
 
-        viewModel.findOutlet(outletId).observe(this , outlet -> {
-            this.outlet = outlet ;
+        viewModel.findOutlet(outletId).observe(this, outlet -> {
+            this.outlet = outlet;
         });
 
-        viewModel.getLookUpData().observe(this , lookUp -> {
-            if (lookUp != null)
+        viewModel.getLookUpData().observe(this, lookUp -> {
+            if (lookUp != null){
                 initAssetsAdapter(lookUp.getAssetStatus());
+            }
+
         });
 
         viewModel.loadAssets(outletId);
@@ -128,34 +132,24 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     }
 
     private void initAssetsAdapter(List<AssetStatus> assetStatuses) {
-        assetStatuses.add(0 , new AssetStatus("" , -1));
+        assetStatuses.add(0, new AssetStatus("", -1));
 
         assetList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this , RecyclerView.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, RecyclerView.VERTICAL));
         recyclerView.setNestedScrollingEnabled(false);
-        assetsVerificationAdapter = new AssetsVerificationAdapter(this, assetStatuses,this);
+        assetsVerificationAdapter = new AssetsVerificationAdapter(this, assetStatuses, this);
         recyclerView.setAdapter(assetsVerificationAdapter);
         recyclerView.setNestedScrollingEnabled(false);
     }
 
     @SuppressLint("MissingPermission")
     public void enableLocationServices() {
-//        new GpsUtils(this, LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY))
-//                .turnGPSOn(isGPSEnable -> {
-//                    // turn on GPS
-//                    if(isGPSEnable) {
-//                        createLocationRequest();
-//                        setLocationCallback();
-//                        locationProviderClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper());
-//                    }
-//                });
-
         createLocationRequest();
         setLocationCallback();
-        locationProviderClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper());
+        locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
 
     }
 
@@ -169,8 +163,8 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
     }
 
-    public void setLocationCallback(){
-        locationCallback = new LocationCallback(){
+    public void setLocationCallback() {
+        locationCallback = new LocationCallback() {
 
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -182,86 +176,59 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
 
-                        if (location.isFromMockProvider()){
+                        if (location.isFromMockProvider()) {
                             Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        currentLatLng = new LatLng(location.getLatitude() , location.getLongitude());
+                        currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                        if (outlet != null){
 
-                            outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
+                        if (outlet != null && !barcode.isEmpty()) {
 
-                            Double metre = checkMetre(currentLatLng , outletLatLng);
+                            outletLatLng = new LatLng(outlet.getLatitude(), outlet.getLongitude());
+
+                            Double metre = checkMetre(currentLatLng, outletLatLng);
                             Configuration config = PreferenceUtil.getInstance(AssetsVerificationActivity.this).getConfig();
 
-                            if (config.getGeoFenceMinRadius() != null){
-                                if (metre > config.getGeoFenceMinRadius() ){
+                            boolean inRadius = true;
+
+                            if (config.getGeoFenceMinRadius() != null) {
+                                if (metre > config.getGeoFenceMinRadius()) {
                                     showOutsideBoundaryDialog(0);
+                                    inRadius = false;
                                 }
-                            }else{
-                                if (metre > 100 ){
+                            } else {
+                                if (metre > 100) {
                                     showOutsideBoundaryDialog(0);
+                                    inRadius = false;
                                 }
                             }
 
-                            if (barcode != null)
-                                if (!barcode.isEmpty())
-                                    viewModel.verifyAsset(barcode);
-
+                            if (!barcode.isEmpty() && inRadius){
+                                viewModel.verifyAsset(barcode);
+                                barcode = "";
+                            }
                         }
-
-                        locationProviderClient.removeLocationUpdates(locationCallback);
-
                     }
                 }
+
+                locationProviderClient.removeLocationUpdates(locationCallback);
             }
         };
     }
-//    private LocationCallback locationCallback = new LocationCallback(){
-//        @Override
-//        public void onLocationResult(LocationResult locationResult) {
-//            if (locationResult == null) {
-//                return;
-//            }
-//            for (Location location : locationResult.getLocations()) {
-//                if (location != null) {
-//
-//                   if (location.isFromMockProvider()){
-//                       Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
-//                       return;
-//                   }
-//
-//                    currentLatLng = new LatLng(location.getLatitude() , location.getLongitude());
-//
-//                   if (outlet != null){
-//
-//                       outletLatLng = new LatLng(outlet.getLatitude() , outlet.getLongitude());
-//                       if (checkMetre(currentLatLng, outletLatLng) > 100) {
-//                           showOutsideBoundaryDialog(0);
-//                       }
-//                       if (barcode != null)
-//                           if (!barcode.isEmpty())
-//                               viewModel.verifyAsset(barcode);
-//                   }
-//
-//                }
-//            }
-//
-//        }
-//    };
 
-    public void showOutsideBoundaryDialog( int repeat){
 
-        if (repeat != 5){
+    public void showOutsideBoundaryDialog(int repeat) {
 
-            final int repeatLocal = ++repeat ;
+        if (repeat != 5) {
+
+            final int repeatLocal = ++repeat;
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
             builderSingle.setTitle(R.string.warning);
             builderSingle.setMessage(R.string.retailersBoundary);
             builderSingle.setCancelable(false);
-            builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) ->{
+            builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) -> {
                 dialog1.dismiss();
                 showOutsideBoundaryDialog(repeatLocal);
             });
@@ -269,25 +236,26 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
         }
     }
-    public Double checkMetre(LatLng from , LatLng to){
-        return Double.parseDouble(new DecimalFormat("##.##").format(SphericalUtil.computeDistanceBetween(from , to )));
+
+    public Double checkMetre(LatLng from, LatLng to) {
+        return Double.parseDouble(new DecimalFormat("##.##").format(SphericalUtil.computeDistanceBetween(from, to)));
     }
 
     @OnClick(R.id.btnScanBarcode)
-    public void BarCodeClick(){
+    public void BarCodeClick() {
         Intent intent = new Intent(this, ScannerActivity.class);
-        startActivityForResult(intent,SCANNER_REQUEST_CODE);
+        startActivityForResult(intent, SCANNER_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode==RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case SCANNER_REQUEST_CODE:
                     barcode = data.getStringExtra(KEY_SCANNER_RESULT);
-                   permissionCheck();
+                    permissionCheck();
                     break;
             }
         }
@@ -298,19 +266,20 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         viewModel.updateAsset(asset);
     }
 
-    public void permissionCheck(){
+
+
+    public void permissionCheck() {
 
         Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()){
-                           enableLocationServices();
-                        }
-                        else{
-                            if(report.isAnyPermissionPermanentlyDenied())
+                        if (report.areAllPermissionsGranted()) {
+                            enableLocationServices();
+                        } else {
+                            if (report.isAnyPermissionPermanentlyDenied())
                                 openLocationSettings();
                         }
                     }
@@ -325,30 +294,32 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     @Override
     public void onBackPressed() {
 
-        int verified = 0 , notVerified = 0 , statusWithOutVerified = 0 ;
-        if (assetsVerificationAdapter.getAssetList().size() > 0){
+        int verified = 0, notVerified = 0, statusWithOutVerified = 0;
+        if (assetsVerificationAdapter.getAssetList().size() > 0) {
 
-            for (Asset asset : assetsVerificationAdapter.getAssetList()){
+            for (Asset asset : assetsVerificationAdapter.getAssetList()) {
 
-                if (asset.getStatusid() != null && asset.getVerified()){
+                if (asset.getStatusid() != null && asset.getVerified()) {
                     verified++;
-                }else if (asset.getStatusid() != null){
+                } else if (asset.getStatusid() != null) {
                     notVerified++;
-                }else{
+                } else {
                     statusWithOutVerified++;
                 }
             }
         }
 
-        if (statusWithOutVerified > 0){
+        if (statusWithOutVerified > 0) {
+            PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(false);
             PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(true);
-        }else if (notVerified > 0){
+        } else if (notVerified > 0) {
             PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(false);
             PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(false);
-        }else if (verified == assetsVerificationAdapter.getAssetList().size()){
+        } else if (verified == assetsVerificationAdapter.getAssetList().size()) {
             PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(true);
             PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(true);
         }
         finish();
     }
+
 }

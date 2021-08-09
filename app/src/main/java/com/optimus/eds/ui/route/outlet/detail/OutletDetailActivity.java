@@ -421,16 +421,23 @@ public class OutletDetailActivity extends BaseActivity implements
     @SuppressLint("MissingPermission")
     @OnClick(R.id.btnOk)
     public void onOkClick() {
-        if (!isFakeLocation) {
-            viewModel.updateOutletStatusCode(1);
-            if (currentLatLng != null)
-                viewModel.onNextClick(currentLocation, outletVisitStartTime);
-            else{
-                locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
-            }
-        } else {
-            Toast.makeText(this, "You are using fake GPS", Toast.LENGTH_SHORT).show();
+
+        viewModel.updateOutletStatusCode(1);
+        if (currentLatLng != null)
+            viewModel.onNextClick(currentLocation, outletVisitStartTime);
+        else{
+            locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
         }
+//        if (!isFakeLocation) {
+//            viewModel.updateOutletStatusCode(1);
+//            if (currentLatLng != null)
+//                viewModel.onNextClick(currentLocation, outletVisitStartTime);
+//            else{
+//                locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
+//            }
+//        } else {
+//            Toast.makeText(this, "You are using fake GPS", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @SuppressLint("MissingPermission")

@@ -133,6 +133,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
         });
 
         viewModel.getAssets().observe(this,assets -> {
+
             if(assets.isEmpty()){
                 findViewById(R.id.btnAssetVerification).setClickable(false);
                 findViewById(R.id.btnAssetVerification).setAlpha(0.5f);
@@ -262,10 +263,10 @@ public class OutletMerchandiseActivity extends BaseActivity {
                                         .setTitle("Confirmation")
                                         .setMessage("Are you sure you want to Back to PJP")
 
-                                        .setPositiveButton("CANCEL", (dialog1, which1) -> {
+                                        .setNegativeButton("CANCEL", (dialog1, which1) -> {
                                             dialog1.dismiss();
                                         })
-                                        .setNegativeButton("OK", (dialog1, which1) -> {
+                                        .setPositiveButton("OK", (dialog1, which1) -> {
 
                                             dialog1.dismiss();
 
@@ -312,8 +313,16 @@ public class OutletMerchandiseActivity extends BaseActivity {
 
     @OnClick(R.id.btnBeforeMerchandise)
     public void onBeforeMerchandiseClick(){
-        type= MerchandiseImgType.BEFORE_MERCHANDISE;
-        actionPic(Constant.IntentExtras.ACTION_CAMERA);
+
+        if(isAssets && PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+            type= MerchandiseImgType.BEFORE_MERCHANDISE;
+            actionPic(Constant.IntentExtras.ACTION_CAMERA);
+        }else if (isAssets && !PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+            Toast.makeText(this, "Please scan all assets", Toast.LENGTH_SHORT).show();
+        }else{
+            type= MerchandiseImgType.BEFORE_MERCHANDISE;
+            actionPic(Constant.IntentExtras.ACTION_CAMERA);
+        }
     }
 
     @OnClick(R.id.btnAfterMerchandise)
