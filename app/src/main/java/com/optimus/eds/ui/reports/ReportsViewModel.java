@@ -4,7 +4,7 @@ import android.app.Application;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.optimus.eds.db.entities.OrderDetail;
 import com.optimus.eds.model.OrderDetailAndPriceBreakdown;
 import com.optimus.eds.model.OrderModel;
@@ -87,8 +87,8 @@ public class ReportsViewModel extends AndroidViewModel {
                     @Override
                     public void onNext(OrderModel orderDetail) {
                         boolean isOrderSynced=false;
-                        Crashlytics.setBool("order_empty_in_reports",orderDetail.getOrder()==null);
-                        Crashlytics.setBool("order_payable_empty_in_reports",orderDetail.getOrder()==null||orderDetail.getOrder().getPayable()==null);
+                        FirebaseCrashlytics.getInstance().setCustomKey("order_empty_in_reports",orderDetail.getOrder()==null);
+                        FirebaseCrashlytics.getInstance().setCustomKey("order_payable_empty_in_reports",orderDetail.getOrder()==null||orderDetail.getOrder().getPayable()==null);
                         Double price = orderDetail.getOrder().getPayable();
                         total+=price;
                         if(orderDetail.getOrder().getOrderStatus()==1) {

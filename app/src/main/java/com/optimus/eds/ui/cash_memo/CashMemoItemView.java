@@ -46,6 +46,7 @@ public class CashMemoItemView extends MaterialCardView {
     LinearLayout freeItemsContainer;
 
     private OrderDetail order;
+    double totalCalculatedPrice;
 
     private CashMemoFreeItemView.FreeItemSelector freeItemSelector;
     private CashMemoAdapter.ItemLevelPriceListener priceListener;
@@ -71,11 +72,13 @@ public class CashMemoItemView extends MaterialCardView {
 
 
 
-    public void setCartItem(OrderDetail item, CashMemoFreeItemView.FreeItemSelector listener, CashMemoAdapter.ItemLevelPriceListener itemlevelPriceListener) {
+    public void setCartItem(OrderDetail item, CashMemoFreeItemView.FreeItemSelector listener,
+                            CashMemoAdapter.ItemLevelPriceListener itemlevelPriceListener) {
         freeItemsContainer.removeAllViews();
         rateContainer.removeAllViews();
         this.order = item;
         this.freeItemSelector = listener;
+
         this.priceListener = itemlevelPriceListener;
         if (item != null) {
 
@@ -151,15 +154,19 @@ public class CashMemoItemView extends MaterialCardView {
     private View addPricingView(OrderDetail item){
         LayoutInflater inflater =  LayoutInflater.from(getContext());
         CashMemoRateView rateView = (CashMemoRateView) inflater.inflate(R.layout.memo_rate_child_view,null);
-
         rateView.setRates(item);
         return rateView;
     }
+
     private View addFreeItemsView(OrderDetail item,int freeGoodType){
         LayoutInflater inflater =  LayoutInflater.from(getContext());
         CashMemoFreeItemView freeItemsView = (CashMemoFreeItemView) inflater.inflate(R.layout.cashmemo_free_item_view,null);
         freeItemsView.setCartItem(item,freeGoodType==1?order.getCartonFreeQuantityTypeId():order.getUnitFreeQuantityTypeId(),freeItemSelector);
         return freeItemsView;
+    }
+
+    interface  RateCalculate{
+        void rateCallback(double value);
     }
 
 }

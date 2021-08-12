@@ -28,7 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
@@ -186,7 +186,7 @@ public class OrderBookingActivity extends BaseActivity {
     private void onOutletLoaded(Outlet outlet) {
         if (outlet == null) return;
         this.outlet = outlet;
-        Crashlytics.setLong("Outlet_Id", outlet.getOutletId());
+        FirebaseCrashlytics.getInstance().setCustomKey("Outlet_Id", outlet.getOutletId());
         tvOutletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));
     }
 

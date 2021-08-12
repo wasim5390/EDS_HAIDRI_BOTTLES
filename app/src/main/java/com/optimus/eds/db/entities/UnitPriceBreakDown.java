@@ -92,6 +92,10 @@ public class    UnitPriceBreakDown {
         this.mBlockPrice = mBlockPrice;
     }
 
+    public void addBlockPrice(Double mBlockPrice) {
+        this.mBlockPrice += mBlockPrice;
+    }
+
     @SerializedName("totalPrice")
     public Double  mTotalPrice;
     @SerializedName("calculationType")
@@ -204,6 +208,10 @@ public class    UnitPriceBreakDown {
         if(obj instanceof  UnitPriceBreakDown)
             return (this.mPriceConditionId.equals(((UnitPriceBreakDown) obj).mPriceConditionId));
         return (this.mPriceConditionId.equals(((CartonPriceBreakDown) obj).mPriceConditionId));
+    }
+
+    public String getmPriceConditionClass() {
+        return mPriceConditionClass;
     }
 }
 

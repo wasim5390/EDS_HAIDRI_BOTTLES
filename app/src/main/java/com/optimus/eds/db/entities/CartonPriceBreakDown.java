@@ -29,8 +29,12 @@ public class CartonPriceBreakDown {
     public Integer mOrderDetailId;
     @SerializedName("priceCondition")
     public String mPriceCondition;
+
     @SerializedName("priceConditionType") //Will contain label of pricing like Retail Price, Discount
     public String mPriceConditionType;
+
+
+
     @SerializedName("priceConditionClass")
     public String mPriceConditionClass;
 
@@ -98,6 +102,10 @@ public class CartonPriceBreakDown {
         return mPriceConditionType;
     }
 
+    public void setPriceConditionType(String mPriceConditionType) {
+        this.mPriceConditionType = mPriceConditionType;
+    }
+
     public Integer getPriceConditionId() {
         return mPriceConditionId;
     }
@@ -107,6 +115,10 @@ public class CartonPriceBreakDown {
 
     public void setPriceConditionClassOrder(Integer mPriceConditionClassOrder) {
         this.mPriceConditionClassOrder = mPriceConditionClassOrder;
+    }
+
+    public String getmPriceConditionClass() {
+        return mPriceConditionClass;
     }
 
 
