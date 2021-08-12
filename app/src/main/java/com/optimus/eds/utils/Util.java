@@ -10,6 +10,8 @@ import android.text.format.DateUtils;
 import android.util.Base64;
 import android.util.Patterns;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 import com.optimus.eds.Constant;
 
 import java.io.ByteArrayOutputStream;
@@ -51,6 +53,10 @@ public class Util {
             return null;
         }
     }*/
+
+    public static Double checkMetre(LatLng from , LatLng to){
+        return Double.parseDouble(new DecimalFormat("##.##").format(SphericalUtil.computeDistanceBetween(from , to )));
+    }
 
     public static String getAuthorizationHeader(Context context) {
         String token = PreferenceUtil.getInstance(context).getToken();

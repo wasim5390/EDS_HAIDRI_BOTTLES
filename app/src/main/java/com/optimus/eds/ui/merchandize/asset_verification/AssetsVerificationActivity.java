@@ -183,7 +183,6 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
                         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-
                         if (outlet != null && !barcode.isEmpty()) {
 
                             outletLatLng = new LatLng(outlet.getLatitude(), outlet.getLongitude());

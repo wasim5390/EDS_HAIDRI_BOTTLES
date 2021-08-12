@@ -38,6 +38,7 @@ import com.optimus.eds.BaseActivity;
 import com.optimus.eds.BuildConfig;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
+import com.optimus.eds.db.entities.Asset;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.ui.order.OrderBookingActivity;
 import com.optimus.eds.ui.camera.ImageCropperActivity;
@@ -133,7 +134,6 @@ public class OutletMerchandiseActivity extends BaseActivity {
         });
 
         viewModel.getAssets().observe(this,assets -> {
-
             if(assets.isEmpty()){
                 findViewById(R.id.btnAssetVerification).setClickable(false);
                 findViewById(R.id.btnAssetVerification).setAlpha(0.5f);
@@ -141,6 +141,13 @@ public class OutletMerchandiseActivity extends BaseActivity {
                 isAssets = false;
             }else{
                 isAssets = true;
+                int assetVerified = 0;
+                for (Asset asset : assets){
+                    if (asset.getVerified())
+                        assetVerified++;
+                }
+                if (assetVerified == assets.size())
+                    PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(true);
             }
 
         });

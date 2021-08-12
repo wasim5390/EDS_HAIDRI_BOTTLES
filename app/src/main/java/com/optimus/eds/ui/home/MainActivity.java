@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -92,6 +93,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void created(Bundle savedInstanceState) {
+
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         setObservers();

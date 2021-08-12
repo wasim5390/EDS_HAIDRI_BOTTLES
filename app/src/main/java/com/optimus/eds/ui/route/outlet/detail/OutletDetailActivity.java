@@ -7,10 +7,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -57,7 +60,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -195,7 +200,9 @@ public class OutletDetailActivity extends BaseActivity implements
         createLocationRequest();
         enableLocationServices();
 
+
     }
+
 
 
     @SuppressLint("MissingPermission")
@@ -234,7 +241,9 @@ public class OutletDetailActivity extends BaseActivity implements
                     currentLocation = location;
                     currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
+                    Toast.makeText(OutletDetailActivity.this, "LocationTime" + location.getTime(), Toast.LENGTH_SHORT).show();
 
+                    Log.d("LocationTime"  , "Time " + location.getTime());
                     // Toast.makeText(OutletDetailActivity.this, "Location Received!", Toast.LENGTH_SHORT).show();
                     if (locationProviderClient != null) {
                         locationProviderClient.removeLocationUpdates(locationCallback);

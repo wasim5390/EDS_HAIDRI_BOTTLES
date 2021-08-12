@@ -1,6 +1,7 @@
 package com.optimus.eds.ui.route.outlet;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 
 import androidx.annotation.Nullable;
@@ -40,10 +41,12 @@ import com.optimus.eds.db.entities.OutletOrderStatus;
 import com.optimus.eds.db.entities.Route;
 import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.model.WorkStatus;
+import com.optimus.eds.ui.AlertDialogManager;
 import com.optimus.eds.ui.cash_memo.CashMemoActivity;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailActivity;
 import com.optimus.eds.ui.route.outlet.routes.RouteAdapter;
 import com.optimus.eds.utils.PreferenceUtil;
+import com.optimus.eds.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -342,18 +345,38 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
     @Override
     public void onOutletClick(Outlet outlet) {
-        WorkStatus status = PreferenceUtil.getInstance(this).getWorkSyncData();
-        if(status.getDayStarted()!=1)
-        {
-            showMessage(status.getDayStarted()==2 ? getString(R.string.day_already_ended):getString(R.string.have_not_started_day));
-            return;
+
+        if (android.provider.Settings.Global.getInt(getContentResolver(), android.provider.Settings.Global.AUTO_TIME, 0)  == 1){
+            WorkStatus status = PreferenceUtil.getInstance(this).getWorkSyncData();
+            if(status.getDayStarted()!=1)
+            {
+                showMessage(status.getDayStarted()==2 ? getString(R.string.day_already_ended):getString(R.string.have_not_started_day));
+                return;
+            }
+            viewModel.orderTaken(outlet.getOutletId()).observe(this,aBoolean -> {
+                if(aBoolean && outlet.getStatusId() != 7){
+                    CashMemoActivity.start(this,outlet.getOutletId(),RES_CODE_DETAILS , true , outlet.getStatusId());
+                }else
+                    OutletDetailActivity.start(this,outlet.getOutletId(),route.getRouteId(),RES_CODE_DETAILS);
+            });
+        }else {
+
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle(R.string.warning);
+            builderSingle.setMessage("Please set the Auto Date and Time");
+            builderSingle.setCancelable(false);
+            builderSingle.setPositiveButton("Setting", (dialog1, which1) -> {
+                dialog1.dismiss();
+                startActivityForResult(new Intent(android.provider.Settings.ACTION_DATE_SETTINGS), 0);
+
+            });
+            builderSingle.setNegativeButton("Cancel" , (dialog1, which1) -> {
+                dialog1.dismiss();
+
+            });
+            builderSingle.show();
+
         }
-        viewModel.orderTaken(outlet.getOutletId()).observe(this,aBoolean -> {
-            if(aBoolean && outlet.getStatusId() != 7){
-                CashMemoActivity.start(this,outlet.getOutletId(),RES_CODE_DETAILS , true , outlet.getStatusId());
-            }else
-                OutletDetailActivity.start(this,outlet.getOutletId(),route.getRouteId(),RES_CODE_DETAILS);
-        });
 
     }
 
