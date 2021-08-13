@@ -364,6 +364,9 @@ public class OutletMerchandiseActivity extends BaseActivity {
                     takePic();
                 }
 
+                if(report.getDeniedPermissionResponses().size()> 0){
+                    Log.d("Heloo" , "Denied");
+                }
                 // check for permanent denial of any permission
                 if (report.isAnyPermissionPermanentlyDenied()) {
                     // show alert dialog navigating to Settings

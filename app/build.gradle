@@ -47,6 +47,13 @@ android {
 apply from: 'dependencies.gradle'
 
 dependencies {
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
+
+    // Barcode Scanner
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
+    implementation 'com.google.zxing:core:3.3.0'
+
     // Core library
     androidTestImplementation 'androidx.test:core:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
@@ -67,7 +74,7 @@ dependencies {
 
 // Espresso dependencies
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+    implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
     implementation 'com.google.android.material:material:1.0.0-beta01'
     implementation 'com.google.firebase:firebase-messaging:20.0.0'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'

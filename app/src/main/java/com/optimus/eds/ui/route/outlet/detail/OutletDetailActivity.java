@@ -114,6 +114,8 @@ public class OutletDetailActivity extends BaseActivity implements
     OutletDetailViewModel viewModel;
     private String reasonForNoSale = "";
 
+    private boolean isAssets = false ;
+
     private GoogleMap mMap;
     private Long outletVisitStartTime = Calendar.getInstance().getTimeInMillis();
     private Location currentLocation = new Location("CurrentLocation");
@@ -180,7 +182,11 @@ public class OutletDetailActivity extends BaseActivity implements
 
         viewModel.loadAssets(outletId);
         viewModel.getAssets().observe(this, assets -> {
+            createLocationRequest();
+            enableLocationServices();
             outletVisits.setText(String.valueOf(assets.size()));
+
+            isAssets = assets.size() > 0;
         });
 
        /* viewModel.stockLoaded().observe(this,responseModel -> {
@@ -196,9 +202,8 @@ public class OutletDetailActivity extends BaseActivity implements
             btnTasks.setVisibility(exist ? View.VISIBLE : View.GONE);
         });
 
+
         updateBtn(false);
-        createLocationRequest();
-        enableLocationServices();
 
 
     }
@@ -241,9 +246,6 @@ public class OutletDetailActivity extends BaseActivity implements
                     currentLocation = location;
                     currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
-                    Toast.makeText(OutletDetailActivity.this, "LocationTime" + location.getTime(), Toast.LENGTH_SHORT).show();
-
-                    Log.d("LocationTime"  , "Time " + location.getTime());
                     // Toast.makeText(OutletDetailActivity.this, "Location Received!", Toast.LENGTH_SHORT).show();
                     if (locationProviderClient != null) {
                         locationProviderClient.removeLocationUpdates(locationCallback);
@@ -255,8 +257,13 @@ public class OutletDetailActivity extends BaseActivity implements
                         Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
 
                         if (config.getGeoFenceMinRadius() != null) {
-                            if (metre > config.getGeoFenceMinRadius()) {
+                            if (metre > config.getGeoFenceMinRadius() && !isAssets) {
                                 showOutsideBoundaryDialog(0, String.valueOf(metre));
+                                updateBtn(true);
+                            }else if (metre > config.getGeoFenceMinRadius() && isAssets){
+                                showOutsideBoundaryDialogWhenAssets(String.valueOf(metre));
+                            }else{
+                                updateBtn(true);
                             }
                         } else {
                             if (metre > 100) {
@@ -265,14 +272,31 @@ public class OutletDetailActivity extends BaseActivity implements
                         }
                     }
 
-                    updateBtn(true);
-
-
                 }
             }
 
         }
     };
+
+    public void showOutsideBoundaryDialogWhenAssets(String metres) {
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+        builderSingle.setTitle(R.string.warning);
+        builderSingle.setMessage("You are " + metres + " meters away from the retailer\'s defined boundary.\nPress Ok to continue");
+        builderSingle.setCancelable(false);
+        builderSingle.setPositiveButton("Retry Location", (dialog1, which1) -> {
+            dialog1.dismiss();
+            enableLocationServices();
+        });
+        builderSingle.setNegativeButton("Back to PJP", (dialog1, which1) -> {
+            dialog1.dismiss();
+            viewModel.postEmptyCheckoutWithoutSurvey(true, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
+        });
+        if (!OutletDetailActivity.this.isFinishing()) {
+            builderSingle.show();
+        }
+
+    }
 
     public void showOutsideBoundaryDialog(int repeat, String metres) {
 
@@ -313,6 +337,7 @@ public class OutletDetailActivity extends BaseActivity implements
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
                         if (report.areAllPermissionsGranted()) {
+                            if (locationRequest != null && locationCallback != null)
                             locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
                         } else {
                             if (report.isAnyPermissionPermanentlyDenied())
@@ -507,7 +532,6 @@ public class OutletDetailActivity extends BaseActivity implements
                         if (!without_verification){
                             viewModel.postEmptyCheckout(noOrderFromOrderBooking, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
                             viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken());
-
                         } else
                             viewModel.postEmptyCheckoutWithoutAssetVerification(noOrderFromOrderBooking, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
                     } else {

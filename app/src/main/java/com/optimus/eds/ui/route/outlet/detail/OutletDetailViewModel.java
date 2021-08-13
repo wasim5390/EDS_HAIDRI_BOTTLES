@@ -240,6 +240,25 @@ public class OutletDetailViewModel extends AndroidViewModel {
         }
     }
 
+    public void postEmptyCheckoutWithoutSurvey(boolean noOrderFromBooking, Long outletId, Long outletVisitStartTime, Long outletVisitEndTime) {
+        if (noOrderFromBooking) {
+            outletStatus = 4; // no Asset Verfication
+            if (outlet == null)
+                outlet = repository.getOutletByIdSingle(outletId).subscribeOn(Schedulers.io()).blockingGet();
+            outlet.setVisitStatus(outletStatus);
+            outlet.setStatusId(4);
+            outlet.setSynced(true);
+            repository.updateOutlet(outlet); // TODO remove this if below successful
+            OrderStatus status = new OrderStatus(outlet.getOutletId(), 4, false, 0.0);
+            // TODO here synced=> false is not working properly
+            status.setOutletVisitStartTime(outletVisitStartTime);
+            status.setOutletVisitEndTime(outletVisitEndTime);
+            statusRepository.insertStatus(status);
+            uploadStatus.postValue(true);
+
+        }
+    }
+
     public LiveData<List<Promotion>> getPromos(Long outletId){
         return repository.getPromotionByOutletId(outletId);
     }
