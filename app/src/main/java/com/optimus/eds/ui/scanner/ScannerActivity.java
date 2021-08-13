@@ -85,19 +85,13 @@ public class ScannerActivity extends AppCompatActivity {
                 finish();
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
+                Intent intent=new Intent();
+                intent.putExtra("barCodeText",result.getContents());
+                intent.putExtra("barCodeNum",result.getContents().trim());
+                intent.putExtra("barCodeImage" , result.getBarcodeImagePath());
 
-                String format = result.getFormatName();
-                if (format.equals("CODE_128")){
-                    Intent intent=new Intent();
-                    intent.putExtra("barCodeText",result.getContents());
-                    intent.putExtra("barCodeNum",result.getContents().trim());
-                    intent.putExtra("barCodeImage" , result.getBarcodeImagePath());
-
-                    setResult(RESULT_OK, getIntent().putExtra(KEY_SCANNER_RESULT, result.getContents()));
-                    finish();
-                }else{
-                    Toast.makeText(this, "Please scan CODE_128 format", Toast.LENGTH_SHORT).show();
-                }
+                setResult(RESULT_OK, getIntent().putExtra(KEY_SCANNER_RESULT, result.getContents()));
+                finish();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
