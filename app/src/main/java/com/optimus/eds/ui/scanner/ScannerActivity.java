@@ -38,10 +38,11 @@ public class ScannerActivity extends AppCompatActivity {
                     public void onPermissionsGranted(String permission) {
 
                         IntentIntegrator integrator = new IntentIntegrator(ScannerActivity.this);
-                        integrator.setDesiredBarcodeFormats(IntentIntegrator.CODE_39, IntentIntegrator.CODE_128 , IntentIntegrator.CODE_93,
-                                IntentIntegrator.EAN_8 , IntentIntegrator.EAN_13 , IntentIntegrator.ITF,
-                                IntentIntegrator.RSS_14 , IntentIntegrator.RSS_EXPANDED , IntentIntegrator.UPC_A,
-                                IntentIntegrator.UPC_E );
+                        integrator.setDesiredBarcodeFormats(IntentIntegrator.CODE_39, IntentIntegrator.CODE_128 , IntentIntegrator.CODE_93);
+//                        integrator.setDesiredBarcodeFormats(IntentIntegrator.CODE_39, IntentIntegrator.CODE_128 , IntentIntegrator.CODE_93,
+//                                IntentIntegrator.EAN_8 , IntentIntegrator.EAN_13 , IntentIntegrator.ITF,
+//                                IntentIntegrator.RSS_14 , IntentIntegrator.RSS_EXPANDED , IntentIntegrator.UPC_A,
+//                                IntentIntegrator.UPC_E );
                         integrator.setPrompt("Scan a barcode");
                         integrator.setTorchEnabled(false);
                         integrator.setCameraId(0);  // Use a specific camera of the device

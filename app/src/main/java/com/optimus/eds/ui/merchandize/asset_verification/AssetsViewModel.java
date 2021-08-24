@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.optimus.eds.db.dao.RouteDao;
 import com.optimus.eds.db.entities.Asset;
 import com.optimus.eds.db.entities.LookUp;
@@ -58,13 +59,16 @@ public class AssetsViewModel extends AndroidViewModel {
          repository.updateAsset(asset);
     }
 
-    public void verifyAsset(String barcode){
+    public void verifyAsset(String barcode , LatLng currentLatLng){
         List<Asset> assets = mAssets.getValue();
         boolean isExist = false;
         if(assets!=null){
             for(Asset asset:assets){
                 if(asset.getSerialNumber().equals(barcode)){
                     asset.setVerified(true);
+                    asset.setLatitude(currentLatLng.latitude);
+
+                    asset.setLongitude(currentLatLng.longitude);
                     isExist = true;
                     break;
                 }

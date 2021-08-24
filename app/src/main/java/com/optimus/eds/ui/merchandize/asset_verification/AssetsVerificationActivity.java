@@ -205,7 +205,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                             }
 
                             if (!barcode.isEmpty() && inRadius){
-                                viewModel.verifyAsset(barcode);
+                                viewModel.verifyAsset(barcode , currentLatLng);
                                 barcode = "";
                             }
                         }
@@ -254,6 +254,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
             switch (requestCode) {
                 case SCANNER_REQUEST_CODE:
                     barcode = data.getStringExtra(KEY_SCANNER_RESULT);
+                    Toast.makeText(this, "Barcode Scanned ( " + barcode + " )", Toast.LENGTH_SHORT).show();
                     permissionCheck();
                     break;
             }

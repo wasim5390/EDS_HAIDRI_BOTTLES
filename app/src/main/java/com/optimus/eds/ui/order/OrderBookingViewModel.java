@@ -394,8 +394,8 @@ public class OrderBookingViewModel extends AndroidViewModel {
             mOrder.setOrderStatus(order.getOrder().orderStatus); // Server Side Status
             mOrder.setLocalOrderId(order.getOrder().getLocalOrderId());
             mOrder.serverOrderId = order.getOrder().serverOrderId;
-            mOrder.setLatitude(order.getOutlet().getLatitude());
-            mOrder.setLongitude(order.getOutlet().getLongitude());
+            mOrder.setLatitude(order.getOutlet().getVisitTimeLat()); //             mOrder.setLatitude(order.getOutlet().getLatitude());
+            mOrder.setLongitude(order.getOutlet().getVisitTimeLng()); // mOrder.setLongitude(order.getOutlet().getLongitude());
 //            mOrder = order.order;
 
 

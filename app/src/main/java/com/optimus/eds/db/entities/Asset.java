@@ -26,8 +26,8 @@ public class Asset implements Serializable {
 
     @SerializedName("longitude")
     private Double longitude;
-    @SerializedName("lattitude")
-    private Double lattitude;
+    @SerializedName("latitude")
+    private Double latitude;
 
     @SerializedName("assetModel")
     private String mAssetModel;
@@ -249,12 +249,12 @@ public class Asset implements Serializable {
         this.longitude = longitude;
     }
 
-    public Double getLattitude() {
-        return lattitude;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setLattitude(Double lattitude) {
-        this.lattitude = lattitude;
+    public void setLatitude(Double lattitude) {
+        this.latitude = lattitude;
     }
 
     public String getmAssetModel() {
