@@ -93,8 +93,8 @@ public class OrderBookingViewModel extends AndroidViewModel {
     private void onScreenCreated() {
         isSaving.setValue(true);
         noOrder.setValue(false);
-        productGroupList = repository.findAllGroups();
         packages = repository.findAllPackages();
+        productGroupList = repository.findAllGroups();
 
     }
 
@@ -104,6 +104,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
     public void setOutletId(Long outletId) {
         this.outletId = outletId;
+        Log.d("PackageId" , outletId+" outlet Id");
         findOrder(outletId);
     }
 
@@ -119,6 +120,10 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
         OrderModel orderModel = repository.findOrder(outletId).blockingGet();
         setOrder(orderModel);
+        if (orderModel != null)
+            Log.d("PackageId" , orderModel+"order model");
+        else
+            Log.d("PackageId" , "null order model");
     }
 
 
@@ -126,17 +131,21 @@ public class OrderBookingViewModel extends AndroidViewModel {
 //        Single<List<Product>> allProductsByGroup = repository.findAllProductsByGroup(groupId);
         Single<List<Product>> allProductsByPackage = repository.findAllProductsByPackageId(groupId);
         if (order == null) {
-            disposable.add(allProductsByPackage.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onProductsLoaded));
+            disposable.add(allProductsByPackage.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(products -> onProductsLoaded(products , groupId) , this::onError));
+            Log.d("PackageId" ,  "in not Filter ");
             return;
         }
+
+        Log.d("PackageId" ,  "in Filter ");
 
         Single<List<OrderDetail>> allAddedProducts = repository.getOrderItems(order.getOrder().getLocalOrderId());
         Single<List<Product>> zippedSingleSource = Single.zip(allProductsByPackage, allAddedProducts, this::updatedProducts);
 
+        Log.d("PackageId" ,  zippedSingleSource.blockingGet().size() + "");
         Disposable homeDisposable = zippedSingleSource
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::onProductsLoaded, this::onError);
+                .subscribe(products -> onProductsLoaded(products , groupId), this::onError);
         disposable.add(homeDisposable);
 
 
@@ -313,7 +322,14 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
     }
 
-    private void onProductsLoaded(List<Product> products) {
+    private void onProductsLoaded(List<Product> products , Long groupId) {
+        Log.d("PackageId" ,  products.size() + " Size");
+
+        if (products.size() == 0)
+            products = repository.findAllProductsByPackageId(groupId).blockingGet();
+
+        Log.d("PackageId" ,  products.size() + "After Size");
+
         mutablePkgList.postValue(repository.packageModel(packages.getValue(), products));
         isSaving.postValue(false);
     }
@@ -321,6 +337,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
     private void onError(Throwable throwable) throws IOException {
         throwable.printStackTrace();
         String errorBody = throwable.getMessage();
+        Log.d("PackageId" ,  errorBody );
         if (throwable instanceof HttpException) {
             HttpException error = (HttpException) throwable;
             if (error.code() == 500)
@@ -404,6 +421,9 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
             Gson gson = new Gson();
             String json = gson.toJson(mOrder);
+
+            Log.d("Order" , json);
+
             OrderResponseModel responseModel = gson.fromJson(json, OrderResponseModel.class);
             responseModel.setOrderDetails(order.getOrderDetails());
             responseModel.setDistributionId(distributionId);
@@ -426,6 +446,8 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     OrderModel orderModel = new OrderModel();
                     String orderString = new Gson().toJson(orderResponseModel);
                     Order order = new Gson().fromJson(orderString, Order.class);
+                    order.setLatitude(this.order.getOrder().latitude);
+                    order.setLongitude(this.order.getOrder().longitude);
                     orderModel.setOrderDetails(orderResponseModel.getOrderDetails());
                     orderModel.setOrder(order);
                     orderModel.setOutlet(this.order.getOutlet());

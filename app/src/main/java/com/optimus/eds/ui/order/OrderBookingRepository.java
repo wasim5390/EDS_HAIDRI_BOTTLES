@@ -95,8 +95,6 @@ public class OrderBookingRepository {
         return orderDao.getOrderWithItems(outletId);
     }
 
-
-
     public Maybe<Order> findOrderById(Long mobileOrderId){
         return orderDao.findOrderById(mobileOrderId);
     }

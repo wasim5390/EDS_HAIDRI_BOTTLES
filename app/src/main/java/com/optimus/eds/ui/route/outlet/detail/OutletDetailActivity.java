@@ -389,7 +389,7 @@ public class OutletDetailActivity extends BaseActivity implements
             outletLatLng = new LatLng(outlet.getLatitude(), outlet.getLongitude());
             if (mMap != null && outlet != null) {
                 mMap.addMarker(new MarkerOptions().position(outletLatLng).title(outlet.getOutletName() != null ? outlet.getOutletName() : ""));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(outletLatLng, 15));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(outletLatLng, 19));
                 mMap.getUiSettings().setScrollGesturesEnabled(false);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
             }
@@ -457,7 +457,7 @@ public class OutletDetailActivity extends BaseActivity implements
 
         viewModel.updateOutletStatusCode(1);
         if (currentLatLng != null)
-            viewModel.onNextClick(currentLocation, outletVisitStartTime);
+            viewModel.onNextClick(currentLocation , currentLatLng, outletVisitStartTime);
         else{
             locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
         }
@@ -499,7 +499,7 @@ public class OutletDetailActivity extends BaseActivity implements
                     int code = hashMap.get(item.getTitle().toString());
                     viewModel.updateOutletStatusCode(code);
                     if (currentLatLng != null)
-                        viewModel.onNextClick(currentLocation, outletVisitStartTime);
+                        viewModel.onNextClick(currentLocation , currentLatLng, outletVisitStartTime);
                     else{
                         locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
                     }

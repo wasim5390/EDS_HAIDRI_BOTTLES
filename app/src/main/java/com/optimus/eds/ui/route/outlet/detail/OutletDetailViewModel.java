@@ -17,6 +17,7 @@ import androidx.lifecycle.MutableLiveData;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.GsonBuilder;
 import com.optimus.eds.Constant;
 import com.optimus.eds.db.entities.Asset;
@@ -154,7 +155,7 @@ public class OutletDetailViewModel extends AndroidViewModel {
         return repository.getConfiguration();
     }
 
-    public void onNextClick(Location currentLocation,Long outletVisitStartTime) {
+    public void onNextClick( Location currentLocation, LatLng currentLatLng, Long outletVisitStartTime) {
 
         Location outletLocation = new Location("Outlet Location");
         outletLocation.setLatitude(outlet.getLatitude());
@@ -167,8 +168,8 @@ public class OutletDetailViewModel extends AndroidViewModel {
             outletNearbyPos.postValue(outletLocation);
         else
         {
-            outlet.setVisitTimeLat(currentLocation.getLatitude());
-            outlet.setVisitTimeLng(currentLocation.getLongitude());
+            outlet.setVisitTimeLat(currentLatLng.latitude);
+            outlet.setVisitTimeLng(currentLatLng.longitude);
             outlet.setVisitStatus(outletStatus);
             outlet.setSynced(false);
             outlet.setZeroSaleOutlet(false);

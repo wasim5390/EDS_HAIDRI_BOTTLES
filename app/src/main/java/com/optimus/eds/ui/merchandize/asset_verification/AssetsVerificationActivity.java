@@ -176,11 +176,10 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
 
-                        if (location.isFromMockProvider()) {
-                            Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
+//                        if (location.isFromMockProvider()) {
+//                            Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
                         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
                         if (outlet != null && !barcode.isEmpty()) {
@@ -209,10 +208,10 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                                 barcode = "";
                             }
                         }
+
+                        locationProviderClient.removeLocationUpdates(locationCallback);
                     }
                 }
-
-                locationProviderClient.removeLocationUpdates(locationCallback);
             }
         };
     }

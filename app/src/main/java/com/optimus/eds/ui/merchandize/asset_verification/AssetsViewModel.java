@@ -67,7 +67,6 @@ public class AssetsViewModel extends AndroidViewModel {
                 if(asset.getSerialNumber().equals(barcode)){
                     asset.setVerified(true);
                     asset.setLatitude(currentLatLng.latitude);
-
                     asset.setLongitude(currentLatLng.longitude);
                     isExist = true;
                     break;

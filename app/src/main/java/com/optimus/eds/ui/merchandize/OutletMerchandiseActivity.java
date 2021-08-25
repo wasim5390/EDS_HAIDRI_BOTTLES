@@ -300,6 +300,13 @@ public class OutletMerchandiseActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        viewModel.loadAssets(outletId);
+
+    }
 
     @OnClick(R.id.btnShowPlanogram)
     public void showPlanogram(){

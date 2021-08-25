@@ -137,7 +137,16 @@ public class OrderBookingActivity extends BaseActivity {
 
         //viewModel.getProductGroupList().observe(this, this::onProductGroupsLoaded);
 
+
+        viewModel.getPackages().observe(this, packages -> {
+
+            hideProgress();
+            onPackagesLoaded(packages);
+        });
+
         viewModel.getProductList().observe(this, this::setSectionedAdapter);
+
+
 
         viewModel.isSaving().observe(this, aBoolean -> {
             if (aBoolean)
@@ -153,12 +162,6 @@ public class OrderBookingActivity extends BaseActivity {
         });
 
 
-        viewModel.getPackages().observe(this, packages -> {
-
-            hideProgress();
-            onPackagesLoaded(packages);
-        });
-
         viewModel.noOrderTaken().observe(this, aBoolean -> {
             if (aBoolean) {
                 AlertDialogManager.getInstance().showVerificationAlertDialog(this,
@@ -173,6 +176,8 @@ public class OrderBookingActivity extends BaseActivity {
         });
 
         viewModel.showMessage().observe(this, s -> Toast.makeText(this, s, Toast.LENGTH_SHORT).show());
+
+
 
         //  new Handler().postDelayed(() -> JobIdManager.cancelJob(OrderBookingActivity.this,outlet.getOutletId().intValue()),2000);
     }
@@ -225,13 +230,16 @@ public class OrderBookingActivity extends BaseActivity {
                 if (_package != null)
                     onAdd(_package.getPackageId(), false);
 
-                viewModel.filterProductsByGroup(((Package) (parent.getSelectedItem())).getPackageId());
-//                viewModel.filterProductsByGroup(((ProductGroup)(parent.getSelectedItem())).getProductGroupId());
                 new Handler().postDelayed(() -> {
                     _package = ((Package) (parent.getSelectedItem()));
                     findViewById(R.id.btnNext).setAlpha(1.0f);
                     findViewById(R.id.btnNext).setClickable(true);
                 }, 1000);
+
+                Log.d("PackageId" , ((Package) (parent.getSelectedItem())).getPackageId() +"");
+
+                viewModel.filterProductsByGroup(((Package) (parent.getSelectedItem())).getPackageId());
+//                viewModel.filterProductsByGroup(((ProductGroup)(parent.getSelectedItem())).getProductGroupId());
             }
 
             @Override

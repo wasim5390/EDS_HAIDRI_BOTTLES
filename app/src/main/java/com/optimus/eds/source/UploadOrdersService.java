@@ -155,6 +155,8 @@ public class UploadOrdersService extends IntentService {
 
         String masterModelGson = new Gson().toJson(masterModel);
 
+        Log.d("MaterModel" , masterModel.latitude + " " + masterModel.longitude);
+
         RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(response->{
             onUpload(response,masterModel.getOutletId(),statusId);

@@ -118,6 +118,7 @@ public class MerchandiseViewModel extends AndroidViewModel {
     }
     public void saveMerchandise(Long outletId, String remarks,List<MerchandiseImage> merchandiseImages , Integer statusId){
 
+       // loadAssets(outletId);
         Completable.create(e -> {
             Merchandise merchandise = new Merchandise();
             merchandise.setOutletId(outletId);

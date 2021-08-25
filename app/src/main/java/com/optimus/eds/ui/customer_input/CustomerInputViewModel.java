@@ -108,6 +108,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
         isSaving.postValue(true);
         FirebaseCrashlytics.getInstance().setCustomKey("order_empty",orderModelLiveData.getValue()==null || orderModelLiveData.getValue().getOrder()==null);
         OrderModel orderModel = orderModelLiveData.getValue();
+
         if(orderModel!=null && orderModel.getOrder()!=null) {
             // @TODO have to change logic for livedata value as it gets null on some devices
             Order order = orderModel.getOrder();
@@ -171,7 +172,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
         masterModel.setCustomerInput(customerInput);
         masterModel.setOrderModel(responseModel);
         masterModel.setStartedDate(outletDetailRepository.getStartedDate());
-        masterModel.setLocation(orderModel.getOutlet().getVisitTimeLat(),orderModel.getOutlet().getVisitTimeLng());
+        masterModel.setLocation(orderModel.getOrder().getLatitude(),orderModel.getOrder().getLongitude());
         masterModel.setOutletId(order.getOutletId());
         masterModel.setOutletStatus(Constant.STATUS_CONTINUE); // 8 for order complete
 
