@@ -25,6 +25,9 @@ android {
         pepsi_uat{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
         }
+        pepsi_testing{ // For PEPSI
+            buildConfigField "String", "BASE_URL", '"http://115.186.182.57:85/api/"'
+        }
     }
 
     compileOptions {

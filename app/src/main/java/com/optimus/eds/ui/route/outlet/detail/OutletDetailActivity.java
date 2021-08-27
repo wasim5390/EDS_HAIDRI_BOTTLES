@@ -265,10 +265,6 @@ public class OutletDetailActivity extends BaseActivity implements
                             }else{
                                 updateBtn(true);
                             }
-                        } else {
-                            if (metre > 100) {
-                                showOutsideBoundaryDialog(0, String.valueOf(metre));
-                            }
                         }
                     }
 

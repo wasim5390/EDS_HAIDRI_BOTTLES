@@ -94,6 +94,9 @@ public class MainActivity extends BaseActivity {
     @Override
     public void created(Bundle savedInstanceState) {
 
+        double metre = Util.checkMetre(new LatLng(31.56572604538445, 74.28943755085665) , new LatLng(31.531458734268416, 74.35286993681301));
+
+        Log.d("LatLng" , metre+"");
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         setObservers();

@@ -253,8 +253,8 @@ public class Asset implements Serializable {
         return latitude;
     }
 
-    public void setLatitude(Double lattitude) {
-        this.latitude = lattitude;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
     public String getmAssetModel() {
