@@ -41,6 +41,7 @@ import com.optimus.eds.location_services.GpsUtils;
 import com.optimus.eds.model.AssetStatus;
 import com.optimus.eds.model.Configuration;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailActivity;
+import com.optimus.eds.ui.scanner.BarcodeScanner;
 import com.optimus.eds.ui.scanner.ScannerActivity;
 import com.optimus.eds.utils.PreferenceUtil;
 
@@ -70,6 +71,8 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     List<Asset> assetList;
 
     String barcode = "";
+
+    private Integer alertDialogCount = 0;
 
     LatLng currentLatLng, outletLatLng;
     private LocationRequest locationRequest;
@@ -156,7 +159,6 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     protected void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -176,10 +178,11 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
 
-//                        if (location.isFromMockProvider()) {
-//                            Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
+                        if (location.isFromMockProvider()) {
+                            locationProviderClient.removeLocationUpdates(locationCallback);
+                            Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
                         if (outlet != null && !barcode.isEmpty()) {
@@ -193,7 +196,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
                             if (config.getGeoFenceMinRadius() != null) {
                                 if (metre > config.getGeoFenceMinRadius()) {
-                                    showOutsideBoundaryDialog(0);
+                                    showOutsideBoundaryDialog(alertDialogCount);
                                     inRadius = false;
                                 }
                             } else {
@@ -210,6 +213,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                         }
 
                         locationProviderClient.removeLocationUpdates(locationCallback);
+                        break;
                     }
                 }
             }
@@ -219,16 +223,20 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
     public void showOutsideBoundaryDialog(int repeat) {
 
-        if (repeat != 5) {
+        if (repeat < 5) {
 
             final int repeatLocal = ++repeat;
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
             builderSingle.setTitle(R.string.warning);
-            builderSingle.setMessage(R.string.retailersBoundary);
+            builderSingle.setMessage("You are outside from the retailer\'s defined boundary.\nPress Ok to continue" +
+                    "\nCurrent LatLng :: " + currentLatLng.latitude + "," + currentLatLng.longitude +
+                    "\nDialog Counter :: " + repeat);
             builderSingle.setCancelable(false);
             builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) -> {
                 dialog1.dismiss();
-                showOutsideBoundaryDialog(repeatLocal);
+                alertDialogCount++;
+                locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+//                showOutsideBoundaryDialog(repeatLocal);
             });
             builderSingle.show();
 
@@ -241,7 +249,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
     @OnClick(R.id.btnScanBarcode)
     public void BarCodeClick() {
-        Intent intent = new Intent(this, ScannerActivity.class);
+        Intent intent = new Intent(this, BarcodeScanner.class);
         startActivityForResult(intent, SCANNER_REQUEST_CODE);
     }
 
@@ -270,7 +278,7 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     public void permissionCheck() {
 
         Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .withListener(new MultiplePermissionsListener() {
                     @SuppressLint("MissingPermission")
                     @Override

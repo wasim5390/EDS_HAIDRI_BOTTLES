@@ -5,7 +5,11 @@ import com.google.gson.annotations.SerializedName;
 import com.optimus.eds.db.entities.CustomerInput;
 import com.optimus.eds.db.entities.Merchandise;
 import com.optimus.eds.db.entities.Outlet;
+import com.optimus.eds.db.entities.OutletVisit;
 import com.optimus.eds.utils.Util;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.room.Ignore;
 
@@ -15,13 +19,10 @@ public class MasterModel extends BaseResponse {
     private Long outletId;
     @Expose
     private Integer outletStatus;
-
     @Expose
     private String reason;
-
     @Expose
     public Long outletVisitTime; // when user opens outlet
-
     @Expose
     public Long outletEndTime; // when user completes order for that outlet
 
@@ -41,6 +42,8 @@ public class MasterModel extends BaseResponse {
     private OrderResponseModel order;
 
     private Long startedDate;
+
+    private List<OutletVisit> outletVisits = new ArrayList<>();
 
     public Long getOutletId() {
         return outletId;
@@ -117,6 +120,13 @@ public class MasterModel extends BaseResponse {
         this.longitude = longitude;
     }
 
+    public List<OutletVisit> getOutletVisits() {
+        return outletVisits;
+    }
+
+    public void setOutletVisits(List<OutletVisit> outletVisits) {
+        this.outletVisits = outletVisits;
+    }
 
     public void setStartedDate(Long startedDate) {
         this.startedDate = startedDate;

@@ -175,6 +175,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
         masterModel.setLocation(orderModel.getOrder().getLatitude(),orderModel.getOrder().getLongitude());
         masterModel.setOutletId(order.getOutletId());
         masterModel.setOutletStatus(Constant.STATUS_CONTINUE); // 8 for order complete
+        masterModel.setOutletVisits(orderModel.getOutlet().getOutletVisits());
 
         if(status!=null)
             masterModel.setOutletVisitTime(status.getOutletVisitStartTime()>0?status.getOutletVisitStartTime():null);

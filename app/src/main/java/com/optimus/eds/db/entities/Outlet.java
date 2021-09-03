@@ -9,9 +9,12 @@ import androidx.room.TypeConverters;
 
 import com.google.gson.annotations.SerializedName;
 import com.optimus.eds.db.converters.LastOrderConverter;
+import com.optimus.eds.db.converters.OutletVisitConverter;
 import com.optimus.eds.model.LastOrder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity(tableName = "Outlet")
@@ -92,6 +95,9 @@ public class Outlet implements Serializable {
     private boolean isZeroSaleOutlet;
     @SerializedName("promoTypeId")
     private Integer promoTypeId;
+
+    @TypeConverters(OutletVisitConverter.class)
+    private List<OutletVisit> outletVisits = new ArrayList<>();
 
     public Boolean getSynced() {
         return synced;
@@ -376,6 +382,14 @@ public class Outlet implements Serializable {
 
     public void setHasExclusivityFee(Boolean hasExclusivityFee) {
         this.hasExclusivityFee = hasExclusivityFee;
+    }
+
+    public List<OutletVisit> getOutletVisits() {
+        return outletVisits;
+    }
+
+    public void setOutletVisits(List<OutletVisit> outletVisits) {
+        this.outletVisits = outletVisits;
     }
 
     public Double getMtdSale() {

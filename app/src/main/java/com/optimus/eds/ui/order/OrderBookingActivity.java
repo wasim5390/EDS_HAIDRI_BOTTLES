@@ -231,11 +231,11 @@ public class OrderBookingActivity extends BaseActivity {
                     onAdd(_package.getPackageId(), false);
 
                 new Handler().postDelayed(() -> {
-                    _package = ((Package) (parent.getSelectedItem()));
                     findViewById(R.id.btnNext).setAlpha(1.0f);
                     findViewById(R.id.btnNext).setClickable(true);
                 }, 1000);
 
+                _package = ((Package) (parent.getSelectedItem()));
                 Log.d("PackageId" , ((Package) (parent.getSelectedItem())).getPackageId() +"");
 
                 viewModel.filterProductsByGroup(((Package) (parent.getSelectedItem())).getPackageId());

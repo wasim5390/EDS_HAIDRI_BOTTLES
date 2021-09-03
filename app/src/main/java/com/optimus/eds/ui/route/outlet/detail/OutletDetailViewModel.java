@@ -6,6 +6,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.PersistableBundle;
 import android.util.Log;
 
@@ -139,6 +140,10 @@ public class OutletDetailViewModel extends AndroidViewModel {
             mAssets.postValue(assets);
         });
 
+    }
+
+    public void updateOutlet(Outlet outlet){
+        repository.updateOutlet(outlet);
     }
 
 

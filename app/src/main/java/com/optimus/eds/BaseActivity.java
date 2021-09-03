@@ -110,10 +110,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
 
     // navigating user to app settings
     public void openLocationSettings() {
-        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
-        startActivityForResult(intent, 101);
+        startActivity(intent);
     }
 
     /**** show progress *******************/

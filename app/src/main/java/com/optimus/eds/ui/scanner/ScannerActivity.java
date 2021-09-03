@@ -15,11 +15,18 @@ import com.optimus.eds.BaseActivity;
 import com.optimus.eds.R;
 import com.optimus.eds.utils.PermissionUtil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
+import static com.google.zxing.integration.android.IntentIntegrator.CODE_128;
+import static com.google.zxing.integration.android.IntentIntegrator.CODE_39;
+import static com.google.zxing.integration.android.IntentIntegrator.CODE_93;
 import static com.optimus.eds.Constant.KEY_SCANNER_RESULT;
 
 /**
@@ -27,6 +34,8 @@ import static com.optimus.eds.Constant.KEY_SCANNER_RESULT;
  */
 
 public class ScannerActivity extends AppCompatActivity {
+
+    private final List<String> formats = Arrays.asList(CODE_128 , CODE_93 , CODE_39 , "CODABAR");
 
     @Override
     public void onCreate(Bundle state) {
@@ -38,7 +47,7 @@ public class ScannerActivity extends AppCompatActivity {
                     public void onPermissionsGranted(String permission) {
 
                         IntentIntegrator integrator = new IntentIntegrator(ScannerActivity.this);
-                        integrator.setDesiredBarcodeFormats(IntentIntegrator.CODE_39, IntentIntegrator.CODE_128 , IntentIntegrator.CODE_93);
+//                        integrator.setDesiredBarcodeFormats(IntentIntegrator.CODE_39, IntentIntegrator.CODE_128 , IntentIntegrator.CODE_93 , IntentIntegrator.PDF_417);
 //                        integrator.setDesiredBarcodeFormats(IntentIntegrator.CODE_39, IntentIntegrator.CODE_128 , IntentIntegrator.CODE_93,
 //                                IntentIntegrator.EAN_8 , IntentIntegrator.EAN_13 , IntentIntegrator.ITF,
 //                                IntentIntegrator.RSS_14 , IntentIntegrator.RSS_EXPANDED , IntentIntegrator.UPC_A,
@@ -86,13 +95,17 @@ public class ScannerActivity extends AppCompatActivity {
                 finish();
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                Intent intent=new Intent();
-                intent.putExtra("barCodeText",result.getContents());
-                intent.putExtra("barCodeNum",result.getContents().trim());
-                intent.putExtra("barCodeImage" , result.getBarcodeImagePath());
 
-                setResult(RESULT_OK, getIntent().putExtra(KEY_SCANNER_RESULT, result.getContents()));
-                finish();
+                if (formats.contains(result.getFormatName())){
+                    Intent intent=new Intent();
+                    intent.putExtra("barCodeText",result.getContents());
+                    intent.putExtra("barCodeNum",result.getContents().trim());
+                    intent.putExtra("barCodeImage" , result.getBarcodeImagePath());
+
+                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                    setResult(RESULT_OK, getIntent().putExtra(KEY_SCANNER_RESULT, result.getContents()));
+                    finish();
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

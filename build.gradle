@@ -2,7 +2,7 @@
 
 buildscript {
     apply from: 'deps-declaration.gradle'
-
+    ext.kotlin_version = "1.4.30"
     repositories {
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
@@ -13,6 +13,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:${versions.android_plugin}"
         classpath 'com.google.gms:google-services:3.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         // Add dependency

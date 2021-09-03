@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.optimus.eds"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 24
+        versionCode 26
         versionName "1.0.21"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,6 +52,7 @@ apply from: 'dependencies.gradle'
 dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     // Barcode Scanner
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
@@ -74,6 +76,18 @@ dependencies {
     // WaterMark Libraray
     implementation 'com.huangyz0918:androidwm:0.2.3'
 
+    // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
+
+// Barcode model dependencies
+    implementation 'com.google.mlkit:barcode-scanning:16.1.1'
+
+// CameraX dependencies
+    implementation "androidx.camera:camera-camera2:1.1.0-alpha01"
+    implementation "androidx.camera:camera-lifecycle:1.1.0-alpha01"
+    implementation "androidx.camera:camera-view:1.0.0-alpha21"
+
 // Espresso dependencies
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
@@ -84,3 +98,4 @@ dependencies {
     implementation 'com.kaopiz:kprogresshud:1.0.2'
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'

@@ -43,6 +43,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Outlet;
+import com.optimus.eds.db.entities.OutletVisit;
 import com.optimus.eds.location_services.GpsUtils;
 import com.optimus.eds.model.Configuration;
 import com.optimus.eds.model.CustomObject;
@@ -116,11 +117,15 @@ public class OutletDetailActivity extends BaseActivity implements
 
     private boolean isAssets = false ;
 
+    private int alertDialogCount = 0 ;
+
+
     private GoogleMap mMap;
     private Long outletVisitStartTime = Calendar.getInstance().getTimeInMillis();
     private Location currentLocation = new Location("CurrentLocation");
     private LatLng outletLatLng, currentLatLng;
     private boolean isFakeLocation = false;
+    private LocationCallback locationCallback ;
 
     public static void start(Context context, Long outletId, Long routeId, int code) {
         Intent starter = new Intent(context, OutletDetailActivity.class);
@@ -136,6 +141,29 @@ public class OutletDetailActivity extends BaseActivity implements
 
     @Override
     public void created(Bundle savedInstanceState) {
+
+        Dexter.withActivity(this)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(new MultiplePermissionsListener() {
+                    @SuppressLint("MissingPermission")
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (report.areAllPermissionsGranted()) {
+                            if (locationRequest != null && locationCallback != null)
+                                locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+                        } else {
+                            if (report.isAnyPermissionPermanentlyDenied()){
+                                Toast.makeText(OutletDetailActivity.this, "Please access location permission", Toast.LENGTH_SHORT).show();
+                                openLocationSettings();
+                            }
+                        }
+                    }
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        token.continuePermissionRequest();
+                    }
+                }).check();
+
         ButterKnife.bind(this);
         outletId = getIntent().getLongExtra("OutletId", 0);
         viewModel = ViewModelProviders.of(this).get(OutletDetailViewModel.class);
@@ -183,6 +211,7 @@ public class OutletDetailActivity extends BaseActivity implements
         viewModel.loadAssets(outletId);
         viewModel.getAssets().observe(this, assets -> {
             createLocationRequest();
+            setLocationCallback();
             enableLocationServices();
             outletVisits.setText(String.valueOf(assets.size()));
 
@@ -224,65 +253,110 @@ public class OutletDetailActivity extends BaseActivity implements
 
     protected void createLocationRequest() {
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(5000);
+        locationRequest.setInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
     }
 
-    private LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            if (locationResult == null) {
-                return;
-            }
-            for (Location location : locationResult.getLocations()) {
-                if (location != null) {
+    private void setLocationCallback() {
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
 
+                        isFakeLocation = location.isFromMockProvider();
+                        if (isFakeLocation){
+                            locationProviderClient.removeLocationUpdates(locationCallback);
+                            Toast.makeText(OutletDetailActivity.this, "You are using fake GPS", Toast.LENGTH_SHORT).show();
+                            return ;
+                        }
 
-                    isFakeLocation = location.isFromMockProvider();
+                        currentLocation = location;
+                        currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
-                    currentLocation = location;
-                    currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                        if (outletLatLng != null) {
 
-                    // Toast.makeText(OutletDetailActivity.this, "Location Received!", Toast.LENGTH_SHORT).show();
-                    if (locationProviderClient != null) {
-                        locationProviderClient.removeLocationUpdates(locationCallback);
-                    }
+                            Double metre = checkMetre(currentLatLng, outletLatLng);
+                            Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
 
-                    if (outletLatLng != null) {
-
-                        Double metre = checkMetre(currentLatLng, outletLatLng);
-                        Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
-
-                        if (config.getGeoFenceMinRadius() != null) {
-                            if (metre > config.getGeoFenceMinRadius() && !isAssets) {
-                                showOutsideBoundaryDialog(0, String.valueOf(metre));
-                                updateBtn(true);
-                            }else if (metre > config.getGeoFenceMinRadius() && isAssets){
-                                showOutsideBoundaryDialogWhenAssets(String.valueOf(metre));
-                            }else{
-                                updateBtn(true);
+                            if (config.getGeoFenceMinRadius() != null) {
+                                if (metre > config.getGeoFenceMinRadius() && !isAssets) {
+                                    showOutsideBoundaryDialog(alertDialogCount, String.valueOf(metre));
+                                } else if (metre > config.getGeoFenceMinRadius() && isAssets) {
+                                    showOutsideBoundaryDialogWhenAssets(String.valueOf(metre));
+                                } else {
+                                    updateBtn(true);
+                                }
                             }
                         }
+                        locationProviderClient.removeLocationUpdates(locationCallback);
+                        break;
                     }
-
                 }
-            }
 
-        }
-    };
+            }
+        };
+    }
+
+//    private LocationCallback locationCallback = new LocationCallback() {
+//        @Override
+//        public void onLocationResult(LocationResult locationResult) {
+//            if (locationResult == null) {
+//                return;
+//            }
+//            for (Location location : locationResult.getLocations()) {
+//                if (location != null) {
+//
+//
+//                    isFakeLocation = location.isFromMockProvider();
+//
+//                    currentLocation = location;
+//                    currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+//
+//                    // Toast.makeText(OutletDetailActivity.this, "Location Received!", Toast.LENGTH_SHORT).show();
+//                    if (locationProviderClient != null) {
+//                        locationProviderClient.removeLocationUpdates(locationCallback);
+//                    }
+//
+//                    if (outletLatLng != null) {
+//
+//                        Double metre = checkMetre(currentLatLng, outletLatLng);
+//                        Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
+//
+//                        if (config.getGeoFenceMinRadius() != null) {
+//                            if (metre > config.getGeoFenceMinRadius() && !isAssets) {
+//                                showOutsideBoundaryDialog(alertDialogCount, String.valueOf(metre));
+//                            }else if (metre > config.getGeoFenceMinRadius() && isAssets){
+//                                showOutsideBoundaryDialogWhenAssets(String.valueOf(metre));
+//                            }else{
+//                                updateBtn(true);
+//                            }
+//                        }
+//                    }
+//
+//                }
+//            }
+//
+//        }
+//    };
+
+
 
     public void showOutsideBoundaryDialogWhenAssets(String metres) {
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
         builderSingle.setTitle(R.string.warning);
-        builderSingle.setMessage("You are " + metres + " meters away from the retailer\'s defined boundary.\nPress Ok to continue");
+        builderSingle.setMessage("You are " + metres + " meters away from the retailer\'s defined boundary.\nPress Ok to continue" +
+                "\nCurrent LatLng :: " + currentLatLng.latitude + "," + currentLatLng.longitude);
         builderSingle.setCancelable(false);
         builderSingle.setPositiveButton("Retry Location", (dialog1, which1) -> {
             dialog1.dismiss();
-            enableLocationServices();
+            locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
         });
         builderSingle.setNegativeButton("Back to PJP", (dialog1, which1) -> {
             dialog1.dismiss();
@@ -295,21 +369,34 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
     public void showOutsideBoundaryDialog(int repeat, String metres) {
-        if (repeat != 5) {
+        if (repeat < 5) {
 
             final int repeatLocal = ++repeat;
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
             builderSingle.setTitle(R.string.warning);
-            builderSingle.setMessage("You are " + metres + " meters away from the retailer\'s defined boundary.\nPress Ok to continue");
+            builderSingle.setMessage("You are " + metres + " meters away from the retailer\'s defined boundary.\nPress Ok to continue" +
+                    "\nCurrent LatLng :: " + currentLatLng.latitude + "," + currentLatLng.longitude +
+                    "\nAlert Count :: " + repeat);
             builderSingle.setCancelable(false);
             builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) -> {
                 dialog1.dismiss();
-                showOutsideBoundaryDialog(repeatLocal, metres);
+                alertDialogCount++;
+                locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
+//                showOutsideBoundaryDialog(repeatLocal, metres);
             });
             if (!OutletDetailActivity.this.isFinishing()) {
                 builderSingle.show();
             }
+        }else {
 
+            OutletVisit outletVisit = new OutletVisit();
+            outletVisit.setOutletId(outletId);
+            outletVisit.setVisitTime(outletVisitStartTime);
+            outletVisit.setLatitude(currentLatLng.latitude);
+            outletVisit.setLongitude(currentLatLng.longitude);
+            outlet.getOutletVisits().add(outletVisit);
+            viewModel.updateOutlet(outlet);
+            updateBtn(true);
         }
     }
 
@@ -324,28 +411,6 @@ public class OutletDetailActivity extends BaseActivity implements
         super.onStart();
         Log.d(TAG, "onStart fired ..............");
 
-
-        Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                .withListener(new MultiplePermissionsListener() {
-                    @SuppressLint("MissingPermission")
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {
-                            if (locationRequest != null && locationCallback != null)
-                            locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                        } else {
-                            if (report.isAnyPermissionPermanentlyDenied())
-                                openLocationSettings();
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
-                    }
-                }).check();
-
     }
 
 
@@ -353,15 +418,10 @@ public class OutletDetailActivity extends BaseActivity implements
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         int code = getOutletPopCode(popSpinner.getSelectedItem().toString());
         viewModel.updateOutletStatusCode(code);
-
     }
-
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
+    public void onNothingSelected(AdapterView<?> parent) { }
 
     private void updateUI(Outlet outlet) {
         if (outlet != null) {
@@ -369,7 +429,6 @@ public class OutletDetailActivity extends BaseActivity implements
             outletAddress.setText(!outlet.getAddress().isEmpty() ? outlet.getAddress() : "");
             outletChannel.setText(String.valueOf(outlet.getChannelName()));
             outletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));
-            outletVisits.setText(String.valueOf(outlet.getVisitFrequency()));
             viewModel.setOutlet(outlet);
 
             if (outlet.getLastOrder() != null) {
@@ -548,6 +607,7 @@ public class OutletDetailActivity extends BaseActivity implements
     public void hideProgress() {
         hideProgressD();
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

@@ -255,7 +255,7 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
         viewModel.getVisitedOutletList().observe(this , outletOrderStatuses -> {
 
-            if (SELECTED_PJP_TAB == 1){
+            if (SELECTED_PJP_TAB == 1 && SELECTED_TAB == 0 ){
                 this.outletOrderStatuses.clear();
 
                 if (outletOrderStatuses.size() > 0 ){
@@ -269,12 +269,14 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
+            }else{
+                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         });
 
         viewModel.getProductiveOutletList().observe(this , outletOrderStatuses -> {
 
-            if (SELECTED_PJP_TAB == 2){
+            if (SELECTED_PJP_TAB == 2 && SELECTED_TAB == 0 ){
                 this.outletOrderStatuses.clear();
 
                 if (outletOrderStatuses.size() > 0 ){
@@ -288,12 +290,14 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
+            }else{
+                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         });
 
         viewModel.getPendingOutletList().observe(this , outletOrderStatuses -> {
 
-            if (SELECTED_PJP_TAB == 0){
+            if (SELECTED_PJP_TAB == 0 && SELECTED_TAB == 0 ){
                 this.outletOrderStatuses.clear();
 
                 if (outletOrderStatuses.size() > 0 ){
@@ -307,6 +311,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
+            }else{
+                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         });
 

@@ -1,7 +1,5 @@
 package com.optimus.eds.ui.home;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.Manifest;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -11,25 +9,18 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.material.navigation.NavigationView;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
-import com.optimus.eds.model.TargetVsAchievement;
 import com.optimus.eds.model.AppUpdateModel;
+import com.optimus.eds.model.TargetVsAchievement;
 import com.optimus.eds.model.WorkStatus;
 import com.optimus.eds.source.ApkDownloader;
 import com.optimus.eds.ui.AlertDialogManager;
@@ -38,14 +29,17 @@ import com.optimus.eds.ui.login.LoginActivity;
 import com.optimus.eds.ui.reports.ReportsActivity;
 import com.optimus.eds.ui.reports.stock.StockActivity;
 import com.optimus.eds.ui.route.outlet.routes.RoutesActivity;
+import com.optimus.eds.ui.scanner.*;
 import com.optimus.eds.utils.PermissionUtil;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 import java.io.File;
-
 import java.util.Objects;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -94,9 +88,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public void created(Bundle savedInstanceState) {
 
-        double metre = Util.checkMetre(new LatLng(31.56572604538445, 74.28943755085665) , new LatLng(31.531458734268416, 74.35286993681301));
-
-        Log.d("LatLng" , metre+"");
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         setObservers();
