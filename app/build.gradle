@@ -7,7 +7,7 @@ android {
         applicationId "com.optimus.eds"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 26
+        versionCode 41
         versionName "1.0.21"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -18,11 +18,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     flavorDimensions "version"
     productFlavors {
-        mem_uat {
-            buildConfigField "String", "BASE_URL", '"http://173.214.164.251:9001/api/"'
-        }
+//        mem_uat {
+//            buildConfigField "String", "BASE_URL", '"http://173.214.164.251:9001/api/"'
+//        }
         pepsi_uat{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
         }
@@ -67,8 +68,8 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.1.0'
 
     //Locations and Places
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.maps.android:android-maps-utils:0.6.2'
     implementation 'com.google.android.gms:play-services-places:17.0.0'
     implementation 'com.google.android.libraries.places:places:2.4.0'

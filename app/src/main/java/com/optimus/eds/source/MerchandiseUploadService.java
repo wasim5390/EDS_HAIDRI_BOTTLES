@@ -84,7 +84,8 @@ public class MerchandiseUploadService extends JobService implements Constant {
 
         String merchandisingJson = new Gson().toJson(merchandiseModel);
 
-        RetrofitHelper.getInstance().getApi().postMerchandise(merchandiseModel,token)
+        Log.d("AssetsJson" , merchandisingJson);
+        RetrofitHelper.getInstance().getApi().postMerchandise(merchandiseModel)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(baseResponse -> {
             onUpload(baseResponse,merchandise);
 

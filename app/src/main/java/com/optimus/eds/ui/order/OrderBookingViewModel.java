@@ -189,6 +189,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
             @Override
             public void onComplete() {
+
                 addOrderItems(orderItems, sendToServer);
             }
 
@@ -406,13 +407,18 @@ public class OrderBookingViewModel extends AndroidViewModel {
             mOrder.setRouteId(order.getOutlet().getRouteId());
             mOrder.setVisitDayId(order.getOutlet().getVisitDay());
             if (order.getOrder().orderStatus == null)
-            mOrder.setOrderStatus(Constant.ORDER_CREATED); //2 created
+            mOrder.setOrderStatus(1); //2 created
             else
             mOrder.setOrderStatus(order.getOrder().orderStatus); // Server Side Status
             mOrder.setLocalOrderId(order.getOrder().getLocalOrderId());
+
+            if(order.getOrder() != null)
             mOrder.serverOrderId = order.getOrder().serverOrderId;
-            mOrder.setLatitude(order.getOutlet().getVisitTimeLat()); //             mOrder.setLatitude(order.getOutlet().getLatitude());
-            mOrder.setLongitude(order.getOutlet().getVisitTimeLng()); // mOrder.setLongitude(order.getOutlet().getLongitude());
+
+            if (order.getOutlet().getVisitTimeLat() != null){
+                mOrder.setLatitude(order.getOutlet().getVisitTimeLat()); //             mOrder.setLatitude(order.getOutlet().getLatitude());
+                mOrder.setLongitude(order.getOutlet().getVisitTimeLng()); // mOrder.setLongitude(order.getOutlet().getLongitude());
+            }
 //            mOrder = order.order;
 
 
@@ -433,6 +439,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     msg.postValue(Constant.NETWORK_ERROR);
                     isSaving.postValue(false);
                 } else {
+                    new Gson().toJson(responseModel);
                     disposable.add(calculateFromServer(responseModel));
                 }
             });
@@ -446,8 +453,10 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     OrderModel orderModel = new OrderModel();
                     String orderString = new Gson().toJson(orderResponseModel);
                     Order order = new Gson().fromJson(orderString, Order.class);
-                    order.setLatitude(this.order.getOrder().latitude);
-                    order.setLongitude(this.order.getOrder().longitude);
+                    if (this.order.getOrder().latitude != null){
+                        order.setLatitude(this.order.getOrder().latitude);
+                        order.setLongitude(this.order.getOrder().longitude);
+                    }
                     orderModel.setOrderDetails(orderResponseModel.getOrderDetails());
                     orderModel.setOrder(order);
                     orderModel.setOutlet(this.order.getOutlet());

@@ -270,7 +270,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
             }else{
-                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+                if (route != null)
+                    viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         });
 
@@ -291,7 +292,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
             }else{
-                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+                if (route != null)
+                    viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         });
 
@@ -312,7 +314,8 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
             }else{
-                viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
+                if (route != null)
+                    viewModel.loadOutletsFromDb(route.getRouteId(),SELECTED_TAB<1);
             }
         });
 
@@ -362,8 +365,10 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
             viewModel.orderTaken(outlet.getOutletId()).observe(this,aBoolean -> {
                 if(aBoolean && outlet.getStatusId() != 7){
                     CashMemoActivity.start(this,outlet.getOutletId(),RES_CODE_DETAILS , true , outlet.getStatusId());
-                }else
-                    OutletDetailActivity.start(this,outlet.getOutletId(),route.getRouteId(),RES_CODE_DETAILS);
+                }else{
+                    if (route != null)
+                        OutletDetailActivity.start(this,outlet.getOutletId(),route.getRouteId(),RES_CODE_DETAILS);
+                }
             });
         }else {
 

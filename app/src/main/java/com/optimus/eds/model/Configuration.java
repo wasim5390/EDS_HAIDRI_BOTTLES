@@ -32,7 +32,7 @@ public class Configuration {
     }
 
     public Boolean getEndDayOnPjpCompletion() {
-        return endDayOnPjpCompletion==null?false:endDayOnPjpCompletion;
+        return endDayOnPjpCompletion!=null?endDayOnPjpCompletion:true;
     }
 
     public Integer getGeoFenceMinRadius() {

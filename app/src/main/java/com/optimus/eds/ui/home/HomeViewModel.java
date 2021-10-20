@@ -154,7 +154,6 @@ public class HomeViewModel extends AndroidViewModel {
         Long lastSyncDate = PreferenceUtil.getInstance(getApplication()).getWorkSyncData().getSyncDate();
         if( !Util.isDateToday(lastSyncDate)){
             onStartDay().postValue(false);
-
         }
     }
 

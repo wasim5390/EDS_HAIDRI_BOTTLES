@@ -110,11 +110,15 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
         });
 
+        permissionCheck();
+
         viewModel.loadAssets(outletId);
         viewModel.getAssets().observe(this, assets -> {
 
-            assetList = new ArrayList<>(assets);
-            updateAssets(assetList);
+            if (assets != null){
+                assetList = new ArrayList<>(assets);
+                updateAssets(assetList);
+            }
         });
 
 
@@ -178,40 +182,38 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
 
-                        if (location.isFromMockProvider()) {
-                            locationProviderClient.removeLocationUpdates(locationCallback);
-                            Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+//                        if (location.isFromMockProvider()) {
+//                            locationProviderClient.removeLocationUpdates(locationCallback);
+//                            Toast.makeText(AssetsVerificationActivity.this, "You are using Fake GPS", Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
                         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-                        if (outlet != null && !barcode.isEmpty()) {
-
-                            outletLatLng = new LatLng(outlet.getLatitude(), outlet.getLongitude());
-
-                            Double metre = checkMetre(currentLatLng, outletLatLng);
-                            Configuration config = PreferenceUtil.getInstance(AssetsVerificationActivity.this).getConfig();
-
-                            boolean inRadius = true;
-
-                            if (config.getGeoFenceMinRadius() != null) {
-                                if (metre > config.getGeoFenceMinRadius()) {
-                                    showOutsideBoundaryDialog(alertDialogCount);
-                                    inRadius = false;
-                                }
-                            } else {
-                                if (metre > 100) {
-                                    showOutsideBoundaryDialog(0);
-                                    inRadius = false;
-                                }
-                            }
-
-                            if (!barcode.isEmpty() && inRadius){
-                                viewModel.verifyAsset(barcode , currentLatLng);
-                                barcode = "";
-                            }
-                        }
-
+//                        if (outlet != null && !barcode.isEmpty()) {
+//
+//                            outletLatLng = new LatLng(outlet.getLatitude(), outlet.getLongitude());
+//
+//                            Double metre = checkMetre(currentLatLng, outletLatLng);
+//                            Configuration config = PreferenceUtil.getInstance(AssetsVerificationActivity.this).getConfig();
+//
+//                            boolean inRadius = true;
+//
+//                            if (config.getGeoFenceMinRadius() != null) {
+//                                if (metre > config.getGeoFenceMinRadius()) {
+//                                    showOutsideBoundaryDialog(alertDialogCount);
+//                                    inRadius = false;
+//                                }
+//                            } else {
+//                                if (metre > 100) {
+//                                    showOutsideBoundaryDialog(0);
+//                                    inRadius = false;
+//                                }
+//                            }
+//
+//                            if (!barcode.isEmpty() && inRadius){
+//                                viewModel.verifyAsset(barcode , currentLatLng);
+//                                barcode = "";
+//                            }
+//                        }
                         locationProviderClient.removeLocationUpdates(locationCallback);
                         break;
                     }
@@ -262,7 +264,8 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
                 case SCANNER_REQUEST_CODE:
                     barcode = data.getStringExtra(KEY_SCANNER_RESULT);
                     Toast.makeText(this, "Barcode Scanned ( " + barcode + " )", Toast.LENGTH_SHORT).show();
-                    permissionCheck();
+                    viewModel.verifyAsset(barcode , currentLatLng);
+//                    permissionCheck();
                     break;
             }
         }
@@ -270,6 +273,10 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
 
     @Override
     public void onStatusChange(Asset asset) {
+        if (currentLatLng != null){
+            asset.setLatitude(currentLatLng.latitude);
+            asset.setLongitude(currentLatLng.longitude);
+        }
         viewModel.updateAsset(asset);
     }
 
@@ -317,9 +324,20 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         }
 
         if (statusWithOutVerified > 0) {
+
+            if (PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+                finish();
+                return;
+            }
+
             PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(false);
             PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(true);
         } else if (notVerified > 0) {
+            if (PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+                finish();
+                return;
+            }
+
             PreferenceUtil.getInstance(this).setAssetsScannedInLastMonth(false);
             PreferenceUtil.getInstance(this).setAssetsScannedWithoutVerified(false);
         } else if (verified == assetsVerificationAdapter.getAssetList().size()) {

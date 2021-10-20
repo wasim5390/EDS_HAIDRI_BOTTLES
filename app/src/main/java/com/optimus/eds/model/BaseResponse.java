@@ -44,4 +44,15 @@ public class BaseResponse implements Serializable {
         this.errorCode = errorCode;
     }
 
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

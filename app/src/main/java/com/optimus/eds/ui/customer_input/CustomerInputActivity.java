@@ -126,14 +126,13 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
             if (aBoolean) {
                 setResult(RESULT_OK);
                 finish();
-                //CustomerComplaintsActivity.start(this);
+//          //      CustomerComplaintsActivity.start(this);
             } else
                 findViewById(R.id.btnNext).setEnabled(true);
         });
         viewModel.isSaving().observe(this, this::setProgress);
         viewModel.showMessage().observe(this, this::showMsg);
-        // LocalBroadcastManager.getInstance(this).registerReceiver(orderUploadSuccessReceiver,new IntentFilter(Constant.ACTION_ORDER_UPLOAD));
-
+         LocalBroadcastManager.getInstance(this).registerReceiver(orderUploadSuccessReceiver,new IntentFilter(Constant.ACTION_ORDER_UPLOAD));
     }
 
 
@@ -244,6 +243,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
             String strn = etStrn.getText().toString();
             String base64Sign = Util.compressBitmap(signature);
 
+            showProgress();
             viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDateInMillis, statusId);
             findViewById(R.id.btnNext).setEnabled(false);
         });
@@ -271,22 +271,29 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
 
     @Override
     protected void onDestroy() {
-       /* if (orderUploadSuccessReceiver != null) {
+        if (orderUploadSuccessReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(orderUploadSuccessReceiver);
-        }*/
+        }
         super.onDestroy();
     }
 
 
-  /*  private BroadcastReceiver orderUploadSuccessReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver orderUploadSuccessReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction()==Constant.ACTION_ORDER_UPLOAD){
+            if(intent.getAction().equals(Constant.ACTION_ORDER_UPLOAD)){
                 MasterModel response = (MasterModel) intent.getSerializableExtra("Response");
-                if(response!=null && response.isSuccess())
-                Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
+                hideProgress();
+                if(response!=null && response.isSuccess()){
+                    Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
+                    viewModel.setOrderSaved(true);
+                    viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken() , statusId);
+                }else{
+                    findViewById(R.id.btnNext).setEnabled(true);
+                    Toast.makeText(context, response.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         }
-    };*/
+    };
 
 }

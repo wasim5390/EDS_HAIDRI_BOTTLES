@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -328,15 +329,15 @@ public class OutletMerchandiseActivity extends BaseActivity {
     @OnClick(R.id.btnBeforeMerchandise)
     public void onBeforeMerchandiseClick(){
 
-        if(isAssets && PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+//        if(isAssets && PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+//            type= MerchandiseImgType.BEFORE_MERCHANDISE;
+//            actionPic(Constant.IntentExtras.ACTION_CAMERA);
+//        }else if (isAssets && !PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
+//            Toast.makeText(this, "Please scan all assets", Toast.LENGTH_SHORT).show();
+//        }else{
             type= MerchandiseImgType.BEFORE_MERCHANDISE;
             actionPic(Constant.IntentExtras.ACTION_CAMERA);
-        }else if (isAssets && !PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
-            Toast.makeText(this, "Please scan all assets", Toast.LENGTH_SHORT).show();
-        }else{
-            type= MerchandiseImgType.BEFORE_MERCHANDISE;
-            actionPic(Constant.IntentExtras.ACTION_CAMERA);
-        }
+//        }
     }
 
     @OnClick(R.id.btnAfterMerchandise)
@@ -499,8 +500,13 @@ public class OutletMerchandiseActivity extends BaseActivity {
                     Bitmap bitmap = null;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
-                        createWaterMark(bitmap);
-                    } catch (IOException e) {
+                        bitmap = Util.captureImageOrientation(mImagePath , bitmap);
+                        if (bitmap != null)
+                            createWaterMark(bitmap);
+                        Bitmap orientationBitmap = BitmapFactory.decodeFile(mImagePath);
+                        Util.captureImageOrientation(mImagePath , orientationBitmap);
+
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 //                    String imagePath = data.getStringExtra(Constant.IntentExtras.IMAGE_PATH);

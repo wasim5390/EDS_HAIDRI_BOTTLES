@@ -107,9 +107,10 @@ public class RetrofitHelper implements Constant {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .retryOnConnectionFailure(true)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1 , TimeUnit.MINUTES)
+                .retryOnConnectionFailure(false)
                 .addInterceptor(httpLoggingInterceptor)
                 .addInterceptor(new AuthorizationInterceptor());
         Gson builder = new GsonBuilder().setExclusionStrategies(new AnnotationExclusionStrategy()).create();

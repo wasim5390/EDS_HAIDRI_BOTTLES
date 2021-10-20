@@ -123,12 +123,18 @@ public class PackageSection extends StatelessSection {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length()<1 || (s.length()==1 && s.toString().equals("."))) {
+                if(s.length()<1 || (s.length()==1 && (s.toString().equals(".") || s.toString().equals("-")))) {
                     product.setQty(null,null);
                     return;
                 }
 
-                double qty = Double.parseDouble(s.toString());
+                double qty = 0;
+
+                try{
+                    qty = Double.parseDouble(s.toString());
+                }catch (Exception e){
+                    qty = 0;
+                }
                 Integer unitStock = product.getUnitStockInHand();
                 if(qty>0){
                     Integer[] cu = Util.convertToLongQuantity(s.toString());

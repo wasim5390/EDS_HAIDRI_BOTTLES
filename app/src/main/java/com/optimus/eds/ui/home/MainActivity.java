@@ -88,6 +88,8 @@ public class MainActivity extends BaseActivity {
     @Override
     public void created(Bundle savedInstanceState) {
 
+
+
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         setObservers();
@@ -244,6 +246,11 @@ public class MainActivity extends BaseActivity {
                 }
                 break;
             case R.id.btnDownload:
+                if(!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
+                {
+                    showMessage(Constant.ERROR_DAY_NO_STARTED);
+                    return;
+                }
                 AlertDialogManager.getInstance().showVerificationAlertDialog(this,getString(R.string.update_routes_title),
                         getString(R.string.update_routes_msg)
                         ,verified -> {
@@ -264,6 +271,7 @@ public class MainActivity extends BaseActivity {
 //                OutletListActivity.start(this);
                 break;
             case R.id.btnReports:
+
                 AlertDialogManager.getInstance().showReportsSelectionDialog(this,"Select Report",
                         object -> {
                             if(object.getId()==0)
@@ -274,6 +282,11 @@ public class MainActivity extends BaseActivity {
 
                 break;
             case R.id.btnUpload:
+                if(!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
+                {
+                    showMessage(Constant.ERROR_DAY_NO_STARTED);
+                    return;
+                }
                 viewModel.pushOrdersToServer();
                 break;
             case R.id.btnEndDay:
@@ -322,7 +335,6 @@ public class MainActivity extends BaseActivity {
 
 
         viewModel.getTargetVsAchievement().observe(this  , aBoolean -> {
-
             hideProgress();
             if (aBoolean)
                 setTargetVsAchievement(new Gson().fromJson(PreferenceUtil.getInstance(this).getTargetAchievement() , TargetVsAchievement.class));

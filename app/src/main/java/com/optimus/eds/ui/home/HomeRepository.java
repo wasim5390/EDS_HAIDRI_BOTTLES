@@ -396,7 +396,7 @@ public class HomeRepository {
                     public void onSuccess(LogModel logModel) {
                         if (logModel.isSuccess()) {
                             WorkStatus status = preferenceUtil.getWorkSyncData();
-                            status.setDayStarted(1);
+                            status.setDayStarted(isStart ? 1 : 0);
                             status.setSyncDate(logModel.getStartDay());
                             preferenceUtil.saveWorkSyncData(status);
                             onDayStartLiveData.postValue(isStart);

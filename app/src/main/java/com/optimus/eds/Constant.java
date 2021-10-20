@@ -48,7 +48,7 @@ public interface Constant {
     String ACTION_ORDER_UPLOAD = "upload_order_data";
     String GENERIC_ERROR = "Something went wrong, Please contact Manager!";
     String NETWORK_ERROR = "No internet, Please try again later!";
-    String ERROR_DAY_NO_STARTED = "You have not even started your day";
+    String ERROR_DAY_NO_STARTED = "You have not even started your day or You have closed your day";
     String ERROR_START_DAY_FIRST = "Please start your day first";
     int ORDER_CREATED = 2;
     String PRICING_ERROR = "Something went wrong, Please try again!";

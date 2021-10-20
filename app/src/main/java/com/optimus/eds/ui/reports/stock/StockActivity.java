@@ -65,11 +65,11 @@ public class StockActivity extends BaseActivity {
             else hideProgress();
         });
 
-        viewModel.stockLoaded().observe(this, responseModel -> {
-          if(responseModel.isSuccess()){
-//              onProductGroupsLoaded(responseModel.getProductGroups());
-          }
-        });
+//        viewModel.stockLoaded().observe(this, responseModel -> {
+//          if(responseModel.isSuccess()){
+////              onProductGroupsLoaded(responseModel.getProductGroups());
+//          }
+//        });
 
         viewModel.getPackages().observe(this, packages -> {
 

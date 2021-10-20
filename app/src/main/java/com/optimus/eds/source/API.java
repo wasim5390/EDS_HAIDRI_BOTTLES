@@ -57,7 +57,7 @@ public interface API {
 
     @Headers({ "Content-Type: application/json;charset=UTF-8"})
     @POST("api/route/PostOutletVisit")
-    Single<BaseResponse> postMerchandise(@Body MerchandiseModel merchandise,@Header("Authorization") String auth);
+    Single<BaseResponse> postMerchandise(@Body MerchandiseModel merchandise);
 
     @FormUrlEncoded
     @POST("api/AppOpertion/LogStartEnd")

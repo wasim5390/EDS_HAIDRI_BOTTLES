@@ -235,11 +235,13 @@ public class CashMemoActivity extends BaseActivity {
     public void upNavigate(){
 
         if (statusId != 7){
-            if (this.orderModel.order.serverOrderId != null){
+            if (this.orderModel != null){
+                if (this.orderModel.order.serverOrderId != null){
 
-                OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
-                orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
-                viewModel.updateStatus(orderStatus);
+                    OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
+                    orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
+                    viewModel.updateStatus(orderStatus);
+                }
             }
 
             Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class
@@ -262,11 +264,14 @@ public class CashMemoActivity extends BaseActivity {
     public void onBackPressed() {
 
         if (!fromOutlet){
-            if (this.orderModel.order.serverOrderId != null){
 
-                OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
-                orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
-                viewModel.updateStatus(orderStatus);
+            if (this.orderModel != null){
+                if (this.orderModel.order.serverOrderId != null){
+
+                    OrderStatus orderStatus = viewModel.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
+                    orderStatus.setOutletVisitStartTime(Calendar.getInstance().getTimeInMillis());
+                    viewModel.updateStatus(orderStatus);
+                }
             }
 
             Intent intent = new Intent(this,OrderBookingActivity.class); // Added Bu Husnain  cashMemoEditable?OrderBookingActivity.class: OutletListActivity.class

@@ -153,6 +153,7 @@ public class LoginActivity extends BaseActivity {
                 String error= Constant.GENERIC_ERROR;
                 hideProgress();
                 if(tokenResponse.isSuccess()) {
+
                     MainActivity.start(this);
                     this.finish();
                 }else{

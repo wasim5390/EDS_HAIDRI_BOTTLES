@@ -67,6 +67,7 @@ public class OrderBookingActivity extends BaseActivity {
     @BindView(R.id.tvName)
     TextView tvOutletName;
 
+
     private SectionedRecyclerViewAdapter sectionAdapter;
     private Outlet outlet;
 
@@ -136,7 +137,6 @@ public class OrderBookingActivity extends BaseActivity {
         viewModel.loadOutlet(outletId).observe(this, this::onOutletLoaded);
 
         //viewModel.getProductGroupList().observe(this, this::onProductGroupsLoaded);
-
 
         viewModel.getPackages().observe(this, packages -> {
 
@@ -230,14 +230,15 @@ public class OrderBookingActivity extends BaseActivity {
                 if (_package != null)
                     onAdd(_package.getPackageId(), false);
 
-                new Handler().postDelayed(() -> {
-                    findViewById(R.id.btnNext).setAlpha(1.0f);
-                    findViewById(R.id.btnNext).setClickable(true);
-                }, 1000);
+                findViewById(R.id.btnNext).setAlpha(1.0f);
+                findViewById(R.id.btnNext).setClickable(true);
+//                new Handler().postDelayed(() -> {
+//                    findViewById(R.id.btnNext).setAlpha(1.0f);
+//                    findViewById(R.id.btnNext).setClickable(true);
+//                }, 1000);
 
                 _package = ((Package) (parent.getSelectedItem()));
                 Log.d("PackageId" , ((Package) (parent.getSelectedItem())).getPackageId() +"");
-
                 viewModel.filterProductsByGroup(((Package) (parent.getSelectedItem())).getPackageId());
 //                viewModel.filterProductsByGroup(((ProductGroup)(parent.getSelectedItem())).getProductGroupId());
             }
@@ -290,6 +291,7 @@ public class OrderBookingActivity extends BaseActivity {
 
 //        if(group!=null)
 //            onAdd(group.getProductGroupId(),true);
+
 
         if (_package != null)
             onAdd(_package.getPackageId(), true);

@@ -39,8 +39,8 @@ public class OutletListAdapter extends
 
     public void populateOutlets(List<Outlet> outlets , boolean isPjp) {
         List<Outlet> outletList = new ArrayList<>(outlets);
-        this.outlets=outletList;
-        this.outletsFiltered = outletList;
+        this.outlets= new ArrayList<>(outletList);
+        this.outletsFiltered = new ArrayList<>(outletList);
         this.outletOrderStatuses = new ArrayList<>();
         this.filteredOutletOrderStatuses = new ArrayList<>();
         this.isPjp = isPjp;

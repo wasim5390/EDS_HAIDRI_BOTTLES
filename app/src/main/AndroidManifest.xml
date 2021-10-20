@@ -83,7 +83,7 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".ui.reports.stock.StockActivity" />
 
-        <activity android:name=".ui.scanner.BarcodeScanner" />
+        <activity android:name=".ui.scanner.BarcodeScanner"  android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

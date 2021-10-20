@@ -44,6 +44,8 @@ public interface RouteDao extends MerchandiseDao{
     Single<List<Outlet>> findAllOutletsForRoute(Long routeId,int planned);
 
     //@Query("SELECT * FROM Outlet WHERE planned=:planned AND mVisitStatus<=1")
+
+
     @Query("SELECT Outlet.*, OrderStatus.* FROM Outlet LEFT JOIN OrderStatus ON Outlet.mOutletId = OrderStatus.outletId" +
             " WHERE  Outlet.planned=1 AND  ( ( OrderStatus.status < 2) OR ( Outlet.statusId < 2 ) ) "  )
     Flowable<List<Outlet>> findOutletsWithPendingTasks(); // int planned

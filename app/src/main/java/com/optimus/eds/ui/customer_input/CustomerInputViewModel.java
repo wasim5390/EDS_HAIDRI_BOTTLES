@@ -119,7 +119,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
                     .subscribeOn(Schedulers.io())
                     .subscribe(() -> {
                         postData(orderModel, customerInput);
-                        scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken() , statusId);
+//                        scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken() , statusId);  By Husnain
 
                     });
         }else{
@@ -150,9 +150,13 @@ public class CustomerInputViewModel extends AndroidViewModel {
                 startUploadService.postValue(outletId);
             }
             isSaving.postValue(false);
-            orderSaved.postValue(true);
+//            orderSaved.postValue(true); by Husnain
 
         });
+    }
+
+    public void setOrderSaved(boolean orderSaved){
+        this.orderSaved.postValue(orderSaved);
     }
 
     //**************** Post Order ****************/

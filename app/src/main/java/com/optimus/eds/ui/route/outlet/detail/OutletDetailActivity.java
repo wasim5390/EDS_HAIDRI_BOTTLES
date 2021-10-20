@@ -5,8 +5,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -34,6 +36,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.maps.android.SphericalUtil;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -41,12 +46,15 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.optimus.eds.BaseActivity;
+import com.optimus.eds.Constant;
+import com.optimus.eds.LocationLogs;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.OutletVisit;
 import com.optimus.eds.location_services.GpsUtils;
 import com.optimus.eds.model.Configuration;
 import com.optimus.eds.model.CustomObject;
+import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.source.UploadOrdersService;
 import com.optimus.eds.ui.AlertDialogManager;
 import com.optimus.eds.ui.merchandize.OutletMerchandiseActivity;
@@ -54,6 +62,9 @@ import com.optimus.eds.ui.order.OrderBookingActivity;
 import com.optimus.eds.ui.route.outlet.tasks.OutletTasksDialogFragment;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -65,6 +76,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -110,6 +122,8 @@ public class OutletDetailActivity extends BaseActivity implements
     @BindView(R.id.lastOrder)
     MaterialCardView lastOrderCard;
 
+    Location accurateLatLng ;
+
     Outlet outlet;
 
     OutletDetailViewModel viewModel;
@@ -119,6 +133,9 @@ public class OutletDetailActivity extends BaseActivity implements
 
     private int alertDialogCount = 0 ;
 
+    private Long startLocationTime  = 0L , endLocationTime = 0L;
+
+    private List<LocationLogs> locationsListForLog = new ArrayList<>();
 
     private GoogleMap mMap;
     private Long outletVisitStartTime = Calendar.getInstance().getTimeInMillis();
@@ -126,6 +143,7 @@ public class OutletDetailActivity extends BaseActivity implements
     private LatLng outletLatLng, currentLatLng;
     private boolean isFakeLocation = false;
     private LocationCallback locationCallback ;
+    private boolean withoutVerification ;
 
     public static void start(Context context, Long outletId, Long routeId, int code) {
         Intent starter = new Intent(context, OutletDetailActivity.class);
@@ -176,6 +194,7 @@ public class OutletDetailActivity extends BaseActivity implements
         if (mapFragment == null) return;
         mapFragment.getMapAsync(this);
 
+
         setToolbar(getString(R.string.outlet_summary));
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item);
 //        adapter.addAll(getResources().getStringArray(R.array.pop_array));
@@ -204,7 +223,7 @@ public class OutletDetailActivity extends BaseActivity implements
         viewModel.startUploadService().observe(this, aBoolean -> {
             if (aBoolean) {
                 UploadOrdersService.startUploadService(getApplication(), outletId);
-                finish();
+//                finish(); by husnain
             }
         });
 
@@ -234,6 +253,8 @@ public class OutletDetailActivity extends BaseActivity implements
 
         updateBtn(false);
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(orderUploadSuccessReceiver,new IntentFilter(Constant.ACTION_ORDER_UPLOAD));
+
 
     }
 
@@ -254,6 +275,7 @@ public class OutletDetailActivity extends BaseActivity implements
     protected void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(1000);
+        locationRequest.setSmallestDisplacement(0F);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -268,7 +290,8 @@ public class OutletDetailActivity extends BaseActivity implements
                 }
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
-
+                        Log.d("hasAccuracy" , location.hasAccuracy()+ "  accuracy " + location.getAccuracy() +" latitude" + location.getLatitude() + "longitude" + location.getLongitude() + " Provider " + location.getProvider());
+//                        Toast.makeText(OutletDetailActivity.this, "hasAccuracy"+ location.hasAccuracy()+ "  accuracy " + location.getAccuracy() +" latitude " + location.getLatitude() + "longitude " + location.getLongitude() , Toast.LENGTH_SHORT).show();
                         isFakeLocation = location.isFromMockProvider();
                         if (isFakeLocation){
                             locationProviderClient.removeLocationUpdates(locationCallback);
@@ -276,26 +299,47 @@ public class OutletDetailActivity extends BaseActivity implements
                             return ;
                         }
 
-                        currentLocation = location;
-                        currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                        if (accurateLatLng == null){
+                            currentLocation = location;
+                            accurateLatLng = location;
+                            currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                        }else{
 
+                            if (accurateLatLng.getAccuracy() < location.getAccuracy())
+                                currentLatLng = new LatLng(accurateLatLng.getLatitude(), accurateLatLng.getLongitude());
+                            else{
+                                accurateLatLng = location;
+                                currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            }
+                        }
+
+                        locationsListForLog.add(new LocationLogs(location.getLatitude() , location.getLongitude() , location.getAccuracy()));
                         if (outletLatLng != null) {
 
                             Double metre = checkMetre(currentLatLng, outletLatLng);
                             Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
 
+                            startLocationTime = System.currentTimeMillis();
                             if (config.getGeoFenceMinRadius() != null) {
-                                if (metre > config.getGeoFenceMinRadius() && !isAssets) {
+                                if (metre > config.getGeoFenceMinRadius() && !isAssets && startLocationTime > endLocationTime) {
+                                    hideProgress();
+                                    locationProviderClient.removeLocationUpdates(locationCallback);
+                                    Log.d("hasAccuracy selected" , accurateLatLng.getAccuracy() + "");
                                     showOutsideBoundaryDialog(alertDialogCount, String.valueOf(metre));
-                                } else if (metre > config.getGeoFenceMinRadius() && isAssets) {
+                                } else if (metre > config.getGeoFenceMinRadius() && isAssets && startLocationTime > endLocationTime) {
+                                   hideProgress();
+                                    locationProviderClient.removeLocationUpdates(locationCallback);
+//                                    updateBtn(true);
                                     showOutsideBoundaryDialogWhenAssets(String.valueOf(metre));
-                                } else {
+                                } else if (metre <= config.getGeoFenceMinRadius()){
+                                    hideProgress();
+                                    locationProviderClient.removeLocationUpdates(locationCallback);
                                     updateBtn(true);
                                 }
                             }
                         }
-                        locationProviderClient.removeLocationUpdates(locationCallback);
-                        break;
+//                        locationProviderClient.removeLocationUpdates(locationCallback);
+//                        break;
                     }
                 }
 
@@ -356,16 +400,42 @@ public class OutletDetailActivity extends BaseActivity implements
         builderSingle.setCancelable(false);
         builderSingle.setPositiveButton("Retry Location", (dialog1, which1) -> {
             dialog1.dismiss();
+            startLocationTime = System.currentTimeMillis();
+            endLocationTime = startLocationTime + 4000;
+            showProgress();
             locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
         });
         builderSingle.setNegativeButton("Back to PJP", (dialog1, which1) -> {
             dialog1.dismiss();
+
+            sendLogs();
+
             viewModel.postEmptyCheckoutWithoutSurvey(true, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
         });
         if (!OutletDetailActivity.this.isFinishing()) {
             builderSingle.show();
         }
 
+    }
+
+    private void sendLogs(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("outletId" , outletId.toString());
+            jsonObject.put("locationLogs" ,new Gson().toJson(locationsListForLog) );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
+        FirebaseCrashlytics.getInstance().setCustomKey(outletId.toString() , jsonObject.toString());
+        FirebaseCrashlytics.getInstance().log(jsonObject.toString());
+
+        try {
+            throw new Exception();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void showOutsideBoundaryDialog(int repeat, String metres) {
@@ -381,6 +451,9 @@ public class OutletDetailActivity extends BaseActivity implements
             builderSingle.setPositiveButton(getString(R.string.ok), (dialog1, which1) -> {
                 dialog1.dismiss();
                 alertDialogCount++;
+                startLocationTime = System.currentTimeMillis();
+                endLocationTime = startLocationTime + 4000;
+                showProgress();
                 locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
 //                showOutsideBoundaryDialog(repeatLocal, metres);
             });
@@ -388,6 +461,7 @@ public class OutletDetailActivity extends BaseActivity implements
                 builderSingle.show();
             }
         }else {
+            sendLogs();
 
             OutletVisit outletVisit = new OutletVisit();
             outletVisit.setOutletId(outletId);
@@ -432,7 +506,7 @@ public class OutletDetailActivity extends BaseActivity implements
             viewModel.setOutlet(outlet);
 
             if (outlet.getLastOrder() != null) {
-                lastOrderPrice.setText(String.valueOf("RS. " + outlet.getLastOrder().getOrderTotal()));
+                lastOrderPrice.setText("RS. " + outlet.getLastOrder().getOrderTotal());
                 lastOrderQuantity.setText(String.valueOf(outlet.getLastOrder().getOrderQuantity()));
                 lastOrderTakenDate.setText(Util.formatDate(Util.DATE_FORMAT, outlet.getLastOrder().getLastSaleDate()));
             }
@@ -442,7 +516,7 @@ public class OutletDetailActivity extends BaseActivity implements
             }
 
             outletLatLng = new LatLng(outlet.getLatitude(), outlet.getLongitude());
-            if (mMap != null && outlet != null) {
+            if (mMap != null ) {
                 mMap.addMarker(new MarkerOptions().position(outletLatLng).title(outlet.getOutletName() != null ? outlet.getOutletName() : ""));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(outletLatLng, 19));
                 mMap.getUiSettings().setScrollGesturesEnabled(false);
@@ -528,6 +602,15 @@ public class OutletDetailActivity extends BaseActivity implements
 //        }
     }
 
+    @Override
+    protected void onDestroy() {
+        if (orderUploadSuccessReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(orderUploadSuccessReceiver);
+        }
+        locationProviderClient.removeLocationUpdates(locationCallback);
+        super.onDestroy();
+    }
+
     @SuppressLint("MissingPermission")
     @OnClick(R.id.btnNotFlow)
     public void notFlowClick(View v) {
@@ -581,11 +664,12 @@ public class OutletDetailActivity extends BaseActivity implements
                 case REQUEST_CODE:
                     if (data != null && data.getExtras() != null && data.hasExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING)) {
                         boolean noOrderFromOrderBooking = data.getBooleanExtra(EXTRA_PARAM_NO_ORDER_FROM_BOOKING, false);
-                        boolean without_verification = data.getBooleanExtra(WITHOUT_VERIFICATION, false);
+                        withoutVerification = data.getBooleanExtra(WITHOUT_VERIFICATION, false);
                         reasonForNoSale = String.valueOf(data.getLongExtra(EXTRA_PARAM_OUTLET_REASON_N_ORDER, 1L));
-                        if (!without_verification){
+                        if (!withoutVerification){
+                            showProgress();
                             viewModel.postEmptyCheckout(noOrderFromOrderBooking, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
-                            viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken());
+//                            viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken());
                         } else
                             viewModel.postEmptyCheckoutWithoutAssetVerification(noOrderFromOrderBooking, outletId, outletVisitStartTime, Calendar.getInstance().getTimeInMillis());
                     } else {
@@ -597,6 +681,25 @@ public class OutletDetailActivity extends BaseActivity implements
 
         }
     }
+
+
+    private BroadcastReceiver orderUploadSuccessReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Constant.ACTION_ORDER_UPLOAD)){
+                MasterModel response = (MasterModel) intent.getSerializableExtra("Response");
+                hideProgress();
+                if(response!=null && response.isSuccess()){
+                    Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
+                    if (!withoutVerification)
+                        viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken());
+                    finish();
+                }else{
+                    Toast.makeText(context, response.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
 
     @Override
     public void showProgress() {

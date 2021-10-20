@@ -19,6 +19,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.optimus.eds.Constant;
 import com.optimus.eds.db.entities.Asset;
@@ -33,6 +35,9 @@ import com.optimus.eds.source.JobIdManager;
 import com.optimus.eds.source.MerchandiseUploadService;
 import com.optimus.eds.source.StatusRepository;
 import com.optimus.eds.ui.merchandize.MerchandiseRepository;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.List;
@@ -62,7 +67,7 @@ public class OutletDetailViewModel extends AndroidViewModel {
         outletNearbyPos = new MutableLiveData<>();
         startUploadService = new MutableLiveData<>();
         mAssets = new MutableLiveData<>();
-        repository.loadProductsFromServer();
+      //  repository.loadProductsFromServer(); Comment By Husnain
 
     }
 
@@ -248,6 +253,7 @@ public class OutletDetailViewModel extends AndroidViewModel {
 
     public void postEmptyCheckoutWithoutSurvey(boolean noOrderFromBooking, Long outletId, Long outletVisitStartTime, Long outletVisitEndTime) {
         if (noOrderFromBooking) {
+
             outletStatus = 4; // no Asset Verfication
             if (outlet == null)
                 outlet = repository.getOutletByIdSingle(outletId).subscribeOn(Schedulers.io()).blockingGet();

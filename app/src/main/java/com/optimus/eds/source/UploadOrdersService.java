@@ -117,8 +117,11 @@ public class UploadOrdersService extends IntentService {
                     public void onError(Throwable e){
                         if(e instanceof OrderException) {
                             OrderException exception = (OrderException)e;
-                            int status = exception.model.getOutletStatus();
-                            NotificationUtil.getInstance(getApplicationContext()).cancelUpload(10,exception.model.getOutletId(),status);
+                            if (exception != null){
+                                Integer status = exception.model.getOutletStatus();
+                                if (status != null)
+                                    NotificationUtil.getInstance(getApplicationContext()).cancelUpload(10,exception.model.getOutletId(),status);
+                            }
                         }else{
                             try {
                                 error(e);
@@ -145,8 +148,6 @@ public class UploadOrdersService extends IntentService {
         String json = status.getData() != null ? status.getData() : ""; // Added Check By Husnain
         MasterModel masterModel = new Gson().fromJson(json,MasterModel.class);
 
-
-
         uploadMasterData(masterModel,status.getStatus());
 
     }
@@ -155,7 +156,7 @@ public class UploadOrdersService extends IntentService {
 
         String masterModelGson = new Gson().toJson(masterModel);
 
-        Log.d("MaterModel" , masterModel.latitude + " " + masterModel.longitude);
+//        Log.d("MaterModel" , masterModel.latitude + " " + masterModel.longitude);
 
         RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(response->{
@@ -196,7 +197,6 @@ public class UploadOrdersService extends IntentService {
                 outletDetailRepository.updateOutletVisitStatus(outletId,statusId,true);
                 repository.updateStatus(new OrderStatus(outletId,statusId,true,0.0));
                 outletDetailRepository.updateOutlet(statusId , outletId);
-
             }
         Intent intent = new Intent();
         intent.setAction(Constant.ACTION_ORDER_UPLOAD);
