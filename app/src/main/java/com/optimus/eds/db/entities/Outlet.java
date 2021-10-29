@@ -54,6 +54,12 @@ public class Outlet implements Serializable {
 
     @SerializedName("lastSaleDate")
     private Long mLastSaleDate;
+    @SerializedName("pricingGroupId")
+    private Integer pricingGroupId;
+    @SerializedName("vpoClassificationId")
+    private Integer vpoClassificationId;
+    @SerializedName("channelId")
+    private Integer channelId;
     @SerializedName("lastSaleQuantity")
     private String mLastSaleQuantity;
     @SerializedName("availableCreditLimit")
@@ -398,5 +404,29 @@ public class Outlet implements Serializable {
 
     public void setMtdSale(Double mtdSale) {
         this.mtdSale = mtdSale;
+    }
+
+    public Integer getPricingGroupId() {
+        return pricingGroupId;
+    }
+
+    public void setPricingGroupId(Integer pricingGroupId) {
+        this.pricingGroupId = pricingGroupId;
+    }
+
+    public Integer getVpoClassificationId() {
+        return vpoClassificationId;
+    }
+
+    public void setVpoClassificationId(Integer vpoClassificationId) {
+        this.vpoClassificationId = vpoClassificationId;
+    }
+
+    public Integer getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
     }
 }

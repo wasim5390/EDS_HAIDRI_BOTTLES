@@ -9,6 +9,7 @@ import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.model.MerchandiseModel;
 import com.optimus.eds.model.OrderResponseModel;
 import com.optimus.eds.model.PackageProductResponseModel;
+import com.optimus.eds.model.PricingModel;
 import com.optimus.eds.model.RouteOutletResponseModel;
 
 
@@ -50,6 +51,9 @@ public interface API {
 
     @POST("api/order/calculateprice")
     Single<OrderResponseModel> calculatePricing(@Body OrderResponseModel order);
+
+    @GET("api/pricing/get")
+    Observable<PricingModel> loadPricing();
 
     @Headers({ "Content-Type: application/json;charset=UTF-8"})
     @POST("api/order/PostOrder")

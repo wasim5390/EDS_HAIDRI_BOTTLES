@@ -20,6 +20,8 @@ import com.optimus.eds.db.dao.CustomerDao;
 import com.optimus.eds.db.dao.MerchandiseDao;
 import com.optimus.eds.db.dao.OrderDao;
 import com.optimus.eds.db.dao.OrderStatusDao;
+import com.optimus.eds.db.dao.PriceConditionEntitiesDao;
+import com.optimus.eds.db.dao.PricingDao;
 import com.optimus.eds.db.dao.ProductsDao;
 import com.optimus.eds.db.dao.RouteDao;
 import com.optimus.eds.db.dao.TaskDao;
@@ -32,6 +34,7 @@ import com.optimus.eds.db.entities.Order;
 import com.optimus.eds.db.entities.OrderDetail;
 import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
+import com.optimus.eds.db.entities.OutletAvailedPromotion;
 import com.optimus.eds.db.entities.Package;
 import com.optimus.eds.db.entities.Product;
 import com.optimus.eds.db.entities.ProductGroup;
@@ -39,12 +42,30 @@ import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.db.entities.Route;
 import com.optimus.eds.db.entities.Task;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
+import com.optimus.eds.db.entities.pricing.PriceAccessSequence;
+import com.optimus.eds.db.entities.pricing.PriceBundle;
+import com.optimus.eds.db.entities.pricing.PriceCondition;
+import com.optimus.eds.db.entities.pricing.PriceConditionAvailed;
+import com.optimus.eds.db.entities.pricing.PriceConditionClass;
+import com.optimus.eds.db.entities.pricing.PriceConditionDetail;
+import com.optimus.eds.db.entities.pricing.PriceConditionEntities;
+import com.optimus.eds.db.entities.pricing.PriceConditionScale;
+import com.optimus.eds.db.entities.pricing.PriceConditionType;
+import com.optimus.eds.db.entities.pricing.PriceScaleBasis;
+import com.optimus.eds.db.entities.pricing.PricingArea;
+import com.optimus.eds.db.entities.pricing.PricingLevels;
+import com.optimus.eds.ui.order.pricing.ProductQuantity;
 
 @Database(entities = {Route.class, Outlet.class, Merchandise.class, Asset.class,ProductGroup.class,
         Product.class, Package.class, Order.class, OrderStatus.class,
         OrderDetail.class, CartonPriceBreakDown.class,
-        UnitPriceBreakDown.class, CustomerInput.class, Task.class, Promotion.class , LookUp.class
-}, version = BuildConfig.VERSION_CODE, exportSchema = false )
+        UnitPriceBreakDown.class, OutletAvailedPromotion.class, CustomerInput.class, Task.class, Promotion.class , LookUp.class ,
+        PriceAccessSequence.class,
+        PriceBundle.class, PriceCondition.class, PriceConditionAvailed.class,
+        PriceConditionClass.class,
+        PriceConditionDetail.class , ProductQuantity.class, PriceConditionEntities.class,
+        PriceConditionScale.class, PriceConditionType.class, PriceScaleBasis.class,
+        PricingLevels.class,  PricingArea.class}, version = BuildConfig.VERSION_CODE, exportSchema = false )
 @TypeConverters({OutletVisitConverter.class ,MerchandiseItemConverter.class, LastOrderConverter.class, AssetConverter.class, LookUpConverter.class,  ProductConverter.class , PromotionConverter.class})
 
 public abstract class AppDatabase extends RoomDatabase {
@@ -58,6 +79,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract OrderStatusDao orderStatusDao();
     public abstract MerchandiseDao merchandiseDao();
     public abstract CustomerDao customerDao();
+    public abstract PricingDao pricingDao();
+    public abstract PriceConditionEntitiesDao priceConditionEntitiesDao();
 
     public static synchronized AppDatabase getDatabase(Context context) {
         if (INSTANCE == null) {

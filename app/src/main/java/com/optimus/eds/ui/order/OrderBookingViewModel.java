@@ -20,12 +20,15 @@ import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.Package;
 import com.optimus.eds.db.entities.Product;
 import com.optimus.eds.db.entities.ProductGroup;
+import com.optimus.eds.db.entities.UnitPriceBreakDown;
 import com.optimus.eds.model.OrderModel;
 import com.optimus.eds.model.OrderResponseModel;
 import com.optimus.eds.model.PackageModel;
 import com.optimus.eds.source.API;
 import com.optimus.eds.source.RetrofitHelper;
 
+import com.optimus.eds.ui.order.pricing.PriceOutputDTO;
+import com.optimus.eds.ui.order.pricing.PricingManager;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.NetworkManager;
 import com.optimus.eds.utils.Util;
@@ -436,16 +439,46 @@ public class OrderBookingViewModel extends AndroidViewModel {
             NetworkManager.getInstance().isOnline().subscribe((aBoolean, throwable) -> {
                 if (!aBoolean) {
 
-                    msg.postValue(Constant.NETWORK_ERROR);
-                    isSaving.postValue(false);
+                    disposable.add(calculateLocally(responseModel));
+//                    msg.postValue(Constant.NETWORK_ERROR);
+//                    isSaving.postValue(false);
                 } else {
                     new Gson().toJson(responseModel);
                     disposable.add(calculateFromServer(responseModel));
                 }
             });
         }
-
     }
+
+    private Disposable calculateLocally(OrderResponseModel responseModel) {
+        return PricingManager.getInstance(getApplication())
+                .calculatePriceBreakdown(responseModel)
+                .map(orderResponseModel -> {
+                    Gson gson = new Gson();
+                    BigDecimal orderTotalAmount = BigDecimal.valueOf(orderResponseModel.getPayable());
+                    int totalQty = getOrderTotalQty(orderResponseModel.getOrderDetails());
+                    PriceOutputDTO priceOutputDTO = PricingManager.getInstance(getApplication()).getOrderPrice(orderTotalAmount,totalQty,orderResponseModel.getOutletId()
+                            ,orderResponseModel.getRouteId(),orderResponseModel.getDistributionId());
+                    String gsonText = gson.toJson(priceOutputDTO.getPriceBreakdown());
+                    List<UnitPriceBreakDown> priceBreakDown =  gson.fromJson(gsonText, new TypeToken<List<UnitPriceBreakDown>>(){}.getType());
+                    orderResponseModel.setPriceBreakDown(priceBreakDown);
+                    orderResponseModel.setPayable(priceOutputDTO.getTotalPrice().doubleValue());
+                    return orderResponseModel;
+                })
+                .map(orderResponseModel -> {
+                    OrderModel orderModel = new OrderModel();
+                    String orderString = new Gson().toJson(orderResponseModel);
+                    Order order = new Gson().fromJson(orderString, Order.class);
+                    orderModel.setOrderDetails(orderResponseModel.getOrderDetails());
+                    orderModel.setOrder(order);
+                    orderModel.setOutlet(this.order.getOutlet());
+                    orderModel.setSuccess(orderResponseModel.isSuccess());
+                    return orderModel;
+                }).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::updateOrder, this::onError);
+    }
+
 
     private Disposable calculateFromServer(OrderResponseModel responseModel) {
         return webservice.calculatePricing(responseModel)

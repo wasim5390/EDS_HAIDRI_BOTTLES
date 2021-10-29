@@ -14,6 +14,7 @@ import com.optimus.eds.EdsApplication;
 import com.optimus.eds.db.AppDatabase;
 import com.optimus.eds.db.dao.CustomerDao;
 import com.optimus.eds.db.dao.OrderDao;
+import com.optimus.eds.db.dao.PriceConditionEntitiesDao;
 import com.optimus.eds.db.dao.ProductsDao;
 import com.optimus.eds.db.dao.RouteDao;
 import com.optimus.eds.db.dao.TaskDao;
@@ -24,10 +25,19 @@ import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.db.entities.Task;
+import com.optimus.eds.db.entities.pricing.PriceAccessSequence;
+import com.optimus.eds.db.entities.pricing.PriceBundle;
+import com.optimus.eds.db.entities.pricing.PriceCondition;
+import com.optimus.eds.db.entities.pricing.PriceConditionClass;
+import com.optimus.eds.db.entities.pricing.PriceConditionDetail;
+import com.optimus.eds.db.entities.pricing.PriceConditionEntities;
+import com.optimus.eds.db.entities.pricing.PriceConditionScale;
+import com.optimus.eds.db.entities.pricing.PriceConditionType;
 import com.optimus.eds.model.AppUpdateModel;
 import com.optimus.eds.model.LogModel;
 import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.model.PackageProductResponseModel;
+import com.optimus.eds.model.PricingModel;
 import com.optimus.eds.model.RouteOutletResponseModel;
 import com.optimus.eds.model.WorkStatus;
 import com.optimus.eds.source.API;
@@ -42,6 +52,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -66,7 +77,7 @@ public class HomeRepository {
     private RouteDao routeDao;
     private TaskDao taskDao;
     private OrderDao orderDao;
-
+    private PriceConditionEntitiesDao pricingDao;
 
     private MutableLiveData<Boolean> targetVsAchievement;
     private MutableLiveData<Boolean> isLoading;
@@ -90,6 +101,7 @@ public class HomeRepository {
         customerDao = appDatabase.customerDao();
         orderDao = appDatabase.orderDao();
         isLoading = new MutableLiveData<>();
+        pricingDao = appDatabase.priceConditionEntitiesDao();
         onDayStartLiveData = new MutableLiveData<>();
         msg = new MutableLiveData<>();
         webService = api;
@@ -285,6 +297,9 @@ public class HomeRepository {
             stockObservable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
                 if (response.isSuccess() || !response.getPackageList().isEmpty()) {
+
+                    loadPricing();
+
                     AsyncTask.execute(() -> {
                         productsDao.deleteAllPackages();
                         productsDao.deleteAllProductGroups();
@@ -307,6 +322,7 @@ public class HomeRepository {
 
 
         });
+
     }
 
 
@@ -418,6 +434,140 @@ public class HomeRepository {
                     }
                 });
     }
+
+    public Completable deleteAllPricing(){
+        return   Completable.fromAction(()-> pricingDao.deleteAllPriceConditionClasses())
+                .andThen(Completable.fromAction(()->pricingDao.deleteAllPricingAreas()));
+
+    }
+
+    /**
+     * Pricing Start
+     */
+    Completable insertPriceConditionClasses(List<PriceConditionClass> priceConditionClasses){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceConditionClasses(priceConditionClasses);
+        });
+    }
+    Completable insertConditionTypes(List<PriceConditionType> priceConditionTypes){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceConditionType(priceConditionTypes);
+        });
+    }
+
+    Completable insertConditions(List<PriceCondition> priceConditions){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceCondition(priceConditions);
+        });
+    }
+
+    Completable insertAccessSequence(List<PriceAccessSequence> priceAccessSequences){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceAccessSequence(priceAccessSequences);
+        });
+    }
+
+    Completable insertConditionDetails(List<PriceConditionDetail> priceConditionDetails){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceConditionDetail(priceConditionDetails);
+        });
+    }
+
+    Completable insertPriceBundle(List<PriceBundle> bundles){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceBundles(bundles);
+        });
+    }
+
+    Completable insertPriceConditionEntities(List<PriceConditionEntities> entities){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceConditionEntities(entities);
+        });
+    }
+
+    Completable insertPriceConditionScale(List<PriceConditionScale> scales){
+        return   Completable.fromAction(() -> {
+            pricingDao.insertPriceConditionScales(scales);
+        });
+    }
+    /**** End Pricing ***/
+
+
+    public void loadPricing() {
+        executor.execute(() -> {
+            try {
+
+                Observable<PricingModel> pricingModelResponse = webService.loadPricing();
+                pricingModelResponse.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
+                        AsyncTask.execute(() -> {
+                            deleteAllPricing();
+                            pricingDao.insertPriceConditionClasses(response.getPriceConditionClasses());
+                            pricingDao.insertPriceConditionType(response.getPriceConditionTypes());
+                            pricingDao.insertPriceAccessSequence(response.getPriceAccessSequences());
+                            pricingDao.insertPriceCondition(response.getPriceConditions());
+                            pricingDao.insertPriceBundles(response.getPriceBundles());
+                            pricingDao.insertPriceConditionDetail(response.getPriceConditionDetails());
+                            pricingDao.insertPriceConditionEntities(response.getPriceConditionEntities());
+                            pricingDao.insertPriceConditionScales(response.getPriceConditionScales());
+                            msg.postValue("Pricing Loaded Successfully!");
+
+                        });
+
+
+                    isLoading.postValue(false);
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    msg.postValue(Constant.GENERIC_ERROR);
+                    isLoading.postValue(false);
+                });
+//                Response<PricingModel> response = webService.loadPricing().execute();
+//                if(response.isSuccessful()){
+//                    PricingModel pricingModel = response.body();
+//                    deleteAllPricing()
+//                            .andThen(insertPriceConditionClasses(pricingModel.getPriceConditionClasses()))
+//                            .andThen(insertConditionTypes(pricingModel.getPriceConditionTypes()).delay(200, TimeUnit.MILLISECONDS))
+//                            .andThen(insertAccessSequence(pricingModel.getPriceAccessSequences()).delay(200, TimeUnit.MILLISECONDS))
+//                            .andThen(insertConditions(pricingModel.getPriceConditions()))
+//                            .andThen(insertPriceBundle(pricingModel.getPriceBundles()))
+//                            .andThen(insertConditionDetails(pricingModel.getPriceConditionDetails()))
+//                            .andThen(insertPriceConditionEntities(pricingModel.getPriceConditionEntities()))
+//                            .andThen(insertPriceConditionScale(pricingModel.getPriceConditionScales()))
+//                            .observeOn(Schedulers.io())
+//                            .subscribeOn(Schedulers.io())
+//                            .subscribe(new CompletableObserver() {
+//                                @Override
+//                                public void onSubscribe(Disposable d) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onComplete() {
+//                                    msg.postValue("Pricing Loaded Successfully!");
+//                                }
+//
+//                                @Override
+//                                public void onError(Throwable e) {
+//                                    Log.e(TAG,e.getMessage());
+//                                    msg.postValue(Constant.GENERIC_ERROR);
+//                                }
+//                            });
+//
+//                }
+//                else{
+//                    msg.postValue(response.errorBody().string());
+//                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG,e.getMessage()+"");
+                msg.postValue(Constant.GENERIC_ERROR);
+            }finally {
+                isLoading.postValue(false);
+            }
+
+        });
+    }
+
 
     public Single<AppUpdateModel> updateApp() {
         return webService.checkAppUpdate();
