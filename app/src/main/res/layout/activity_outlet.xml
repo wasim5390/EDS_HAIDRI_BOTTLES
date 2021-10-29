@@ -164,6 +164,43 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/channel" />
 
+
+                    <TextView
+                        android:id="@+id/digitalAccount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:text="Digital Account: "
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/visits" />
+
+                    <TextView
+                        android:id="@+id/disburseAmount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:text="Disburse Amount: "
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/digitalAccount" />
+
+                    <TextView
+                        android:id="@+id/remarks"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:text="Remarks: "
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/disburseAmount" />
+
                     <TextView
                         android:id="@+id/tvName"
                         android:layout_width="0dp"
@@ -204,6 +241,33 @@
                         app:layout_constraintStart_toEndOf="@+id/barrier3"
                         app:layout_constraintTop_toTopOf="@+id/visits" />
 
+
+                    <TextView
+                        android:id="@+id/digitalAccountTv"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/barrier3"
+                        app:layout_constraintTop_toTopOf="@+id/digitalAccount" />
+
+                    <TextView
+                        android:id="@+id/disburseAmountTv"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/barrier3"
+                        app:layout_constraintTop_toTopOf="@+id/disburseAmount" />
+
+                    <TextView
+                        android:id="@+id/remarksTv"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/barrier3"
+                        app:layout_constraintTop_toTopOf="@+id/remarks" />
 
                     <androidx.constraintlayout.widget.Barrier
                         android:id="@+id/barrier3"

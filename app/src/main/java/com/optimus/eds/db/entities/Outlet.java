@@ -101,6 +101,12 @@ public class Outlet implements Serializable {
     private boolean isZeroSaleOutlet;
     @SerializedName("promoTypeId")
     private Integer promoTypeId;
+    @SerializedName("digitalAccount")
+    private String digitalAccount;
+    @SerializedName("disburseAmount")
+    private Double disburseAmount;
+    @SerializedName("remarks")
+    private String remarks;
 
     @TypeConverters(OutletVisitConverter.class)
     private List<OutletVisit> outletVisits = new ArrayList<>();
@@ -420,6 +426,30 @@ public class Outlet implements Serializable {
 
     public void setVpoClassificationId(Integer vpoClassificationId) {
         this.vpoClassificationId = vpoClassificationId;
+    }
+
+    public String getDigitalAccount() {
+        return digitalAccount;
+    }
+
+    public void setDigitalAccount(String digitalAccount) {
+        this.digitalAccount = digitalAccount;
+    }
+
+    public Double getDisburseAmount() {
+        return disburseAmount;
+    }
+
+    public void setDisburseAmount(Double disburseAmount) {
+        this.disburseAmount = disburseAmount;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     public Integer getChannelId() {

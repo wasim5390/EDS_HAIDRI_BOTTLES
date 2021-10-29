@@ -99,6 +99,16 @@ public class OutletDetailActivity extends BaseActivity implements
     @BindView(R.id.tvChannel)
     TextView outletChannel;
 
+    @BindView(R.id.digitalAccountTv)
+    TextView digitalAccountTv;
+
+    @BindView(R.id.disburseAmountTv)
+    TextView disburseAmountTv;
+
+
+    @BindView(R.id.remarksTv)
+    TextView remarksTv;
+
     @BindView(R.id.tvTotalVisit)
     TextView outletVisits;
     @BindView(R.id.monthlySalesText)
@@ -503,6 +513,9 @@ public class OutletDetailActivity extends BaseActivity implements
             outletAddress.setText(!outlet.getAddress().isEmpty() ? outlet.getAddress() : "");
             outletChannel.setText(String.valueOf(outlet.getChannelName()));
             outletName.setText(outlet.getOutletName().concat(" - " + outlet.getLocation()));
+            digitalAccountTv.setText(outlet.getDigitalAccount());
+            disburseAmountTv.setText(outlet.getDisburseAmount() + "");
+            remarksTv.setText(outlet.getRemarks());
             viewModel.setOutlet(outlet);
 
             if (outlet.getLastOrder() != null) {
