@@ -3,23 +3,24 @@ package com.optimus.eds;
 public class Enums {
 
 
-    public enum LimitBy {;
-        public static final int Quantity=1;
-        public static final int Amount=2;
+    public enum LimitBy {
+        ;
+        public static final int Quantity = 1;
+        public static final int Amount = 2;
 
     }
 
-   public enum AccessSequenceCode {
+    public enum AccessSequenceCode {
         DISTRIBUTION_PRODUCT,
         OUTLET_PRODUCT,
         ROUTE_PRODUCT,
         REGION_PRODUCT, PRODUCT, OUTLET, ROUTE, DISTRIBUTION;
     }
 
-   public enum CalculationType {
+    public enum CalculationType {
         ;
-        public static final int Fix = 1 ;
-        public static final int Percentage = 2 ;
+        public static final int Fix = 1;
+        public static final int Percentage = 2;
     }
 
     public enum OperationType {
@@ -44,23 +45,44 @@ public class Enums {
     public enum RoundingRule {
         ;
         public static final int Zero_Decimal_Precision = 1;
-        public static final int  Two_Decimal_Precision = 2;
-        public static final int  Floor = 3;
-        public static final int  Ceiling = 4;
+        public static final int Two_Decimal_Precision = 2;
+        public static final int Floor = 3;
+        public static final int Ceiling = 4;
 
     }
 
-   public enum ScaleBasis {
+    public enum ScaleBasis {
         ;
         public static Integer Quantity = 1;
         public static Integer Value = 2;
         public static Integer Total_Quantity = 3;
     }
 
-    public enum MessageSeverityLevel {;
-        public static Integer    ERROR = 1;
-        public static Integer   WARNING = 2;
-        public static Integer   MESSAGE = 3;
+    public enum MessageSeverityLevel {
+        ;
+        public static Integer ERROR = 1;
+        public static Integer WARNING = 2;
+        public static Integer MESSAGE = 3;
+    }
+
+    public enum EnumPCDefinitionLevel {
+        ;
+        public static Integer ProductLevel =1;
+        public static Integer PackageLevel = 2;
+    }
+
+    public enum EnumFreeGoodsType
+    {
+        ;
+        public static Integer Inclusive = 1;
+        public static Integer Exclusive = 2;
+    }
+
+    public enum EnumFreeGoodsQuantityType
+    {
+        ;
+        public static Integer Primary = 1;
+        public static Integer Optional = 2;
     }
 
 }

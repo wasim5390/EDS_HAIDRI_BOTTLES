@@ -436,8 +436,24 @@ public class HomeRepository {
     }
 
     public Completable deleteAllPricing(){
+
+
         return   Completable.fromAction(()-> pricingDao.deleteAllPriceConditionClasses())
-                .andThen(Completable.fromAction(()->pricingDao.deleteAllPricingAreas()));
+                .andThen(Completable.fromAction(()->pricingDao.deleteAllPricingAreas()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteAllPriceConditionEntities()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteAllPriceBundles()))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceCondition()))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionTypes()))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionScale()))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceAccessSequence()))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionOutletAttribute()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodMasters()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodGroups()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreePriceConditionOutletAttribute()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodDetails()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodExclusives()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodEntityDetails()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedFreeGoods()));
 
     }
 
@@ -502,6 +518,7 @@ public class HomeRepository {
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
                         AsyncTask.execute(() -> {
                             deleteAllPricing();
+
                             pricingDao.insertPriceConditionClasses(response.getPriceConditionClasses());
                             pricingDao.insertPriceConditionType(response.getPriceConditionTypes());
                             pricingDao.insertPriceAccessSequence(response.getPriceAccessSequences());
@@ -510,6 +527,19 @@ public class HomeRepository {
                             pricingDao.insertPriceConditionDetail(response.getPriceConditionDetails());
                             pricingDao.insertPriceConditionEntities(response.getPriceConditionEntities());
                             pricingDao.insertPriceConditionScales(response.getPriceConditionScales());
+                            pricingDao.insertPriceConditionOutletAttributes(response.getPriceConditionOutletAttribute());
+
+                            if (response.getFreeGoodsWrapper() != null){
+
+                                pricingDao.insertFreeGoodMasters(response.freeGoodsWrapper.getFreeGoodMasters());
+                                pricingDao.insertFreeGoodGroups(response.freeGoodsWrapper.getFreeGoodGroups());
+                                pricingDao.insertFreePriceConditionOutletAttributes(response.freeGoodsWrapper.getPriceConditionOutletAttributes());
+                                pricingDao.insertFreeGoodDetails(response.freeGoodsWrapper.getFreeGoodDetails());
+                                pricingDao.insertFreeGoodExclusives(response.freeGoodsWrapper.getFreeGoodExclusives());
+                                pricingDao.insertFreeGoodEntityDetails(response.freeGoodsWrapper.getFreeGoodEntityDetails());
+                                pricingDao.insertOutletAvailedFreeGoods(response.freeGoodsWrapper.getOutletAvailedFreeGoods());
+                            }
+
                             msg.postValue("Pricing Loaded Successfully!");
 
                         });

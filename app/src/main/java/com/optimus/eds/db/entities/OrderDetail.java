@@ -184,7 +184,7 @@ public class OrderDetail implements Cloneable{
     public Integer cartonSelectedFreeGoodQuantity;
 
     @Ignore
-    public Long parentId; //In case of FOC, server will send the FOC row with parentId
+    public Integer parentId; //In case of FOC, server will send the FOC row with parentId
 
     @SerializedName("cartonPriceBreakDown")
     @Ignore
@@ -204,8 +204,10 @@ public class OrderDetail implements Cloneable{
     public List<OrderDetail> unitFreeGoods;
 
 
+    public OrderDetail() {
+    }
 
-    public OrderDetail(@NonNull Long mOrderId,@NonNull Long mProductId, Integer mCartonQuantity, Integer mUnitQuantity) {
+    public OrderDetail(@NonNull Long mOrderId, @NonNull Long mProductId, Integer mCartonQuantity, Integer mUnitQuantity) {
         this.mLocalOrderId = mOrderId;
         this.mProductId = mProductId;
         this.mCartonQuantity = mCartonQuantity;
@@ -454,6 +456,14 @@ public class OrderDetail implements Cloneable{
         return cartonFreeGoods==null?new ArrayList<>():cartonFreeGoods;
     }
 
+    public void setUnitFreeGoods(List<OrderDetail> unitFreeGoods) {
+        this.unitFreeGoods = unitFreeGoods;
+    }
+
+    public void setCartonFreeGoods(List<OrderDetail> cartonFreeGoods) {
+        this.cartonFreeGoods = cartonFreeGoods;
+    }
+
     public List<OrderDetail> getUnitFreeGoods() {
         return unitFreeGoods==null?new ArrayList<>():unitFreeGoods;
     }
@@ -518,6 +528,14 @@ public class OrderDetail implements Cloneable{
 
     public Long getPkgId() {
         return packageId;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public void setPkgId(Long pkgId) {

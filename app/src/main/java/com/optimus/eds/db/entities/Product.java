@@ -68,6 +68,7 @@ public class Product implements Serializable {
     @SerializedName("actualCartonStock")
     public Integer actualCartonStock;
 
+    // match with unit definitionId and carton definition ID
 
     @Ignore
     public Integer qtyCarton,qtyUnit;

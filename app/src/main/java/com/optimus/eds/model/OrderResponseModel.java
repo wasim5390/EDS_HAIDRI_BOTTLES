@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.optimus.eds.db.entities.CartonPriceBreakDown;
 import com.optimus.eds.db.entities.OrderDetail;
+import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
 
 public class OrderResponseModel extends BaseResponse{
@@ -55,6 +56,10 @@ public class OrderResponseModel extends BaseResponse{
     @Expose
     private Long startedDate;
 
+    private Outlet outlet ;
+
+    private Integer channelId ;
+    private Integer organizationId ;
 
     public void setOutletStatus(Integer outletStatus) {
         this.outletStatus = outletStatus;
@@ -213,4 +218,27 @@ public class OrderResponseModel extends BaseResponse{
         return startedDate;
     }
 
+    public Integer getChannelId() {
+        return channelId != null ? channelId : 0;
+    }
+
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
+    }
+
+    public Integer getOrganizationId() {
+        return organizationId != null ? organizationId : 0;
+    }
+
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public Outlet getOutlet() {
+        return outlet;
+    }
+
+    public void setOutlet(Outlet outlet) {
+        this.outlet = outlet;
+    }
 }

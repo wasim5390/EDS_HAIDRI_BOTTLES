@@ -42,6 +42,7 @@ public class PriceConditionType {
     private Integer processingOrder  ;
     private Integer pcDefinitionLevelId   ;
     private Boolean isPromo    ;
+    private Boolean isLRB    ;
 
 
     @Ignore
@@ -149,6 +150,14 @@ public class PriceConditionType {
 
     public void setPcDefinitionLevelId(Integer pcDefinitionLevelId) {
         this.pcDefinitionLevelId = pcDefinitionLevelId;
+    }
+
+    public Boolean getLRB() {
+        return isLRB != null && isLRB;
+    }
+
+    public void setLRB(Boolean LRB) {
+        isLRB = LRB;
     }
 
     public Boolean getPromo() {

@@ -78,6 +78,8 @@ public class Outlet implements Serializable {
     @SerializedName("mtdSale")
     private Double mtdSale;
 
+
+
     @SerializedName("mobileNumber")
     private String mobileNumber;
     @SerializedName("hasHTHDiscount")
@@ -101,12 +103,19 @@ public class Outlet implements Serializable {
     private boolean isZeroSaleOutlet;
     @SerializedName("promoTypeId")
     private Integer promoTypeId;
+    @SerializedName("customerRegistrationTypeId")
+    private Integer customerRegistrationTypeId;
     @SerializedName("digitalAccount")
     private String digitalAccount;
     @SerializedName("disburseAmount")
     private Double disburseAmount;
     @SerializedName("remarks")
     private String remarks;
+
+    @SerializedName("organizationId")
+    private Integer organizationId;
+    @SerializedName("outletPromoConfigId")
+    private Integer outletPromoConfigId;
 
     @TypeConverters(OutletVisitConverter.class)
     private List<OutletVisit> outletVisits = new ArrayList<>();
@@ -421,7 +430,7 @@ public class Outlet implements Serializable {
     }
 
     public Integer getVpoClassificationId() {
-        return vpoClassificationId;
+        return vpoClassificationId != null ? vpoClassificationId : 0;
     }
 
     public void setVpoClassificationId(Integer vpoClassificationId) {
@@ -458,5 +467,29 @@ public class Outlet implements Serializable {
 
     public void setChannelId(Integer channelId) {
         this.channelId = channelId;
+    }
+
+    public Integer getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public Integer getCustomerRegistrationTypeId() {
+        return customerRegistrationTypeId == null ? 0 : customerRegistrationTypeId;
+    }
+
+    public void setCustomerRegistrationTypeId(Integer customerRegistrationTypeId) {
+        this.customerRegistrationTypeId = customerRegistrationTypeId;
+    }
+
+    public Integer getOutletPromoConfigId() {
+        return outletPromoConfigId;
+    }
+
+    public void setOutletPromoConfigId(Integer outletPromoConfigId) {
+        this.outletPromoConfigId = outletPromoConfigId;
     }
 }

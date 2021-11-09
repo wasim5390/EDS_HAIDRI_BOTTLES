@@ -51,6 +51,8 @@ public class    UnitPriceBreakDown {
 
 
 
+    @SerializedName("priceConditionClassId")
+    public Integer mPriceConditionClassId;
     @SerializedName("priceConditionId")
     public Integer mPriceConditionId;
     @SerializedName("priceConditionDetailId")
@@ -198,6 +200,14 @@ public class    UnitPriceBreakDown {
 
     public void setPriceConditionClassOrder(Integer mPriceConditionClassOrder) {
         this.mPriceConditionClassOrder = mPriceConditionClassOrder;
+    }
+
+    public Integer getmPriceConditionClassId() {
+        return mPriceConditionClassId;
+    }
+
+    public void setmPriceConditionClassId(Integer mPriceConditionClassId) {
+        this.mPriceConditionClassId = mPriceConditionClassId;
     }
 
     /**

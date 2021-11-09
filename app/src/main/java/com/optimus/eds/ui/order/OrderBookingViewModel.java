@@ -239,7 +239,6 @@ public class OrderBookingViewModel extends AndroidViewModel {
 
                         }
                     }
-
                 }
 
                 Completable orderUpdateCompletable = repository.updateOrder(order.getOrder());
@@ -436,6 +435,9 @@ public class OrderBookingViewModel extends AndroidViewModel {
             OrderResponseModel responseModel = gson.fromJson(json, OrderResponseModel.class);
             responseModel.setOrderDetails(order.getOrderDetails());
             responseModel.setDistributionId(distributionId);
+            responseModel.setOrganizationId(order.getOutlet().getOrganizationId());
+            responseModel.setChannelId(order.getOutlet().getChannelId());
+            responseModel.setOutlet(order.getOutlet());
             NetworkManager.getInstance().isOnline().subscribe((aBoolean, throwable) -> {
                 if (!aBoolean) {
 
@@ -457,24 +459,33 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     Gson gson = new Gson();
                     BigDecimal orderTotalAmount = BigDecimal.valueOf(orderResponseModel.getPayable());
                     int totalQty = getOrderTotalQty(orderResponseModel.getOrderDetails());
-                    PriceOutputDTO priceOutputDTO = PricingManager.getInstance(getApplication()).getOrderPrice(orderTotalAmount,totalQty,orderResponseModel.getOutletId()
+                    PriceOutputDTO priceOutputDTO = PricingManager.getInstance(getApplication()).getOrderPrice(orderResponseModel , orderTotalAmount,totalQty,orderResponseModel.getOutletId()
                             ,orderResponseModel.getRouteId(),orderResponseModel.getDistributionId());
                     String gsonText = gson.toJson(priceOutputDTO.getPriceBreakdown());
                     List<UnitPriceBreakDown> priceBreakDown =  gson.fromJson(gsonText, new TypeToken<List<UnitPriceBreakDown>>(){}.getType());
                     orderResponseModel.setPriceBreakDown(priceBreakDown);
                     orderResponseModel.setPayable(priceOutputDTO.getTotalPrice().doubleValue());
-                    return orderResponseModel;
-                })
-                .map(orderResponseModel -> {
+
+
+                    for (OrderDetail orderDetail : orderResponseModel.getOrderDetails()){
+                        if (orderDetail.getCartonFreeGoods().size() > 0 || orderDetail.getUnitFreeGoods().size() > 0){
+                            orderDetail.setCartonFreeGoods(new ArrayList<>());
+                            orderDetail.setUnitFreeGoods(new ArrayList<>());
+                        }
+                    }
+                    // call free goods
+                    OrderResponseModel orderResponseModelcheck = PricingManager.getInstance(getApplication()).GetFreeGoods(orderResponseModel);
                     OrderModel orderModel = new OrderModel();
-                    String orderString = new Gson().toJson(orderResponseModel);
+                    String orderString = new Gson().toJson(orderResponseModelcheck);
                     Order order = new Gson().fromJson(orderString, Order.class);
-                    orderModel.setOrderDetails(orderResponseModel.getOrderDetails());
+                    orderModel.setOrderDetails(orderResponseModelcheck.getOrderDetails());
                     orderModel.setOrder(order);
                     orderModel.setOutlet(this.order.getOutlet());
-                    orderModel.setSuccess(orderResponseModel.isSuccess());
+                    orderModel.setSuccess(orderResponseModelcheck.isSuccess());
+
                     return orderModel;
-                }).observeOn(AndroidSchedulers.mainThread())
+                })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::updateOrder, this::onError);
     }

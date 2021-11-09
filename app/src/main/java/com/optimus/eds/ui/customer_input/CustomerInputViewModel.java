@@ -148,6 +148,8 @@ public class CustomerInputViewModel extends AndroidViewModel {
             Log.println(100,"Post Data:",outletId.toString());
             if (available){
                 startUploadService.postValue(outletId);
+            }else{
+             startUploadService.postValue(null);
             }
             isSaving.postValue(false);
 //            orderSaved.postValue(true); by Husnain

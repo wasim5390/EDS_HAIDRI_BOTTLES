@@ -27,10 +27,10 @@ public interface PriceConditionDetailsDao extends PricingDao {
     @Transaction
     Maybe<PriceConditionDetailsWithScale> findPriceConditionDetail(int conditionId, int productDefinitionId);
 
-    @Query("SELECT * FROM PriceConditionDetail Where priceConditionId=:conditionId AND productDefinitionId=:productDefinitionId" +
-            " AND ((:bundleId NOT Null AND (bundleId =:bundleId OR bundleId=0)) OR (:bundleId is Null AND bundleId is Null)) ")
+    @Query("SELECT * FROM PriceConditionDetail Where priceConditionId=:conditionId AND (productDefinitionId=:productDefinitionId" +
+            " OR packageId = :packageId) AND ((:bundleId NOT Null AND (bundleId =:bundleId OR bundleId=0)) OR (:bundleId is Null AND bundleId is Null)) ")
     @Transaction
-    Maybe<PriceConditionDetailsWithScale> findPriceConditionDetailWithBundle(int conditionId, int productDefinitionId,Integer bundleId);
+    Maybe<PriceConditionDetailsWithScale> findPriceConditionDetailWithBundle(int conditionId, int productDefinitionId,Integer bundleId , Long packageId);
 
 
 

@@ -3,12 +3,14 @@ package com.optimus.eds.model;
 import com.google.gson.annotations.SerializedName;
 import com.optimus.eds.BaseModel;
 import com.optimus.eds.db.entities.OutletAvailedPromotion;
+import com.optimus.eds.db.entities.pricing.FreeGoodsWrapper;
 import com.optimus.eds.db.entities.pricing.PriceAccessSequence;
 import com.optimus.eds.db.entities.pricing.PriceBundle;
 import com.optimus.eds.db.entities.pricing.PriceCondition;
 import com.optimus.eds.db.entities.pricing.PriceConditionClass;
 import com.optimus.eds.db.entities.pricing.PriceConditionDetail;
 import com.optimus.eds.db.entities.pricing.PriceConditionEntities;
+import com.optimus.eds.db.entities.pricing.PriceConditionOutletAttribute;
 import com.optimus.eds.db.entities.pricing.PriceConditionScale;
 import com.optimus.eds.db.entities.pricing.PriceConditionType;
 
@@ -40,6 +42,12 @@ public class PricingModel extends BaseModel {
 
     @SerializedName("outletAvailedPromotion")
     public List<OutletAvailedPromotion> outletAvailedPromotions;
+
+    @SerializedName("priceConditionOutletAttribute")
+    public List<PriceConditionOutletAttribute> priceConditionOutletAttribute;
+
+    @SerializedName("freeGoodsWrapper")
+    public FreeGoodsWrapper freeGoodsWrapper;
 
     public List<PriceConditionClass> getPriceConditionClasses() {
         return (priceConditionClasses != null) ? priceConditionClasses : new ArrayList<>();
@@ -111,10 +119,26 @@ public class PricingModel extends BaseModel {
     }
 
     public List<OutletAvailedPromotion> getOutletAvailedPromotions() {
-        return outletAvailedPromotions;
+        return  (outletAvailedPromotions != null) ? outletAvailedPromotions : new ArrayList<>();
     }
 
     public void setOutletAvailedPromotions(List<OutletAvailedPromotion> outletAvailedPromotions) {
         this.outletAvailedPromotions = outletAvailedPromotions;
+    }
+
+    public List<PriceConditionOutletAttribute> getPriceConditionOutletAttribute() {
+        return ( priceConditionOutletAttribute  != null ) ? priceConditionOutletAttribute : new ArrayList<>();
+    }
+
+    public void setPriceConditionOutletAttribute(List<PriceConditionOutletAttribute> priceConditionOutletAttribute) {
+        this.priceConditionOutletAttribute = priceConditionOutletAttribute;
+    }
+
+    public FreeGoodsWrapper getFreeGoodsWrapper() {
+        return freeGoodsWrapper;
+    }
+
+    public void setFreeGoodsWrapper(FreeGoodsWrapper freeGoodsWrapper) {
+        this.freeGoodsWrapper = freeGoodsWrapper;
     }
 }

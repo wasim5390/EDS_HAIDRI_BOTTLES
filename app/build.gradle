@@ -7,7 +7,7 @@ android {
         applicationId "com.optimus.eds"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 41
+        versionCode 42
         versionName "1.0.21"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

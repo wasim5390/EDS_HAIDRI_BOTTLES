@@ -10,14 +10,28 @@ public class ProductQuantity {
     @PrimaryKey
     public Integer ProductDefinitionId;
     public int Quantity;
+    public Long packageId;
 
 
-    public ProductQuantity(int productDefinitionId, int quantity) {
+    public ProductQuantity(int productDefinitionId, int quantity , Long packageId) {
         ProductDefinitionId = productDefinitionId;
         Quantity = quantity;
+        this.packageId = packageId;
     }
 
     public ProductQuantity() {
+    }
+
+    public void setProductDefinitionId(Integer productDefinitionId) {
+        ProductDefinitionId = productDefinitionId;
+    }
+
+    public Long getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(Long packageId) {
+        this.packageId = packageId;
     }
 
     public int getProductDefinitionId() {

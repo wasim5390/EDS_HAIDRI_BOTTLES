@@ -13,6 +13,7 @@ import com.optimus.eds.db.entities.ProductGroup;
 
 import java.util.List;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
@@ -43,6 +44,13 @@ public interface ProductsDao {
 
     @Query("SELECT * FROM Package WHERE packageId=:id")
     LiveData<Package> findPackageById(Long id);
+
+
+    @Query("SELECT * FROM Product WHERE unitDefinitionId=:productDefinitionId")
+    Maybe<Product> checkUnitProduct(Integer productDefinitionId);
+
+    @Query("SELECT * FROM Product WHERE cartonDefinitionId=:productDefinitionId")
+    Maybe<Product> checkCartonProduct(Integer productDefinitionId);
 
     @Insert(onConflict = REPLACE)
     void insertProduct(Product product);

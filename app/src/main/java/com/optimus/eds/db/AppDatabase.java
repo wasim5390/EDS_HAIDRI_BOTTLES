@@ -10,6 +10,12 @@ import android.os.Build;
 
 import com.optimus.eds.BuildConfig;
 import com.optimus.eds.db.converters.AssetConverter;
+import com.optimus.eds.db.converters.FreeGoodDetailsConverter;
+import com.optimus.eds.db.converters.FreeGoodEntityDetailsConverter;
+import com.optimus.eds.db.converters.FreeGoodExclusivesConverter;
+import com.optimus.eds.db.converters.FreeGoodGroupsConverter;
+import com.optimus.eds.db.converters.GroupFreeGoodDetailConverter;
+import com.optimus.eds.db.converters.KeyValueConverter;
 import com.optimus.eds.db.converters.LastOrderConverter;
 import com.optimus.eds.db.converters.LookUpConverter;
 import com.optimus.eds.db.converters.MerchandiseItemConverter;
@@ -42,6 +48,13 @@ import com.optimus.eds.db.entities.Promotion;
 import com.optimus.eds.db.entities.Route;
 import com.optimus.eds.db.entities.Task;
 import com.optimus.eds.db.entities.UnitPriceBreakDown;
+import com.optimus.eds.db.entities.pricing.FreeGoodDetails;
+import com.optimus.eds.db.entities.pricing.FreeGoodEntityDetails;
+import com.optimus.eds.db.entities.pricing.FreeGoodExclusives;
+import com.optimus.eds.db.entities.pricing.FreeGoodGroups;
+import com.optimus.eds.db.entities.pricing.FreeGoodMasters;
+import com.optimus.eds.db.entities.pricing.FreePriceConditionOutletAttributes;
+import com.optimus.eds.db.entities.pricing.OutletAvailedFreeGoods;
 import com.optimus.eds.db.entities.pricing.PriceAccessSequence;
 import com.optimus.eds.db.entities.pricing.PriceBundle;
 import com.optimus.eds.db.entities.pricing.PriceCondition;
@@ -49,6 +62,7 @@ import com.optimus.eds.db.entities.pricing.PriceConditionAvailed;
 import com.optimus.eds.db.entities.pricing.PriceConditionClass;
 import com.optimus.eds.db.entities.pricing.PriceConditionDetail;
 import com.optimus.eds.db.entities.pricing.PriceConditionEntities;
+import com.optimus.eds.db.entities.pricing.PriceConditionOutletAttribute;
 import com.optimus.eds.db.entities.pricing.PriceConditionScale;
 import com.optimus.eds.db.entities.pricing.PriceConditionType;
 import com.optimus.eds.db.entities.pricing.PriceScaleBasis;
@@ -58,15 +72,20 @@ import com.optimus.eds.ui.order.pricing.ProductQuantity;
 
 @Database(entities = {Route.class, Outlet.class, Merchandise.class, Asset.class,ProductGroup.class,
         Product.class, Package.class, Order.class, OrderStatus.class,
-        OrderDetail.class, CartonPriceBreakDown.class,
+        OrderDetail.class, CartonPriceBreakDown.class, PriceConditionOutletAttribute.class,
         UnitPriceBreakDown.class, OutletAvailedPromotion.class, CustomerInput.class, Task.class, Promotion.class , LookUp.class ,
         PriceAccessSequence.class,
         PriceBundle.class, PriceCondition.class, PriceConditionAvailed.class,
-        PriceConditionClass.class,
+        PriceConditionClass.class, FreeGoodDetails.class , FreeGoodEntityDetails.class ,
+        FreeGoodExclusives.class , FreeGoodGroups.class , FreeGoodMasters.class , FreePriceConditionOutletAttributes.class,
+        OutletAvailedFreeGoods.class,
         PriceConditionDetail.class , ProductQuantity.class, PriceConditionEntities.class,
         PriceConditionScale.class, PriceConditionType.class, PriceScaleBasis.class,
         PricingLevels.class,  PricingArea.class}, version = BuildConfig.VERSION_CODE, exportSchema = false )
-@TypeConverters({OutletVisitConverter.class ,MerchandiseItemConverter.class, LastOrderConverter.class, AssetConverter.class, LookUpConverter.class,  ProductConverter.class , PromotionConverter.class})
+@TypeConverters({OutletVisitConverter.class ,MerchandiseItemConverter.class, LastOrderConverter.class, AssetConverter.class, LookUpConverter.class
+        ,  ProductConverter.class , PromotionConverter.class , FreeGoodExclusivesConverter.class,
+        KeyValueConverter.class , GroupFreeGoodDetailConverter.class , FreeGoodGroupsConverter.class
+        , FreeGoodDetailsConverter.class , FreeGoodEntityDetailsConverter.class , KeyValueConverter.class})
 
 public abstract class AppDatabase extends RoomDatabase {
 

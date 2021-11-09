@@ -121,6 +121,10 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         viewModel.getStartUploadService().observe(this, outletId -> {
             if (outletId != null)
                 UploadOrdersService.startUploadService(getApplication(), outletId);
+            else{
+                setResult(RESULT_OK);
+                finish();
+            }
         });
         viewModel.orderSaved().observe(this, aBoolean -> {
             if (aBoolean) {
@@ -175,6 +179,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         if (isLoading) {
             showProgress();
         } else {
+            findViewById(R.id.btnNext).setEnabled(false);
             hideProgress();
         }
     }
