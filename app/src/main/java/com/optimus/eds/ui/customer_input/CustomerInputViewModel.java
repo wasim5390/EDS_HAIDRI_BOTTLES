@@ -151,7 +151,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
             }else{
              startUploadService.postValue(null);
             }
-            isSaving.postValue(false);
+//            isSaving.postValue(false);
 //            orderSaved.postValue(true); by Husnain
 
         });

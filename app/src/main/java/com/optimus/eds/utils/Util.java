@@ -1,6 +1,7 @@
 package com.optimus.eds.utils;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -412,6 +413,30 @@ public class Util {
 
     }
 
+    public static File saveToInternalStorage(Bitmap bitmapImage , Context context){
+        ContextWrapper cw = new ContextWrapper(context);
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir " + System.currentTimeMillis(), Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath=new File(directory,"profile.jpg");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return mypath;
+    }
+
     public static Bitmap captureImageOrientation(String path , Bitmap bitmap){
         ExifInterface ei = null;
         try {
@@ -424,6 +449,7 @@ public class Util {
             switch(orientation) {
 
                 case ExifInterface.ORIENTATION_ROTATE_90:
+                case 0:
                     rotatedBitmap = rotateImage(bitmap, 90);
                     break;
 
@@ -448,6 +474,28 @@ public class Util {
 
         return null;
     }
+
+//    private void bitmapToFile(Bitmap  bitmap): Uri {
+//        // Get the context wrapper
+//        val wrapper = ContextWrapper(app)
+//
+//        // Initialize a new file instance to save bitmap object
+//        var file = wrapper.getDir("Images",Context.MODE_PRIVATE)
+//        file = File(file,"${UUID.randomUUID()}.jpg")
+//
+//        try{
+//            // Compress the bitmap and save in jpg format
+//            val stream:OutputStream = FileOutputStream(file)
+//            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
+//            stream.flush()
+//            stream.close()
+//        }catch (e:IOException){
+//            e.printStackTrace()
+//        }
+//
+//        // Return the saved bitmap uri
+//        return Uri.parse(file.absolutePath)
+//    }
 
     public static Bitmap rotateImage(Bitmap source, float angle) {
         Matrix matrix = new Matrix();

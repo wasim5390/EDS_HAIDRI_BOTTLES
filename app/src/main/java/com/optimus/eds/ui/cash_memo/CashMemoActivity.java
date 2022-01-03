@@ -129,8 +129,6 @@ public class CashMemoActivity extends BaseActivity {
             cashMemoEditable = orderModel.getOrder().getOrderStatus() != 1;
             this.orderModel = orderModel;
 //            configUi(); Added By Husnain
-
-
             updateCart(orderModel.getOrderDetailAndCPriceBreakdowns());
             updatePricesOnUi(orderModel);
         });
@@ -177,7 +175,8 @@ public class CashMemoActivity extends BaseActivity {
             units+=uQty!=null?uQty:0;
         }
         tvQty.setText(carton +"."+ units);
-        tvFreeQty.setText(String.valueOf(order.getFreeAvailableQty()));
+        if (order.getFreeAvailableQty() != null)
+            tvFreeQty.setText(String.valueOf(order.getFreeAvailableQty().intValue()));
 
     }
 

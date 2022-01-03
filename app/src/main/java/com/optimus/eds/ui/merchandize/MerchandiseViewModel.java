@@ -62,16 +62,18 @@ public class MerchandiseViewModel extends AndroidViewModel {
 
     public void saveImages(String path, int type) {
 
-        imagesCount++;
-        MerchandiseImage item = new MerchandiseImage();
-        item.setId(imagesCount);
-        //item.setBase64Image(base64Image);
-        item.setPath(path);
-        item.setType(type);
+        if (path != null){
+            imagesCount++;
+            MerchandiseImage item = new MerchandiseImage();
+            item.setId(imagesCount);
+            //item.setBase64Image(base64Image);
+            item.setPath(path);
+            item.setType(type);
 
-        listImages.add(item);
-        Log.i("ImagePath::",path);
-        setEnableNextButton(type);
+            listImages.add(item);
+            Log.i("ImagePath::",path);
+            setEnableNextButton(type);
+        }
 
     }
 

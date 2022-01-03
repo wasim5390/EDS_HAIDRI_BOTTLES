@@ -446,7 +446,8 @@ public class OrderBookingViewModel extends AndroidViewModel {
 //                    isSaving.postValue(false);
                 } else {
                     new Gson().toJson(responseModel);
-                    disposable.add(calculateFromServer(responseModel));
+//                    disposable.add(calculateFromServer(responseModel));
+                    disposable.add(calculateLocally(responseModel));
                 }
             });
         }

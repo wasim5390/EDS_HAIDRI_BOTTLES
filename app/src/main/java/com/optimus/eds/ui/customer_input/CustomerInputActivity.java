@@ -237,6 +237,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
             return;
         }
 
+        findViewById(R.id.btnNext).setEnabled(false);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirmation");
         builder.setMessage("Are you sure you want to order?");
@@ -249,10 +250,14 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
             String base64Sign = Util.compressBitmap(signature);
 
             showProgress();
-            viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDateInMillis, statusId);
             findViewById(R.id.btnNext).setEnabled(false);
+            viewModel.saveOrder(mobileNumber, remarks, cnic, strn, base64Sign, deliveryDateInMillis, statusId);
         });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton("Cancel", (dialog, which) ->{
+            findViewById(R.id.btnNext).setEnabled(true);
+            dialog.cancel();
+        } );
+        builder.setCancelable(false);
         builder.show();
 
     }
@@ -290,6 +295,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
                 MasterModel response = (MasterModel) intent.getSerializableExtra("Response");
                 hideProgress();
                 if(response!=null && response.isSuccess()){
+                    hideProgress();
                     Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
                     viewModel.setOrderSaved(true);
                     viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken() , statusId);

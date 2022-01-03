@@ -53,6 +53,7 @@ public class MerchandiseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         MerchandiseListHolder merchandiseListHolder = (MerchandiseListHolder) holder;
         MerchandiseImage merchandiseImage = merchandiseImages.get(position);
         File imgFile = new File(merchandiseImage.getPath());
+
         Picasso.get().load(imgFile).fit().into(merchandiseListHolder.imageView);
 
 //        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");

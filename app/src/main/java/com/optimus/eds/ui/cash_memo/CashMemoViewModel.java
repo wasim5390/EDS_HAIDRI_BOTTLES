@@ -58,7 +58,7 @@ public class CashMemoViewModel extends AndroidViewModel {
 
         repository.findOrder(outletId).map(orderModel -> {
            // List<OrderDetail> freeGoods = new ArrayList<>();
-            float freeQty =0f;
+            Double freeQty =0.0;
             for(OrderDetailAndPriceBreakdown orderWithDetails:orderModel.getOrderDetailAndCPriceBreakdowns()){
                 Integer unitFreeQty = orderWithDetails.getOrderDetail().getUnitFreeGoodQuantity();
                 Integer cartonFreeQty = orderWithDetails.getOrderDetail().getCartonFreeGoodQuantity();
@@ -70,17 +70,21 @@ public class CashMemoViewModel extends AndroidViewModel {
                     cartonFreeQty=0;unitFreeQty=0;
                     for(OrderDetail freeItem :orderWithDetails.getOrderDetail().getCartonFreeGoods()){
                         if (freeItem.getCartonQuantity() != null) // Added By Husnain
-                        cartonFreeQty += freeItem.getCartonQuantity();
+                            cartonFreeQty += freeItem.getCartonQuantity();
+                        else if (freeItem.getUnitQuantity() != null)
+                            unitFreeQty += freeItem.getUnitQuantity();
                     }
 
                     for(OrderDetail freeItem :orderWithDetails.getOrderDetail().getUnitFreeGoods()){
                         if (freeItem.getUnitQuantity() != null) // Added By Husnain
                             unitFreeQty += freeItem.getUnitQuantity();
+                        else if (freeItem.getCartonQuantity() != null)
+                            cartonFreeQty += freeItem.getCartonQuantity();
                     }
                 }
 
-                String freeQtyStr = Util.convertToDecimalQuantity(cartonFreeQty==null?0:cartonFreeQty,unitFreeQty==null?0:unitFreeQty);
-                freeQty += Float.valueOf(freeQtyStr);
+//                String freeQtyStr = Util.convertToDecimalQuantity(cartonFreeQty==null?0:cartonFreeQty,unitFreeQty==null?0:unitFreeQty);
+                freeQty += unitFreeQty;//Double.parseDouble(freeQtyStr);
 
                 //freeGoods.addAll(orderWithDetails.getOrderDetail().getCartonFreeGoods());
                 // freeGoods.addAll(orderWithDetails.getOrderDetail().getUnitFreeGoods());

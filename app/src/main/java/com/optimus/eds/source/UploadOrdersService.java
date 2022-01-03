@@ -145,10 +145,14 @@ public class UploadOrdersService extends IntentService {
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .blockingGet();
-        String json = status.getData() != null ? status.getData() : ""; // Added Check By Husnain
-        MasterModel masterModel = new Gson().fromJson(json,MasterModel.class);
 
-        uploadMasterData(masterModel,status.getStatus());
+        if (status != null){
+            String json = status.getData() != null ? status.getData() : ""; // Added Check By Husnain
+            MasterModel masterModel = new Gson().fromJson(json,MasterModel.class);
+
+            uploadMasterData(masterModel,status.getStatus());
+        }
+
 
     }
 
@@ -218,8 +222,8 @@ public class UploadOrdersService extends IntentService {
         MasterModel masterModel = gson.fromJson(orderStatus.getData(),MasterModel.class);
 
         return RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).toObservable()
+                .subscribeOn(Schedulers.io())
                 .onErrorReturn(throwable -> {
                     MasterModel model = new MasterModel();
                     model.setSuccess(false);

@@ -107,7 +107,7 @@ public class HomeRepository {
         webService = api;
         this.executor = executor;
         WorkStatus syncDate = preferenceUtil.getWorkSyncData();
-        onDayStartLiveData.postValue(syncDate.getDayStarted() != 0);
+//        onDayStartLiveData.postValue(syncDate.getDayStarted() != 0);
 
         // Added by Husnain
         targetVsAchievement = new MutableLiveData<>();
@@ -144,6 +144,19 @@ public class HomeRepository {
 
     }
 
+
+    public Integer priceConditionClassValidation(){
+        return pricingDao.priceConditionClassValidation().subscribeOn(Schedulers.io()).blockingGet();
+    }
+
+    public Integer priceConditionValidation(){
+        return pricingDao.priceConditionValidation().subscribeOn(Schedulers.io()).blockingGet();
+    }
+
+    public Integer priceConditionTypeValidation(){
+        return pricingDao.priceConditionTypeValidation().subscribeOn(Schedulers.io()).blockingGet();
+    }
+
     /**
      * Fetch current day Routes/Outlets
      *
@@ -168,7 +181,7 @@ public class HomeRepository {
                     //
                     Crashlytics.setString("dist_id", response.body().getDistributionId() + "");
                     Crashlytics.setUserIdentifier(response.body().getEmployeeName());
-                    if (response.body() != null)
+                    if (response.body() != null && response.body().getDistributionId() != null)
                         preferenceUtil.saveDistributionId(response.body().getDistributionId());
                     preferenceUtil.saveConfig(response.body().getConfiguration());
                     deleteAllRoutesAssets()
@@ -309,11 +322,10 @@ public class HomeRepository {
                         productsDao.insertProducts(response.getProductList());
                     });
 
-
                 } else {
+                    isLoading.postValue(false);
                     msg.postValue(response.getResponseMsg() != null ? response.getResponseMsg() : "Unable to refresh stock");
                 }
-                isLoading.postValue(false);
             }, throwable -> {
                 throwable.printStackTrace();
                 msg.postValue(Constant.GENERIC_ERROR);
@@ -510,9 +522,10 @@ public class HomeRepository {
 
 
     public void loadPricing() {
+
         executor.execute(() -> {
             try {
-
+                isLoading.postValue(true);
                 Observable<PricingModel> pricingModelResponse = webService.loadPricing();
                 pricingModelResponse.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
@@ -542,10 +555,10 @@ public class HomeRepository {
 
                             msg.postValue("Pricing Loaded Successfully!");
 
+                            isLoading.postValue(false);
+
                         });
 
-
-                    isLoading.postValue(false);
                 }, throwable -> {
                     throwable.printStackTrace();
                     msg.postValue(Constant.GENERIC_ERROR);
@@ -591,7 +604,6 @@ public class HomeRepository {
                 e.printStackTrace();
                 Log.e(TAG,e.getMessage()+"");
                 msg.postValue(Constant.GENERIC_ERROR);
-            }finally {
                 isLoading.postValue(false);
             }
 

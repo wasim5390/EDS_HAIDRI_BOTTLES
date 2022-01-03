@@ -12,7 +12,6 @@ public class EdsApplication extends MultiDexApplication  {
 
     public static EdsApplication getInstance() {
         return instance==null?new EdsApplication():instance;
-
     }
 
     public static Context getContext() {

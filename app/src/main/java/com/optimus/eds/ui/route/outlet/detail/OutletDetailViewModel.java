@@ -35,6 +35,7 @@ import com.optimus.eds.source.JobIdManager;
 import com.optimus.eds.source.MerchandiseUploadService;
 import com.optimus.eds.source.StatusRepository;
 import com.optimus.eds.ui.merchandize.MerchandiseRepository;
+import com.optimus.eds.utils.NetworkManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -97,12 +98,23 @@ public class OutletDetailViewModel extends AndroidViewModel {
         masterModel.setLocation(location.getLatitude(),location.getLongitude());
         String finalJson = new GsonBuilder().setPrettyPrinting().create().toJson(masterModel);
         Log.i("JSON:: ",finalJson);
+
         statusRepository.findOrderStatus(outletId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io()).subscribe(status -> {
             status.setData(finalJson);
             statusRepository.update(status);
-            startUploadService.postValue(true);
+        });
+
+        NetworkManager.getInstance().isOnline().subscribe((available, throwable) -> {
+            Log.println(100,"Post Data:",outletId.toString());
+            if (available){
+                startUploadService.postValue(true);
+            }else{
+                startUploadService.postValue(false);
+            }
+//            isSaving.postValue(false);
+//            orderSaved.postValue(true); by Husnain
 
         });
 
@@ -190,6 +202,8 @@ public class OutletDetailViewModel extends AndroidViewModel {
             orderStatus.setOutletVisitStartTime(outletVisitStartTime);
             statusRepository.insertStatus(orderStatus);
             repository.updateOutlet(outlet);
+
+
             uploadStatus.postValue(outletStatus != 1);
         }
 

@@ -6,15 +6,27 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.ActivityResult;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.OnFailureListener;
+import com.google.android.play.core.tasks.OnSuccessListener;
+import com.google.android.play.core.tasks.Task;
 import com.google.gson.Gson;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.Constant;
@@ -35,14 +47,19 @@ import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Random;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
 
 public class MainActivity extends BaseActivity {
@@ -75,6 +92,8 @@ public class MainActivity extends BaseActivity {
     private ActionBarDrawerToggle drawerToggle;
     HomeViewModel viewModel;
 
+    private AppUpdateManager appUpdateManager;
+
     public static void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
         context.startActivity(starter);
@@ -85,11 +104,57 @@ public class MainActivity extends BaseActivity {
         return R.layout.activity_home;
     }
 
+    private void checkUpdate() {
+        // Returns an intent object that you use to check for an update.
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+        // Checks that the platform will allow the specified type of update.
+        Log.d(TAG, "Checking for updates");
+
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)) {
+                // Request the update.
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                            appUpdateInfo,
+                            // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
+                            IMMEDIATE,
+                            // The current activity making the update request.
+                            this,
+                            // Include a request code to later monitor this update request.
+                            1122);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "Update available");
+            } else {
+                Log.d(TAG, "No Update available");
+
+                init();
+            }
+        }).addOnFailureListener(e -> {
+
+            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            init();
+        });
+
+    }
+
     @Override
     public void created(Bundle savedInstanceState) {
 
+        init();
+//        appUpdateManager = AppUpdateManagerFactory.create(this);
+//
+//        checkUpdate();
+
+        Crashlytics.log(Log.ERROR, "YourTAG", "YourMessage");
+
+    }
 
 
+    private void init() {
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         setObservers();
@@ -100,7 +165,13 @@ public class MainActivity extends BaseActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         TextView navProfileName = nav.getHeaderView(0).getRootView().findViewById(R.id.profileName);
 
-        navProfileName.setText(PreferenceUtil.getInstance(this).getUsername());
+        if (PreferenceUtil.getInstance(this).getUsername().contains("@")){
+            String[] usernameString = PreferenceUtil.getInstance(this).getUsername().split("@");
+            navProfileName.setText(usernameString[0]);
+        }else{
+            navProfileName.setText(PreferenceUtil.getInstance(this).getUsername());
+        }
+
         nav.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             switch (id) {
@@ -133,11 +204,10 @@ public class MainActivity extends BaseActivity {
                 case R.id.exit:
                     AlertDialogManager.getInstance().showVerificationAlertDialog(this,
                             getString(R.string.logout), getString(R.string.are_you_sure_to_logout), verified -> {
-                                if(verified)
-                                {
-                                    PreferenceUtil.getInstance(this).clearToken();
-                                    finishAffinity();
+                                if (verified) {
+                                    PreferenceUtil.getInstance(this).clearAllPreferences();
                                     LoginActivity.start(this);
+                                    finish();
 
                                 }
                             });
@@ -156,24 +226,24 @@ public class MainActivity extends BaseActivity {
 //        setBarChart();
 
         if (PreferenceUtil.getInstance(this).getTargetAchievement() != null)
-            setTargetVsAchievement(new Gson().fromJson(PreferenceUtil.getInstance(this).getTargetAchievement() , TargetVsAchievement.class));
+            setTargetVsAchievement(new Gson().fromJson(PreferenceUtil.getInstance(this).getTargetAchievement(), TargetVsAchievement.class));
 
     }
 
     private void setTargetVsAchievement(TargetVsAchievement targetVsAchievement) {
 
-        if (targetVsAchievement != null){
+        if (targetVsAchievement != null) {
             keyOne.setText(R.string.targetQuantity);
-            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetQuantity() != null ? targetVsAchievement.getTargetQuantity() : "0" ));
+            keyOneValue.setText(String.valueOf(targetVsAchievement.getTargetQuantity() != null ? targetVsAchievement.getTargetQuantity() : "0"));
 
             keyTwo.setText(R.string.achieved_quantity);
             keyTwoValue.setText(String.valueOf(targetVsAchievement.getAchievedQuantityPercentage() != null ? targetVsAchievement.getAchievedQuantityPercentage() : "0"));
 
             keyThree.setText(R.string.perDayQuantity);
-            keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity()  != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : "0"));
+            keyThreeValue.setText(String.valueOf(targetVsAchievement.getPerDayRequiredSaleQuantity() != null ? targetVsAchievement.getPerDayRequiredSaleQuantity() : "0"));
 
             keyFour.setText(R.string.mtdSales);
-            keyFourValue.setText(String.valueOf(targetVsAchievement.getMtdSales()  != null ? targetVsAchievement.getMtdSales() : "0"));
+            keyFourValue.setText(String.valueOf(targetVsAchievement.getMtdSales() != null ? targetVsAchievement.getMtdSales() : "0"));
 
         }
 
@@ -238,23 +308,22 @@ public class MainActivity extends BaseActivity {
     public void onMainMenuClick(View view) {
         switch (view.getId()) {
             case R.id.btnStartDay:
-                if(PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
+                if (PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
                     showMessage(getString(R.string.already_started_day));
-                else{
+                else {
                     showProgress();
                     viewModel.startDay();
                 }
                 break;
             case R.id.btnDownload:
-                if(!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
-                {
+                if (!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted()) {
                     showMessage(Constant.ERROR_DAY_NO_STARTED);
                     return;
                 }
-                AlertDialogManager.getInstance().showVerificationAlertDialog(this,getString(R.string.update_routes_title),
+                AlertDialogManager.getInstance().showVerificationAlertDialog(this, getString(R.string.update_routes_title),
                         getString(R.string.update_routes_msg)
-                        ,verified -> {
-                            if(verified){
+                        , verified -> {
+                            if (verified) {
 //                                showProgress();
                                 viewModel.download();
                             }
@@ -262,19 +331,27 @@ public class MainActivity extends BaseActivity {
 
                 break;
             case R.id.btnPlannedCall:
-                if(!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
-                {
+                if (!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted()) {
                     showMessage(Constant.ERROR_START_DAY_FIRST);
                     return;
                 }
-                RoutesActivity.start(this);
+
+                Integer priceConditionClass = viewModel.priceConditionClassValidation();
+                Integer priceCondition = viewModel.priceConditionValidation();
+                Integer priceConditionType = viewModel.priceConditionTypeValidation();
+
+                if (priceConditionClass != 0 && priceCondition != 0 && priceConditionType != 0)
+                    RoutesActivity.start(this);
+                else{
+                    Toast.makeText(this, "Please download data", Toast.LENGTH_SHORT).show();
+                }
 //                OutletListActivity.start(this);
                 break;
             case R.id.btnReports:
 
-                AlertDialogManager.getInstance().showReportsSelectionDialog(this,"Select Report",
+                AlertDialogManager.getInstance().showReportsSelectionDialog(this, "Select Report",
                         object -> {
-                            if(object.getId()==0)
+                            if (object.getId() == 0)
                                 ReportsActivity.start(this);
                             else
                                 StockActivity.start(this);
@@ -282,24 +359,22 @@ public class MainActivity extends BaseActivity {
 
                 break;
             case R.id.btnUpload:
-                if(!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
-                {
+                if (!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted()) {
                     showMessage(Constant.ERROR_DAY_NO_STARTED);
                     return;
                 }
                 viewModel.pushOrdersToServer();
                 break;
             case R.id.btnEndDay:
-                if(!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted())
-                {
+                if (!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted()) {
                     showMessage(Constant.ERROR_DAY_NO_STARTED);
                     return;
                 }
 
                 viewModel.findOutletsWithPendingTasks().subscribe(outlets -> {
-                    if(outlets.size()>0 && PreferenceUtil.getInstance(this).getConfig().getEndDayOnPjpCompletion()){
+                    if (outlets.size() > 0 && PreferenceUtil.getInstance(this).getConfig().getEndDayOnPjpCompletion()) {
                         viewModel.getErrorMsg().postValue("Please complete your tasks");
-                    }else{
+                    } else {
                         viewModel.getEndDayLiveData().postValue(true);
                     }
                 });
@@ -307,37 +382,37 @@ public class MainActivity extends BaseActivity {
         }
 
 
-
     }
 
-    public void setObservers(){
+    public void setObservers() {
         viewModel.isLoading().observe(this, this::setProgress);
         viewModel.getErrorMsg().observe(this, this::showMessage);
         viewModel.onStartDay().observe(this, aBoolean -> {
-            if(aBoolean) {
+            if (aBoolean) {
                 findViewById(R.id.btnStartDay).setClickable(false);
                 findViewById(R.id.btnStartDay).setAlpha(0.5f);
-                String date = Util.formatDate(Util.DATE_FORMAT_3,PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate());
-                AlertDialogManager.getInstance().showAlertDialog(this, "Day Started! ( " + date+" )", "Your day has been started");
 
-                tvRunningDay.setText("( "+date+" )");
-                tvRunningDay.setVisibility(View.VISIBLE);
+                if(PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate() != 0){
+                    String date = Util.formatDate(Util.DATE_FORMAT_3, PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate());
+                    AlertDialogManager.getInstance().showAlertDialog(this, "Day Started! ( " + date + " )", "Your day has been started");
+                    tvRunningDay.setText("( " + date + " )");
+                    tvRunningDay.setVisibility(View.VISIBLE);
+                }
 
-            }else{
+            } else {
                 findViewById(R.id.btnStartDay).setClickable(true);
                 findViewById(R.id.btnStartDay).setAlpha(1.0f);
                 WorkStatus status = new WorkStatus(0);
                 PreferenceUtil.getInstance(this).saveWorkSyncData(status);
                 tvRunningDay.setVisibility(View.GONE);
-
             }
         });
 
 
-        viewModel.getTargetVsAchievement().observe(this  , aBoolean -> {
+        viewModel.getTargetVsAchievement().observe(this, aBoolean -> {
             hideProgress();
             if (aBoolean)
-                setTargetVsAchievement(new Gson().fromJson(PreferenceUtil.getInstance(this).getTargetAchievement() , TargetVsAchievement.class));
+                setTargetVsAchievement(new Gson().fromJson(PreferenceUtil.getInstance(this).getTargetAchievement(), TargetVsAchievement.class));
         });
 
       /*  viewModel.dayStarted().observe(this, aBoolean -> {
@@ -351,31 +426,30 @@ public class MainActivity extends BaseActivity {
         });*/
 
         viewModel.dayEnded().observe(this, aBoolean -> {
-            if(aBoolean){
+            if (aBoolean) {
                 findViewById(R.id.btnEndDay).setClickable(false);
                 findViewById(R.id.btnEndDay).setAlpha(0.5f);
                 tvRunningDay.setVisibility(View.GONE);
             }
         });
 
-        viewModel.getEndDayLiveData().observe(this,aBoolean -> {
-            String endDate = Util.formatDate(Util.DATE_FORMAT_2,PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate());
-            AlertDialogManager.getInstance().showVerificationAlertDialog(this,getString(R.string.day_closing_title).concat(" ( "+endDate+" )"),
+        viewModel.getEndDayLiveData().observe(this, aBoolean -> {
+            String endDate = Util.formatDate(Util.DATE_FORMAT_2, PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate());
+            AlertDialogManager.getInstance().showVerificationAlertDialog(this, getString(R.string.day_closing_title).concat(" ( " + endDate + " )"),
                     getString(R.string.end_day_msg)
-                    ,verified -> {
-                        if(verified)
+                    , verified -> {
+                        if (verified)
                             viewModel.updateDayEndStatus();
                     });
         });
-        viewModel.appUpdateLiveData().observe(this,appUpdateModel -> {
+        viewModel.appUpdateLiveData().observe(this, appUpdateModel -> {
             boolean appNeedToUpdate = AppUpdater.getInstance().apkChanged(appUpdateModel);
-            if(appNeedToUpdate)
-                ApkDownloader.getInstance().downloadApk(this,appUpdateModel);
+            if (appNeedToUpdate)
+                ApkDownloader.getInstance().downloadApk(this, appUpdateModel);
             else
                 showMessage(getString(R.string.already_updated));
         });
     }
-
 
 
     @Override
@@ -389,7 +463,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void showProgress() {
-        showProgressD(this,true);
+        showProgressD(this, true);
     }
 
     @Override
@@ -410,8 +484,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
-
-    BroadcastReceiver downloadReceiver=new BroadcastReceiver() {
+    BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
             DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
@@ -423,22 +496,20 @@ public class MainActivity extends BaseActivity {
             Cursor cursor = downloadManager.query(new DownloadManager.Query().setFilterById(downloadId));
             if (cursor.moveToFirst()) {
                 int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                if(status == DownloadManager.STATUS_SUCCESSFUL){
+                if (status == DownloadManager.STATUS_SUCCESSFUL) {
 
                     // download is successful
                     String uri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
                     File file = new File(Uri.parse(uri).getPath());
-                    AppUpdater.getInstance().installApk(ctxt,file);
+                    AppUpdater.getInstance().installApk(ctxt, file);
                     hideProgress();
 
-                }
-                else {
+                } else {
                     hideProgress();
                     // download is assumed cancelled
                     Toast.makeText(ctxt, getString(R.string.download_cancel), Toast.LENGTH_SHORT).show();
                 }
-            }
-            else {
+            } else {
                 hideProgress();
                 // download is assumed cancelled
                 Toast.makeText(ctxt, getString(R.string.download_cancel), Toast.LENGTH_SHORT).show();
@@ -448,13 +519,48 @@ public class MainActivity extends BaseActivity {
     };
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1122) {
+
+            switch (requestCode){
+
+                case RESULT_OK:
+
+                    break;
+                case ActivityResult.RESULT_IN_APP_UPDATE_FAILED :
+                case RESULT_CANCELED:
+                    checkUpdate();
+                    break;
+            }
+
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        AppUpdateModel updateModel = PreferenceUtil.getInstance(this).getUpdatedVersion();
-        if(updateModel==null)
-            return;
-        String name = "EDS_"+updateModel.getVersion()+".apk";
-        AppUpdater.getInstance().deleteInstalledApkFromDownloads(name);
+
+
+//        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+//            if (appUpdateInfo.updateAvailability()
+//                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+//            ) {
+//                // If an in-app update is already running, resume the update.
+//
+//                try {
+//                    appUpdateManager.startUpdateFlowForResult(
+//                            appUpdateInfo,
+//                            IMMEDIATE,
+//                            this,
+//                            1122
+//                    );
+//                } catch (IntentSender.SendIntentException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
     }
 
     @Override

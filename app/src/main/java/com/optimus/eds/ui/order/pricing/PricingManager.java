@@ -71,6 +71,18 @@ public class PricingManager {
     }
 
 
+    public Integer priceConditionClassValidation(){
+        return pricingDao.priceConditionClassValidation().subscribeOn(Schedulers.io()).blockingGet();
+    }
+
+    public Integer priceConditionValidation(){
+        return pricingDao.priceConditionValidation().subscribeOn(Schedulers.io()).blockingGet();
+    }
+
+    public Integer priceConditionTypeValidation(){
+        return pricingDao.priceConditionTypeValidation().subscribeOn(Schedulers.io()).blockingGet();
+    }
+
     //region "Public Functions"
 
     public PriceOutputDTO getOrderPrice(OrderResponseModel orderResponseModel , BigDecimal orderTotalAmount, int quantity, int outletId, int routeId, Integer distributionId) {
@@ -758,7 +770,7 @@ public class PricingManager {
 
 
 
-                Collections.sort(priceConditions, (o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
+                Collections.sort(filterPriceConditions, (o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
                 for (PriceConditionWithAccessSequence prAccSeqDetail : filterPriceConditions) {
 
                     // added By Husnain
@@ -1162,7 +1174,7 @@ public class PricingManager {
 
                     Integer optionalFreeGoodCount = 0;
 
-                    List<FreeGoodOutputDTO> freeGoodOutputDTOS = GetFreeGoods(orderVM.getOutletId()  , orderVM.getRouteId() , orderVM.getDistributionId() , orderDetail.getProductTempDefId() , ProductList , AppliedFreeGoodGroupIds);
+                    List<FreeGoodOutputDTO> freeGoodOutputDTOS = GetFreeGoods(orderVM.getOutletId() , orderVM.getChannelId() , orderVM.getOutlet().getVpoClassificationId(), orderVM.getOutlet().getPricingGroupId() , orderVM.getRouteId() , orderVM.getDistributionId() , orderDetail.getProductTempDefId() , ProductList , AppliedFreeGoodGroupIds);
                     for(FreeGoodOutputDTO freegood :freeGoodOutputDTOS){
                         freegood.setParentId(orderDetail.orderDetailId);
                         //freegood.Type="freegood";
@@ -1299,7 +1311,7 @@ public class PricingManager {
         }
     }
 
-    public List<FreeGoodOutputDTO> GetFreeGoods(Integer OutletId , Integer RouteId ,  Integer DistributionId, Integer ProductDefinitionId,  List<ProductQuantity> ProductList, List<Integer> AppliedFreeGoodGroupIds)
+    public List<FreeGoodOutputDTO> GetFreeGoods(Integer OutletId , Integer channelId , Integer vpoClassficationId , Integer pricingGroupId , Integer RouteId ,  Integer DistributionId, Integer ProductDefinitionId,  List<ProductQuantity> ProductList, List<Integer> AppliedFreeGoodGroupIds)
     {
         List<PriceAccessSequence> priceAccessSequence = pricingDao.getAccessSequenceByTypeId().subscribeOn(Schedulers.io()).blockingGet();
 
@@ -1312,25 +1324,25 @@ public class PricingManager {
             if (sequence.getSequenceCode().toLowerCase().equals(Enums.AccessSequenceCode.OUTLET_PRODUCT.toString().toLowerCase()))
             {
 
-                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(OutletId , 0 , 0  , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
+                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(OutletId , channelId , vpoClassficationId , pricingGroupId , 0 , 0  , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
                 //prfreeGoodsList = _freeGoodMasterRepository.prGetFreeGoods(OutletId, 0, 0, 0, ProductId, ProductDefinitionId, Quantity, OrderDate, udtProductList);
 //                prfreeGoodsList = _freeGoodMasterRepository.prGetFreeGoods(OutletId, 0, 0, 0, ProductDefinitionId, OrderDate, udtProductList, sequence.AccessSequenceId, OutletId);
 
             }
             else if (sequence.getSequenceCode().toLowerCase().equals(Enums.AccessSequenceCode.ROUTE_PRODUCT.toString().toLowerCase()))
             {
-                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(0 , RouteId , 0, ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
+                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(0 , channelId , vpoClassficationId , pricingGroupId , RouteId , 0, ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
 //                prfreeGoodsList = _freeGoodMasterRepository.prGetFreeGoods(0, RouteId, 0, 0, ProductDefinitionId, OrderDate, udtProductList, sequence.AccessSequenceId, OutletId);
             }
 
             else if (sequence.getSequenceCode().toLowerCase().equals(Enums.AccessSequenceCode.DISTRIBUTION_PRODUCT.toString().toLowerCase()))
             {
-                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(0 , 0 , DistributionId , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
+                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(0 , channelId , vpoClassficationId , pricingGroupId , 0 , DistributionId , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
 //                prfreeGoodsList = _freeGoodMasterRepository.prGetFreeGoods(0, 0, 0, DistributionId, ProductDefinitionId, OrderDate, udtProductList, sequence.AccessSequenceId, OutletId);
             }
             else if (sequence.getSequenceCode().toLowerCase().equals(Enums.AccessSequenceCode.PRODUCT.toString().toLowerCase()))
             {
-                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(0 , 0 , 0  , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
+                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(0 , channelId , vpoClassficationId , pricingGroupId, 0 , 0  , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
 
 
                 //                prfreeGoodsList = _freeGoodMasterRepository.prGetFreeGoods(0, 0, 0, 0, ProductDefinitionId, OrderDate, udtProductList, sequence.AccessSequenceId, OutletId);

@@ -115,6 +115,18 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
 
+    public Integer priceConditionClassValidation(){
+        return repository.priceConditionClassValidation();
+    }
+
+    public Integer priceConditionValidation(){
+        return repository.priceConditionValidation();
+    }
+
+    public Integer priceConditionTypeValidation(){
+        return repository.priceConditionTypeValidation();
+    }
+
 
     public MutableLiveData<Boolean> isLoading() {
         return repository.mLoading();
@@ -152,8 +164,11 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void checkDayEnd(){
         Long lastSyncDate = PreferenceUtil.getInstance(getApplication()).getWorkSyncData().getSyncDate();
+
         if( !Util.isDateToday(lastSyncDate)){
             onStartDay().postValue(false);
+        }else{
+            onStartDay().postValue(true);
         }
     }
 

@@ -234,6 +234,8 @@ public class OutletDetailActivity extends BaseActivity implements
             if (aBoolean) {
                 UploadOrdersService.startUploadService(getApplication(), outletId);
 //                finish(); by husnain
+            }else{
+                finish();
             }
         });
 
@@ -340,12 +342,16 @@ public class OutletDetailActivity extends BaseActivity implements
                                    hideProgress();
                                     locationProviderClient.removeLocationUpdates(locationCallback);
 //                                    updateBtn(true);
-                                    showOutsideBoundaryDialogWhenAssets(String.valueOf(metre));
+                                    showOutsideBoundaryDialog(alertDialogCount, String.valueOf(metre)); // showOutsideBoundaryDialogWhenAssets(String.valueOf(metre));
                                 } else if (metre <= config.getGeoFenceMinRadius()){
                                     hideProgress();
                                     locationProviderClient.removeLocationUpdates(locationCallback);
                                     updateBtn(true);
                                 }
+                            }else {
+                                hideProgress();
+                                locationProviderClient.removeLocationUpdates(locationCallback);
+                                Toast.makeText(OutletDetailActivity.this, "GeoFence radius is not defined", Toast.LENGTH_SHORT).show();
                             }
                         }
 //                        locationProviderClient.removeLocationUpdates(locationCallback);

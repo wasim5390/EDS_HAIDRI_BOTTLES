@@ -1,14 +1,18 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
+
+
+//eds_order_booking alias
+//eds@123 password
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.optimus.eds"
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 42
-        versionName "1.0.21"
+        minSdkVersion 23
+        targetSdkVersion 30
+        versionCode 3
+        versionName "1.0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,11 +29,17 @@ android {
 //            buildConfigField "String", "BASE_URL", '"http://173.214.164.251:9001/api/"'
 //        }
         pepsi_uat{ // For PEPSI
+//            buildConfigField "String", "BASE_URL", '"http://101.50.85.136:81/api/"'
+            buildConfigField "String", "BASE_URL", '"https://edshblapi.azurewebsites.net/"'
+        }
+        pepsi_uat_testing{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
         }
+
         pepsi_testing{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:85/api/"'
         }
+
     }
 
     compileOptions {
@@ -89,6 +99,10 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.1.0-alpha01"
     implementation "androidx.camera:camera-view:1.0.0-alpha21"
 
+    implementation 'com.google.android.play:core:1.10.2'
+
+    // Image Picker
+    implementation 'com.github.dhaval2404:imagepicker:2.0'
 // Espresso dependencies
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'

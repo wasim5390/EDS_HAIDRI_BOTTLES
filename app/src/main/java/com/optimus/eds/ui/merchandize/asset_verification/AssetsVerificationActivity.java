@@ -111,7 +111,6 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
         });
 
         permissionCheck();
-
         viewModel.loadAssets(outletId);
         viewModel.getAssets().observe(this, assets -> {
 
@@ -135,7 +134,9 @@ public class AssetsVerificationActivity extends BaseActivity implements AssetVer
     }
 
     private void updateAssets(List<Asset> assets) {
-        assetsVerificationAdapter.populateAssets(assets);
+
+        if (assetsVerificationAdapter != null)
+            assetsVerificationAdapter.populateAssets(assets);
     }
 
     private void initAssetsAdapter(List<AssetStatus> assetStatuses) {

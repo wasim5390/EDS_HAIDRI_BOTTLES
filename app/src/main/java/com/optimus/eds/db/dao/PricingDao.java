@@ -2,6 +2,7 @@ package com.optimus.eds.db.dao;
 
 
 import com.optimus.eds.db.entities.OutletAvailedPromotion;
+import com.optimus.eds.db.entities.PriceValidation;
 import com.optimus.eds.db.entities.pricing.FreeGoodDetails;
 import com.optimus.eds.db.entities.pricing.FreeGoodEntityDetails;
 import com.optimus.eds.db.entities.pricing.FreeGoodExclusives;
@@ -44,6 +45,14 @@ public interface PricingDao {
     @Query("SELECT * FROM PriceConditionClass Where PriceConditionClass.pricingLevelId=:pricingLevel Order By `order`")
     Single<List<PriceConditionClass>> findPriceConditionClasses(int pricingLevel);
 
+    @Query("Select Count(*) from PriceConditionClass")
+    Single<Integer> priceConditionClassValidation();
+
+    @Query("Select Count(*) from PriceCondition")
+    Single<Integer> priceConditionValidation();
+
+    @Query("Select Count(*) from PriceConditionType")
+    Single<Integer> priceConditionTypeValidation();
 
     @Query("SELECT * FROM PricingArea Order By `order`")
     Single<List<PricingArea>> findPricingArea();
@@ -311,41 +320,41 @@ public interface PricingDao {
     Maybe<Integer> getAlreadyAvailedFreeGoods(Integer freeGoodGroupId , Integer freeGoodDetailId , Integer freeGoodExclusiveId , Integer outletId );
 
 
-    @Query("SELECT    DISTINCT fgg.id , fgg.minimumQuantity, fgg.typeId, --fgm.IsBundle, \n" +
-            "                fgg.freeQuantityTypeId, fgg.forEachQuantity , fgg.freeGoodMasterId, \n" +
-            "                Count (outletChannelAttributeCount.channelId) AS outletChannelAttributeCount,\n" +
-            "                Count (channnelAttributeCount.channelId) AS channelAttributeCount,\n" +
-            "                \n" +
-            "                Count (outletGroupAttributeCount.outletGroupId) AS outletGroupAttributeCount,\n" +
-            "                Count (groupAttributeCount.outletGroupId) AS groupAttributeCount,\n" +
-            "                \n" +
-            "                Count (outletVPOAttributeCount.vpoClassificationId) AS outletVPOAttributeCount,\n" +
-            "                Count (VPOAttributeCount.vpoClassificationId) AS vpoAttributeCount\n" +
-            "FROM      FreeGoodGroups fgg\n" +
-            "         INNER JOIN  FreeGoodMasters fgm ON    fgg.freeGoodMasterId = fgm.freeGoodMasterId AND fgm.isActive = 1 AND fgm.accessSequenceId=:AccessSequenceId\n" +
-            "         INNER JOIN  FreeGoodDetails fgd ON    fgd.freeGoodGroupId = fgg.id AND fgd.isActive = 1\n" +
-            "         LEFT JOIN   FreeGoodEntityDetails fged ON fged.freeGoodMasterId = fgm.freeGoodMasterId\n" +
-            "         INNER JOIN  Outlet O ON O.mOutletId =:OutletIdToCheckAttribute\n" +
-            "         LEFT JOIN FreePriceConditionOutletAttributes  outletChannelAttributeCount ON outletChannelAttributeCount.channelId=O.channelId\n" +
-            "         LEFT JOIN FreePriceConditionOutletAttributes  channnelAttributeCount ON channnelAttributeCount.channelId IS NOT NULL\n" +
-            "         \n" +
-            "         LEFT JOIN FreePriceConditionOutletAttributes  outletGroupAttributeCount ON outletGroupAttributeCount.outletGroupId=O.pricingGroupId\n" +
-            "         LEFT JOIN FreePriceConditionOutletAttributes  groupAttributeCount ON groupAttributeCount.outletGroupId IS NOT NULL\n" +
-            "         \n" +
-            "         LEFT JOIN FreePriceConditionOutletAttributes  outletVPOAttributeCount ON outletVPOAttributeCount.vpoClassificationId=O.vpoClassificationId\n" +
-            "         LEFT JOIN FreePriceConditionOutletAttributes  VPOAttributeCount ON VPOAttributeCount.outletGroupId IS NOT NULL\n" +
-            "WHERE     fgd.ProductDefinitionId=:ProductDefinitionId\n" +
-            "         AND (\n" +
-            "               --(@AccessSequenceId = @GlobalAccessSequenc AND fged.FreeGoodEntityDetailId IS NULL)\n" +
-            "               (:AccessSequenceId = 21 AND fged.freeGoodEntityDetailId IS NULL)\n" +
-            "            OR  (\n" +
-            "               fged.freeGoodEntityDetailId IS NOT NULL And    (fged.outletId = :OutletId OR fged.routeId = :RouteId OR fged.channelId = O.channelId OR fged.distributionId = :DistributionId)\n" +
-            "               )\n" +
-            "            )\n" +
-            "         AND    fgg.isActive = 1 AND fgg.isDeleted=0 \n" +
-            "         --AND fgm.ValidFrom <= @OrderDate AND  fgm.ValidTo >= @OrderDate;\n" +
-            "         AND O.outletPromoConfigId<>1")
-    Maybe<List<FreeGoodGroups>> appliedFreeGoodGroups(Integer OutletId , Integer RouteId, Integer DistributionId , Integer ProductDefinitionId , Integer AccessSequenceId , Integer OutletIdToCheckAttribute);
+    @Query("SELECT    DISTINCT fgg.id , fgg.minimumQuantity, fgg.typeId, --fgm.IsBundle,\n" +
+            "                        fgg.freeQuantityTypeId, fgg.forEachQuantity , fgg.freeGoodMasterId,\n" +
+            "                        outletChannelAttributeCount.ChannelAttributeCount AS outletChannelAttributeCount ,\n" +
+            "                        Count (channnelAttributeCount.channelId) AS channelAttributeCount,\n" +
+            "                        outletGroupAttributeCount.GroupAttributeCount as outletGroupAttributeCount ,\n" +
+            "                         Count (groupAttributeCount.outletGroupId) AS groupAttributeCount,\n" +
+            "                         outletVPOAttributeCount.VPOAttributeCount AS outletVPOAttributeCount,\n" +
+            "                         Count (VPOAttributeCount.vpoClassificationId) AS vpoAttributeCount\n" +
+            "        FROM      FreeGoodGroups fgg\n" +
+            "                 INNER JOIN  FreeGoodMasters fgm ON    fgg.freeGoodMasterId = fgm.freeGoodMasterId AND fgm.isActive = 1 AND fgm.accessSequenceId=:AccessSequenceId\n" +
+            "                 INNER JOIN  FreeGoodDetails fgd ON    fgd.freeGoodGroupId = fgg.id AND fgd.isActive = 1\n" +
+            "                 LEFT JOIN   FreeGoodEntityDetails fged ON fged.freeGoodMasterId = fgm.freeGoodMasterId\n" +
+            "                 INNER JOIN  Outlet O ON O.mOutletId =:OutletIdToCheckAttribute\n" +
+            "                 --LEFT JOIN FreePriceConditionOutletAttributes  outletChannelAttributeCount ON outletChannelAttributeCount.channelId=O.channelId\n" +
+            "                 LEFT JOIN (SELECT Count(fpcoa.channelId) AS ChannelAttributeCount, fpcoa.freeGoodId  FROM FreePriceConditionOutletAttributes  fpcoa Where fpcoa.channelId=:ChannelId Group By fpcoa.freeGoodId)  outletChannelAttributeCount ON outletChannelAttributeCount.freeGoodId=fgm.freeGoodMasterId                  \n" +
+            "                 LEFT JOIN FreePriceConditionOutletAttributes  channnelAttributeCount ON channnelAttributeCount.channelId IS NOT NULL\n" +
+            "                 LEFT JOIN (SELECT Count(fpcoa.outletGroupId) AS GroupAttributeCount, fpcoa.freeGoodId  FROM FreePriceConditionOutletAttributes  fpcoa Where fpcoa.outletGroupId=:PricingGroupId Group By fpcoa.freeGoodId)  outletGroupAttributeCount ON outletGroupAttributeCount.freeGoodId=fgm.freeGoodMasterId\n" +
+            "                 LEFT JOIN FreePriceConditionOutletAttributes  groupAttributeCount ON groupAttributeCount.outletGroupId IS NOT NULL\n" +
+            "                 --LEFT JOIN FreePriceConditionOutletAttributes  outletVPOAttributeCount ON outletVPOAttributeCount.vpoClassificationId=O.vpoClassificationId\n" +
+            "                 \n" +
+            "                 LEFT JOIN (SELECT Count(fpcoa.vpoClassificationId) AS VPOAttributeCount, fpcoa.freeGoodId  FROM FreePriceConditionOutletAttributes  fpcoa Where fpcoa.vpoClassificationId=:VpoClassificationId Group By fpcoa.freeGoodId)  outletVPOAttributeCount ON outletVPOAttributeCount.freeGoodId=fgm.freeGoodMasterId\n" +
+            "               \n" +
+            "                 LEFT JOIN FreePriceConditionOutletAttributes  VPOAttributeCount ON VPOAttributeCount.outletGroupId IS NOT NULL\n" +
+            "        WHERE     fgd.ProductDefinitionId=:ProductDefinitionId\n" +
+            "                 AND (\n" +
+            "                       --(@AccessSequenceId = @GlobalAccessSequenc AND fged.FreeGoodEntityDetailId IS NULL)\n" +
+            "                       (:AccessSequenceId = 21 AND fged.freeGoodEntityDetailId IS NULL)\n" +
+            "                    OR  (\n" +
+            "                       fged.freeGoodEntityDetailId IS NOT NULL And    (fged.outletId = :OutletId OR fged.routeId = :RouteId OR fged.channelId = O.channelId OR fged.distributionId = :DistributionId)\n" +
+            "                       )\n" +
+            "                    )\n" +
+            "                 AND    fgg.isActive = 1 AND fgg.isDeleted=0\n" +
+            "                 --AND fgm.ValidFrom <= @OrderDate AND  fgm.ValidTo >= @OrderDate;\n" +
+            "                 AND O.outletPromoConfigId<>1")
+    Maybe<List<FreeGoodGroups>> appliedFreeGoodGroups(Integer OutletId , Integer ChannelId , Integer VpoClassificationId , Integer PricingGroupId , Integer RouteId, Integer DistributionId , Integer ProductDefinitionId , Integer AccessSequenceId , Integer OutletIdToCheckAttribute);
 
 
     @Query("Select COUNT(fgd.freeGoodDetailId) from FreeGoodDetails fgd where fgd.freeGoodGroupId = :freeGoodGroupId")

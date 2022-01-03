@@ -79,6 +79,7 @@ public class RetrofitHelper implements Constant {
 
             response = chain.proceed(request);
 
+
             if (response.code()== 401 && !preferenceUtil.getUsername().isEmpty()) {
                 response.close();
                 API tokenApi =  getRetrofit().create(API.class);
@@ -94,8 +95,6 @@ public class RetrofitHelper implements Constant {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }else{
-                    // goto Login as we cannot refresh token
                 }
             }
 
@@ -107,9 +106,9 @@ public class RetrofitHelper implements Constant {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .readTimeout(1, TimeUnit.MINUTES)
-                .connectTimeout(1, TimeUnit.MINUTES)
-                .writeTimeout(1 , TimeUnit.MINUTES)
+                .readTimeout(4, TimeUnit.MINUTES)
+                .connectTimeout(4, TimeUnit.MINUTES)
+                .writeTimeout(4 , TimeUnit.MINUTES)
                 .retryOnConnectionFailure(false)
                 .addInterceptor(httpLoggingInterceptor)
                 .addInterceptor(new AuthorizationInterceptor());

@@ -96,6 +96,7 @@ public class ReportsViewModel extends AndroidViewModel {
                             confirmedTotal += price;
                             confirmedOrderCount+=1;
                         }
+                        totalSku =totalSku +  orderDetail.getOrderDetailAndCPriceBreakdowns().size();
                         for(OrderDetailAndPriceBreakdown detailAndPriceBreakdown:orderDetail.getOrderDetailAndCPriceBreakdowns())
                         {
                             OrderDetail orderItem = detailAndPriceBreakdown.getOrderDetail();
@@ -103,6 +104,7 @@ public class ReportsViewModel extends AndroidViewModel {
                             Integer uQty = orderItem.getUnitQuantity();
                             cQty= cQty!=null?cQty:0;
                             uQty = uQty!=null?uQty:0;
+//                            totalSku = orderDetail.getOrderDetailAndCPriceBreakdowns().size();
 
 
                             float quantity =   OrderManager.instance()
@@ -113,10 +115,10 @@ public class ReportsViewModel extends AndroidViewModel {
                                 int pos = orderDetailList.indexOf(new Quantity(orderItem.getProductId()));
                                 Quantity savedItem = orderDetailList.get(pos);
                                 float newQty = savedItem.getQuantity()+quantity;
-                                totalSku = totalSku + quantity;
+//                                totalSku = totalSku + quantity;
                                 orderDetailList.get(pos).setQuantity(newQty);
                             }else{
-                                totalSku = totalSku + quantity;
+//                                totalSku = totalSku + quantity;
                                 orderDetailList.add(qty);
                             }
 

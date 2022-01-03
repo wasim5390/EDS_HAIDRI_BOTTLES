@@ -126,9 +126,9 @@ class BarcodeScanner : AppCompatActivity() {
                 imageCapture
             )
         } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message)
+
         } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message)
+
         }
     }
 
@@ -174,9 +174,9 @@ class BarcodeScanner : AppCompatActivity() {
                 analysisUseCase
             )
         } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message)
+
         } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message)
+
         }
     }
 
@@ -218,7 +218,7 @@ class BarcodeScanner : AppCompatActivity() {
                 }
             }
             .addOnFailureListener {
-                Log.e(TAG, it.message)
+
             }.addOnCompleteListener {
                 // When the image is from CameraX analysis use case, must call image.close() on received
                 // images when finished using them. Otherwise, new images may not be received or the camera

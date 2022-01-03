@@ -7,9 +7,13 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -30,6 +34,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.github.dhaval2404.imagepicker.constant.ImageProvider;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -153,9 +159,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
 
         });
 
-        viewModel.getMerchandiseImages().observe(this, merchandiseItems -> {
-            updateMerchandiseList(merchandiseItems);
-        });
+        viewModel.getMerchandiseImages().observe(this, this::updateMerchandiseList);
 
 
         viewModel.isSaved().observe(this, aBoolean -> {
@@ -338,6 +342,9 @@ public class OutletMerchandiseActivity extends BaseActivity {
             type= MerchandiseImgType.BEFORE_MERCHANDISE;
             actionPic(Constant.IntentExtras.ACTION_CAMERA);
 //        }
+
+
+
     }
 
     @OnClick(R.id.btnAfterMerchandise)
@@ -355,7 +362,12 @@ public class OutletMerchandiseActivity extends BaseActivity {
 //        intent.putExtra("ACTION", action);
 //        startActivityForResult(intent, REQUEST_CODE_IMAGE);
 
-        requestCameraPermission();
+        ImagePicker.Companion.with(this)
+                .provider(ImageProvider.CAMERA) //StudentProfile can only select image from Camera
+                .maxResultSize(800, 800) //Final image resolution will be less than 1080 x 1080(Optional)
+                .start(); //Default Request Code is ImagePicker.REQUEST_CODE
+
+//        requestCameraPermission();
     }
 
     private void requestCameraPermission() {
@@ -394,6 +406,19 @@ public class OutletMerchandiseActivity extends BaseActivity {
 
     private void takePic() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        PackageManager pm = getPackageManager();
+        List<ApplicationInfo> list = pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
+
+        for (ApplicationInfo applicationInfo : list){
+            if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM)==1){
+                if(applicationInfo.loadLabel(pm).toString().equalsIgnoreCase("Camera")) {
+                   takePictureIntent.setPackage(applicationInfo.packageName);
+                    break;
+                }
+            }
+        }
+
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
@@ -436,7 +461,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
         return null;
     }
 
-    public void createWaterMark(Bitmap imageBitmap){
+    public File createWaterMark(Bitmap imageBitmap){
 
         SimpleDateFormat simpleDateFormat =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         String date = simpleDateFormat.format(new Date());
@@ -444,15 +469,15 @@ public class OutletMerchandiseActivity extends BaseActivity {
                 .setTextColor(Color.RED)
                 .setTextAlpha(150)
                 .setTextSize(20);
-//
+
         Bitmap bitmap = WatermarkBuilder
                 .create(this, imageBitmap)
                 .loadWatermarkText(watermarkText)
                 .getWatermark()
                 .getOutputImage();
 
-        saveImageToExternalStorage(bitmap);
-
+//        return saveImageToExternalStorage(bitmap);
+        return Util.saveToInternalStorage(bitmap , this);
     }
 
     public void saveImageToExternalStorage(Bitmap image) {
@@ -496,23 +521,47 @@ public class OutletMerchandiseActivity extends BaseActivity {
         if(resultCode==RESULT_OK){
             switch (requestCode){
 
-                case REQUEST_CODE_IMAGE:
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
-                        bitmap = Util.captureImageOrientation(mImagePath , bitmap);
-                        if (bitmap != null)
-                            createWaterMark(bitmap);
-                        Bitmap orientationBitmap = BitmapFactory.decodeFile(mImagePath);
-                        Util.captureImageOrientation(mImagePath , orientationBitmap);
+//                case REQUEST_CODE_IMAGE:
+//                    Bitmap bitmap = null;
+//                    try {
+//                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+//                        bitmap = Util.captureImageOrientation(mImagePath , bitmap);
+//                        if (bitmap != null)
+//                            createWaterMark(bitmap);
+//                        Bitmap orientationBitmap = BitmapFactory.decodeFile(mImagePath);
+//                        Util.captureImageOrientation(mImagePath , orientationBitmap);
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+////                    String imagePath = data.getStringExtra(Constant.IntentExtras.IMAGE_PATH);
+//                    if(mImagePath!=null) {
+//                        compress(mImagePath,type);
+//                    }
+//                    break;
 
-                    } catch (Exception e) {
+                case ImagePicker.REQUEST_CODE:
+                    Bitmap simpleBitmap = null;
+                    try {
+                        simpleBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
-//                    String imagePath = data.getStringExtra(Constant.IntentExtras.IMAGE_PATH);
-                    if(mImagePath!=null) {
-                        compress(mImagePath,type);
+                    Bitmap rotatedBitmap = null;
+                    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q){
+                        File file = Util.saveToInternalStorage(simpleBitmap , this);
+                        simpleBitmap = BitmapFactory.decodeFile(file.getPath());
+                        rotatedBitmap = Util.captureImageOrientation(file.getAbsolutePath() , simpleBitmap);
+                    }else{
+                        rotatedBitmap = Util.captureImageOrientation(new File(data.getData().getPath()).getAbsolutePath(), simpleBitmap);
                     }
+
+                    File rotatedFile = null;
+                    if (rotatedBitmap != null)
+                        rotatedFile =  createWaterMark(rotatedBitmap);
+                    if (rotatedFile != null)
+                     viewModel.saveImages(rotatedFile.getPath() , type);
                     break;
                 case REQUEST_CODE:
                     setResult(RESULT_OK,data);
@@ -534,7 +583,6 @@ public class OutletMerchandiseActivity extends BaseActivity {
                             if(Util.moveFile(file,actualImage.getParentFile()))
                                 viewModel.saveImages(actualImage.getPath(),type);
                         }, throwable -> {
-
                            // throwable.printStackTrace();
                             Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         });

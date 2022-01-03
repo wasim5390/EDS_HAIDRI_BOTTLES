@@ -39,7 +39,7 @@ public class OrderModel {
     List<OrderDetail> freeGoods;
 
     @Ignore
-    float freeAvailableQty;
+    Double freeAvailableQty;
 
     @Relation(parentColumn = "pk_oid", entityColumn = "fk_oid", entity = OrderDetail.class)
     public List<OrderDetailAndPriceBreakdown> orderDetailAndCPriceBreakdowns;
@@ -58,11 +58,11 @@ public class OrderModel {
         this.orderDetails = orderDetails;
     }
 
-    public float getFreeAvailableQty() {
+    public Double getFreeAvailableQty() {
         return freeAvailableQty;
     }
 
-    public void setFreeAvailableQty(float freeAvailableQty) {
+    public void setFreeAvailableQty(double freeAvailableQty) {
         this.freeAvailableQty = freeAvailableQty;
     }
 
