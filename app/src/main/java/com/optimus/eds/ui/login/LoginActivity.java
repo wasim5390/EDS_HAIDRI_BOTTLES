@@ -187,14 +187,10 @@ public class LoginActivity extends BaseActivity {
         if(imei==null)
             return;
         // generate if token is not saved yet.
-        FirebaseInstallations.getInstance().getToken(true).addOnSuccessListener(new OnSuccessListener<InstallationTokenResult>() {
-            @Override
-            public void onSuccess(InstallationTokenResult installationTokenResult) {
-                String token = installationTokenResult.getToken();
-                saveImeiAndToken(token,imei);
-                Log.d(TAG, token);
-
-            }
+        FirebaseInstallations.getInstance().getToken(true).addOnSuccessListener(installationTokenResult -> {
+            String token = installationTokenResult.getToken();
+            saveImeiAndToken(token,imei);
+            Log.d(TAG, token);
         });
 
     }
