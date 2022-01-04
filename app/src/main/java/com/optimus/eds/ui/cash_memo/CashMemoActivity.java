@@ -165,6 +165,18 @@ public class CashMemoActivity extends BaseActivity {
         if(!order.getOrder().getPriceBreakDown().isEmpty()){
             createBreakDownDialogSheet(order.getOrder().getPriceBreakDown(),order.getOrder().getSubTotal(),order.getOrder().getPayable());
         }
+
+        if (order.getOrder().getPayable() != null && order.getOrder().getPayable() == 0.0){
+            btnNext.setEnabled(false);
+            btnNext.setAlpha(0.5f);
+        }else if(order.getOrder().getPayable() == null){
+            btnNext.setEnabled(false);
+            btnNext.setAlpha(0.5f);
+        }else{
+            btnNext.setEnabled(true);
+            btnNext.setAlpha(1f);
+        }
+
         tvGrandTotal.setText(formatCurrency(order.getOrder().getPayable(),0));
         Long carton=0l,units=0l;
         for(OrderDetailAndPriceBreakdown detailAndPriceBreakdown:order.getOrderDetailAndCPriceBreakdowns())
@@ -227,6 +239,7 @@ public class CashMemoActivity extends BaseActivity {
 
     @OnClick(R.id.btnNext)
     public void navigateToCustomerInput(){
+
         CustomerInputActivity.start(this,outletId,RES_CODE);
     }
 
