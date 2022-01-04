@@ -32,8 +32,8 @@ android {
 //            buildConfigField "String", "BASE_URL", '"http://173.214.164.251:9001/api/"'
 //        }
         pepsi_uat{ // For PEPSI
-//            buildConfigField "String", "BASE_URL", '"http://101.50.85.136:81/api/"'
-            buildConfigField "String", "BASE_URL", '"https://edshblapi.azurewebsites.net/"'
+            buildConfigField "String", "BASE_URL", '"http://101.50.85.136:81/api/"'
+//            buildConfigField "String", "BASE_URL", '"https://edshblapi.azurewebsites.net/"'
         }
         pepsi_uat_testing{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
