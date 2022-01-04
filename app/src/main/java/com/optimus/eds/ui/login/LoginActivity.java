@@ -2,12 +2,9 @@ package com.optimus.eds.ui.login;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.pdf.PdfRenderer;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,8 +22,8 @@ import com.optimus.eds.Constant;
 import com.optimus.eds.R;
 import com.optimus.eds.ui.home.MainActivity;
 import com.optimus.eds.utils.NetworkManager;
+import com.optimus.eds.utils.NetworkManagerKotlin;
 import com.optimus.eds.utils.PreferenceUtil;
-import com.optimus.eds.utils.Util;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.ViewModelProviders;

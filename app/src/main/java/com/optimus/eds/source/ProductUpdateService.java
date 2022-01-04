@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
@@ -70,6 +71,8 @@ public class ProductUpdateService extends IntentService implements Constant {
                 .subscribe(orderDetail -> {
                     findProduct(orderDetail);
                 });
+
+
 
     }
 

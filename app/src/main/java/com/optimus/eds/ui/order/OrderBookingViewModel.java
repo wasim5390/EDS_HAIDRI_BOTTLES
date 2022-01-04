@@ -31,6 +31,7 @@ import com.optimus.eds.ui.order.pricing.PriceOutputDTO;
 import com.optimus.eds.ui.order.pricing.PricingManager;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.NetworkManager;
+import com.optimus.eds.utils.NetworkManagerKotlin;
 import com.optimus.eds.utils.Util;
 
 
@@ -39,7 +40,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,7 +48,6 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
 import io.reactivex.Completable;
 
 import io.reactivex.CompletableObserver;
-import io.reactivex.Maybe;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;

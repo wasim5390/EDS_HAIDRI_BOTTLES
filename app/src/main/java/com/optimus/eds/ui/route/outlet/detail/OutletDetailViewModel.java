@@ -6,7 +6,6 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.PersistableBundle;
 import android.util.Log;
 
@@ -19,8 +18,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.optimus.eds.Constant;
 import com.optimus.eds.db.entities.Asset;
@@ -36,9 +33,7 @@ import com.optimus.eds.source.MerchandiseUploadService;
 import com.optimus.eds.source.StatusRepository;
 import com.optimus.eds.ui.merchandize.MerchandiseRepository;
 import com.optimus.eds.utils.NetworkManager;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.optimus.eds.utils.NetworkManagerKotlin;
 
 import java.util.Calendar;
 import java.util.List;

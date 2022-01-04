@@ -5,10 +5,10 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.PersistableBundle;
 import android.util.Log;
 
-import androidx.constraintlayout.solver.GoalRow;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -25,23 +25,25 @@ import com.optimus.eds.db.entities.Order;
 import com.optimus.eds.db.entities.OrderDetail;
 import com.optimus.eds.db.entities.OrderStatus;
 import com.optimus.eds.db.entities.Outlet;
-import com.optimus.eds.model.BaseResponse;
 import com.optimus.eds.model.MasterModel;
 import com.optimus.eds.model.OrderDetailAndPriceBreakdown;
 import com.optimus.eds.model.OrderModel;
 import com.optimus.eds.model.OrderResponseModel;
 import com.optimus.eds.source.JobIdManager;
 import com.optimus.eds.source.MerchandiseUploadService;
+import com.optimus.eds.source.ProductUpdateService;
+import com.optimus.eds.source.RetrofitHelper;
 import com.optimus.eds.source.StatusRepository;
 import com.optimus.eds.ui.order.OrderBookingRepository;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.NetworkManager;
-import com.optimus.eds.utils.PreferenceUtil;
+import com.optimus.eds.utils.NetworkManagerKotlin;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -156,6 +158,82 @@ public class CustomerInputViewModel extends AndroidViewModel {
 
         });
     }
+
+
+    public void postOrder(){
+        OrderStatus status = statusRepository.findOrderStatus(outletId)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .blockingGet();
+
+        if (status != null){
+            String json = status.getData() != null ? status.getData() : ""; // Added Check By Husnain
+            MasterModel masterModel = new Gson().fromJson(json,MasterModel.class);
+
+            uploadMasterData(masterModel,status.getStatus());
+        }
+
+    }
+
+    public void uploadMasterData(MasterModel masterModel,int statusId){
+
+        String masterModelGson = new Gson().toJson(masterModel);
+
+//        Log.d("MaterModel" , masterModel.latitude + " " + masterModel.longitude);
+
+        FirebaseCrashlytics.getInstance().log(masterModelGson);
+        FirebaseCrashlytics.getInstance().setCustomKey("orderStatuses" , masterModelGson);
+
+
+        RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
+                .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(response->{
+            onUpload(response,masterModel.getOutletId(),statusId);
+        },throwable -> error(throwable));
+
+    }
+
+    private void onUpload(MasterModel orderResponseModel,Long outletId,Integer statusId) {
+        if(!orderResponseModel.isSuccess()){
+            error(orderResponseModel);
+            return;
+        }
+
+
+        if(orderResponseModel !=null )
+            if( orderResponseModel.getOrderModel()!=null) {
+                orderResponseModel.setCustomerInput(null);
+                orderResponseModel.getOrderModel().setOrderDetails(null);
+                OrderBookingRepository.singleInstance(getApplication())
+                        .findOrderById(orderResponseModel.getOrderModel().getMobileOrderId()).map(order -> {
+                    orderResponseModel.getOrderModel().setPayable(order.getPayable());
+                    order.setOrderStatus(orderResponseModel.getOrderModel().getOrderStatusId());
+                    return order;
+                }).flatMapCompletable(order -> OrderBookingRepository.singleInstance(getApplication())
+                        .updateOrder(order)).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> {
+                                    Log.i("UploadOrdersService", "Order Status Updated");
+                                    updateOutletTaskStatus(orderResponseModel.getOutletId(),orderResponseModel.getOrderModel().getPayable());
+                                    ProductUpdateService.startProductsUpdateService(getApplication().getApplicationContext(),orderResponseModel.getOutletId());
+                                },
+                                throwable -> {error(throwable);});
+            }else{
+                outletDetailRepository.updateOutletVisitStatus(outletId,statusId,true);
+                statusRepository.updateStatus(new OrderStatus(outletId,statusId,true,0.0));
+                outletDetailRepository.updateOutlet(statusId , outletId);
+            }
+
+        Intent intent = new Intent();
+        intent.setAction(Constant.ACTION_ORDER_UPLOAD);
+        intent.putExtra("Response", orderResponseModel);
+        LocalBroadcastManager.getInstance(getApplication()).sendBroadcast(intent);
+    }
+
+    private void updateOutletTaskStatus(Long outletId,Double amount){
+        outletDetailRepository.updateOutletVisitStatus(outletId,Constant.STATUS_COMPLETED,true); // 8 for completed task
+        statusRepository.updateStatus(new OrderStatus(outletId,Constant.STATUS_COMPLETED,true,amount));
+        outletDetailRepository.updateOutlet(Constant.STATUS_COMPLETED , outletId);
+    }
+
 
     public void setOrderSaved(boolean orderSaved){
         this.orderSaved.postValue(orderSaved);

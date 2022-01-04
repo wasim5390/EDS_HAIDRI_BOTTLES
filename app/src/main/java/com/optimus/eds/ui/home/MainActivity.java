@@ -22,8 +22,6 @@ import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.install.model.ActivityResult;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.Task;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.Constant;
@@ -37,6 +35,7 @@ import com.optimus.eds.ui.login.LoginActivity;
 import com.optimus.eds.ui.reports.ReportsActivity;
 import com.optimus.eds.ui.reports.stock.StockActivity;
 import com.optimus.eds.ui.route.outlet.routes.RoutesActivity;
+import com.optimus.eds.utils.NetworkManagerKotlin;
 import com.optimus.eds.utils.PermissionUtil;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
@@ -86,6 +85,8 @@ public class MainActivity extends BaseActivity {
     HomeViewModel viewModel;
 
     private AppUpdateManager appUpdateManager;
+
+    private NetworkManagerKotlin networkManager;
 
     public static void start(Context context) {
         Intent starter = new Intent(context, MainActivity.class);
@@ -152,6 +153,7 @@ public class MainActivity extends BaseActivity {
         setObservers();
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
 
+        networkManager = new NetworkManagerKotlin(this);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
@@ -351,11 +353,19 @@ public class MainActivity extends BaseActivity {
 
                 break;
             case R.id.btnUpload:
+                findViewById(R.id.btnUpload).setClickable(false);
                 if (!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted()) {
                     showMessage(Constant.ERROR_DAY_NO_STARTED);
                     return;
                 }
-                viewModel.pushOrdersToServer();
+
+                if (networkManager.isWorking()){
+                    viewModel.handleMultipleSyncOrder();
+                }else{
+                    findViewById(R.id.btnUpload).setClickable(true);
+                    Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
+//
                 break;
             case R.id.btnEndDay:
                 if (!PreferenceUtil.getInstance(this).getWorkSyncData().isDayStarted()) {
@@ -465,8 +475,10 @@ public class MainActivity extends BaseActivity {
 
     private void setProgress(boolean isLoading) {
         if (isLoading) {
+            findViewById(R.id.btnUpload).setClickable(false);
             showProgress();
         } else {
+            findViewById(R.id.btnUpload).setClickable(true);
             hideProgress();
         }
     }

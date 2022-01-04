@@ -10,6 +10,7 @@ import com.optimus.eds.model.PackageProductResponseModel;
 import com.optimus.eds.ui.order.OrderBookingRepository;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.NetworkManager;
+import com.optimus.eds.utils.NetworkManagerKotlin;
 
 import java.util.List;
 

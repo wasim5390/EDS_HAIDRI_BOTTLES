@@ -119,9 +119,10 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
         viewModel.findOrder(outletId);
         viewModel.order().observe(this, this::onOrderLoaded);
         viewModel.getStartUploadService().observe(this, outletId -> {
-            if (outletId != null)
-                UploadOrdersService.startUploadService(getApplication(), outletId);
-            else{
+            if (outletId != null){
+                //                UploadOrdersService.startUploadService(getApplication(), outletId);
+                viewModel.postOrder();
+            } else{
                 setResult(RESULT_OK);
                 finish();
             }
