@@ -340,7 +340,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
     private void onError(Throwable throwable) throws IOException {
         throwable.printStackTrace();
         String errorBody = throwable.getMessage();
-        Log.d("PackageId" ,  errorBody );
+        Log.d("PackageId" ,  errorBody +"");
         if (throwable instanceof HttpException) {
             HttpException error = (HttpException) throwable;
             if (error.code() == 500)

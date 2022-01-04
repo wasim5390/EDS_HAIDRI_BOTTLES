@@ -3,9 +3,11 @@ package com.optimus.eds.source;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.optimus.eds.Constant;
 import com.optimus.eds.db.entities.OrderStatus;
@@ -77,6 +79,7 @@ public class UploadOrdersService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_MORE_FAVORABLE);
             final String action = intent.getAction();
             switch (action){
                 case ACTION_SINGLE_ORDER_UPLOAD:
@@ -97,6 +100,10 @@ public class UploadOrdersService extends IntentService {
         NotificationUtil.getInstance(getApplicationContext()).showNotification();
         OutletListRepository.getInstance(getApplication()).getOrderStatus().toObservable()
                 .concatMapIterable(orderStatuses -> {
+
+                    FirebaseCrashlytics.getInstance().log(new Gson().toJson(orderStatuses));
+                    FirebaseCrashlytics.getInstance().setCustomKey("orderStatuses" , new Gson().toJson(orderStatuses));
+
                     remainingTasks=totalTasks=orderStatuses.size();
                     return orderStatuses;
                 })
@@ -162,8 +169,14 @@ public class UploadOrdersService extends IntentService {
 
 //        Log.d("MaterModel" , masterModel.latitude + " " + masterModel.longitude);
 
+        FirebaseCrashlytics.getInstance().log(masterModelGson);
+        FirebaseCrashlytics.getInstance().setCustomKey("orderStatuses" , masterModelGson);
+
+
         RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(response->{
+
+
             onUpload(response,masterModel.getOutletId(),statusId);
         },throwable -> error(throwable));
     }

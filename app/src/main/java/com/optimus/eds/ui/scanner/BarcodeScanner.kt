@@ -105,7 +105,7 @@ class BarcodeScanner : AppCompatActivity() {
 
         previewUseCase = Preview.Builder()
             .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(previewView!!.display.rotation)
+            .setTargetRotation(previewView?.display?.rotation ?: ROTATION_90)
             .build()
         previewUseCase!!.setSurfaceProvider(previewView!!.surfaceProvider)
 
@@ -153,7 +153,7 @@ class BarcodeScanner : AppCompatActivity() {
 
         analysisUseCase = ImageAnalysis.Builder()
             .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(previewView!!.display.rotation)
+            .setTargetRotation(previewView?.display?.rotation ?: ROTATION_90)
             .build()
 
         // Initialize our background executor 

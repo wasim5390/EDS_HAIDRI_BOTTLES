@@ -224,6 +224,10 @@ public interface PricingDao {
     @Insert(onConflict = REPLACE)
     void insertPriceConditionOutletAttributes(List<PriceConditionOutletAttribute> priceConditionOutletAttributes);
 
+
+    @Insert(onConflict = REPLACE)
+    void insertOutletAvailedPromotions(List<OutletAvailedPromotion> priceConditionOutletAttributes);
+
     @Insert(onConflict = REPLACE)
     void insertPriceCondition(List<PriceCondition> priceConditionType);
 
@@ -306,6 +310,9 @@ public interface PricingDao {
 
     @Query("DELETE FROM OutletAvailedFreeGoods")
     void deleteOutletAvailedFreeGoods();
+
+    @Query("DELETE FROM OutletAvailedPromotion")
+    void deleteOutletAvailedPromotion();
 
     @Query("Select * from FreeGoodDetails where freeGoodGroupId = :freeGoodGroupId")
     Maybe<List<FreeGoodOutputDTO>> getFreeGoodGroupDetails(Integer freeGoodGroupId);

@@ -16,22 +16,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.ActivityResult;
-import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.android.play.core.tasks.OnFailureListener;
-import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.optimus.eds.BaseActivity;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
-import com.optimus.eds.model.AppUpdateModel;
 import com.optimus.eds.model.TargetVsAchievement;
 import com.optimus.eds.model.WorkStatus;
 import com.optimus.eds.source.ApkDownloader;
@@ -41,15 +37,12 @@ import com.optimus.eds.ui.login.LoginActivity;
 import com.optimus.eds.ui.reports.ReportsActivity;
 import com.optimus.eds.ui.reports.stock.StockActivity;
 import com.optimus.eds.ui.route.outlet.routes.RoutesActivity;
-import com.optimus.eds.ui.scanner.*;
 import com.optimus.eds.utils.PermissionUtil;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Random;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -149,7 +142,6 @@ public class MainActivity extends BaseActivity {
 //
 //        checkUpdate();
 
-        Crashlytics.log(Log.ERROR, "YourTAG", "YourMessage");
 
     }
 

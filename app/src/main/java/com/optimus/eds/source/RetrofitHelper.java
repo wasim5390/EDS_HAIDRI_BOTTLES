@@ -3,6 +3,7 @@ package com.optimus.eds.source;
 
 import android.util.Log;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.optimus.eds.AnnotationExclusionStrategy;
@@ -68,18 +69,18 @@ public class RetrofitHelper implements Constant {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
-            PreferenceUtil preferenceUtil = PreferenceUtil.getInstance(EdsApplication.getContext());
 
+
+            FirebaseCrashlytics.getInstance().log(new Gson().toJson(request));
+            FirebaseCrashlytics.getInstance().setCustomKey("response" + System.currentTimeMillis(), new Gson().toJson(request));
+            PreferenceUtil preferenceUtil = PreferenceUtil.getInstance(EdsApplication.getContext());
 
             if(request.headers().get("Authorization")==null || request.headers().get("Authorization").isEmpty()){
                 String token = Util.getAuthorizationHeader(EdsApplication.getContext());
                 Headers headers = request.headers().newBuilder().add("Authorization","Bearer "+ token).build();
                 request = request.newBuilder().headers(headers).build();
             }
-
             response = chain.proceed(request);
-
-
             if (response.code()== 401 && !preferenceUtil.getUsername().isEmpty()) {
                 response.close();
                 API tokenApi =  getRetrofit().create(API.class);
@@ -106,9 +107,9 @@ public class RetrofitHelper implements Constant {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .readTimeout(4, TimeUnit.MINUTES)
-                .connectTimeout(4, TimeUnit.MINUTES)
-                .writeTimeout(4 , TimeUnit.MINUTES)
+                .readTimeout(10, TimeUnit.MINUTES)
+                .connectTimeout(10, TimeUnit.MINUTES)
+                .writeTimeout(10 , TimeUnit.MINUTES)
                 .retryOnConnectionFailure(false)
                 .addInterceptor(httpLoggingInterceptor)
                 .addInterceptor(new AuthorizationInterceptor());

@@ -579,11 +579,15 @@ public class OutletDetailActivity extends BaseActivity implements
     @OnClick(R.id.navigation)
     public void onNavigationClick() {
 
-        if (outletLatLng != null) {
-            Uri navigation = Uri.parse("google.navigation:q=" + outletLatLng.latitude + "," + outletLatLng.longitude + "");
-            Intent navigationIntent = new Intent(Intent.ACTION_VIEW, navigation);
-            navigationIntent.setPackage("com.google.android.apps.maps");
-            startActivity(navigationIntent);
+        try {
+            if (outletLatLng != null) {
+                Uri navigation = Uri.parse("google.navigation:q=" + outletLatLng.latitude + "," + outletLatLng.longitude + "");
+                Intent navigationIntent = new Intent(Intent.ACTION_VIEW, navigation);
+                navigationIntent.setPackage("com.google.android.apps.maps");
+                startActivity(navigationIntent);
+            }
+        }catch (Exception e){
+            Toast.makeText(this, "Please install google map", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -40,7 +40,7 @@ public class PricingModel extends BaseModel {
     @SerializedName("priceAccessSequence")
     public List<PriceAccessSequence> priceAccessSequences;
 
-    @SerializedName("outletAvailedPromotion")
+    @SerializedName("outletAvailedPromotions")
     public List<OutletAvailedPromotion> outletAvailedPromotions;
 
     @SerializedName("priceConditionOutletAttribute")

@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.optimus.eds.Constant;
 import com.optimus.eds.EdsApplication;
@@ -127,8 +127,6 @@ public class HomeRepository {
                     @Override
                     public void onSuccess(TokenResponse tokenResponse) {
                         preferenceUtil.saveToken(tokenResponse.getAccessToken());
-                        Crashlytics.setUserName(username);
-
                         updateWorkStatus(true);
                     }
 
@@ -179,8 +177,9 @@ public class HomeRepository {
                         return;
                     }
                     //
-                    Crashlytics.setString("dist_id", response.body().getDistributionId() + "");
-                    Crashlytics.setUserIdentifier(response.body().getEmployeeName());
+                    FirebaseCrashlytics.getInstance().log("dist_id" + response.body().getDistributionId() + "");
+                    FirebaseCrashlytics.getInstance().log(response.body().getEmployeeName());
+
                     if (response.body() != null && response.body().getDistributionId() != null)
                         preferenceUtil.saveDistributionId(response.body().getDistributionId());
                     preferenceUtil.saveConfig(response.body().getConfiguration());
@@ -465,7 +464,8 @@ public class HomeRepository {
                 .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodDetails()))
                 .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodExclusives()))
                 .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodEntityDetails()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedFreeGoods()));
+                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedFreeGoods()))
+                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedPromotion()));
 
     }
 
@@ -541,6 +541,8 @@ public class HomeRepository {
                             pricingDao.insertPriceConditionEntities(response.getPriceConditionEntities());
                             pricingDao.insertPriceConditionScales(response.getPriceConditionScales());
                             pricingDao.insertPriceConditionOutletAttributes(response.getPriceConditionOutletAttribute());
+                            pricingDao.insertOutletAvailedPromotions(response.getOutletAvailedPromotions());
+
 
                             if (response.getFreeGoodsWrapper() != null){
 
