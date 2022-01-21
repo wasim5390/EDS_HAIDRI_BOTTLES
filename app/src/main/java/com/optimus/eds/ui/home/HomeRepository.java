@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
+import com.optimus.eds.BuildConfig;
 import com.optimus.eds.Constant;
 import com.optimus.eds.EdsApplication;
 import com.optimus.eds.db.AppDatabase;
@@ -192,6 +193,11 @@ public class HomeRepository {
                                     taskDao.deleteAllTask();
                                     routeDao.deleteAllPromotion();
                                     routeDao.deleteAllLookUp();
+
+                                    // remove Pricing
+//                                    pricingDao.deleteAllPriceConditionClasses();
+//                                    pricingDao.deleteAllPricingAreas();
+//                                    deleteAllPricing();
                                 }
                             }))
 
@@ -411,6 +417,7 @@ public class HomeRepository {
     public void updateWorkStatus(boolean isStart) {
         HashMap<String, Integer> map = new HashMap<>();
         map.put("operationTypeId", isStart ? 1 : 2);
+        map.put("appVersion", BuildConfig.VERSION_CODE);
         webService.updateStartEndStatus(map).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new SingleObserver<LogModel>() {
@@ -434,7 +441,9 @@ public class HomeRepository {
                             }
                         } else {
                             isLoading.postValue(false);
-                            msg.postValue(logModel.getErrorCode() == 2 ? logModel.getResponseMsg() : Constant.GENERIC_ERROR);
+
+                            msg.postValue(logModel.getErrorMessage());
+//                            msg.postValue(logModel.getErrorCode() == 2 ? logModel.getResponseMsg() : Constant.GENERIC_ERROR);
                         }
                     }
 
@@ -449,23 +458,23 @@ public class HomeRepository {
     public Completable deleteAllPricing(){
 
 
-        return   Completable.fromAction(()-> pricingDao.deleteAllPriceConditionClasses())
-                .andThen(Completable.fromAction(()->pricingDao.deleteAllPricingAreas()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteAllPriceConditionEntities()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteAllPriceBundles()))
-                .andThen(Completable.fromAction(()->pricingDao.deletePriceCondition()))
-                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionTypes()))
-                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionScale()))
-                .andThen(Completable.fromAction(()->pricingDao.deletePriceAccessSequence()))
-                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionOutletAttribute()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodMasters()))
+        return   Completable.fromAction(()->        pricingDao.deleteAllPriceConditionClasses()        )
+                .andThen(Completable.fromAction(()->pricingDao.deleteAllPricingAreas()                 )   )
+                .andThen(Completable.fromAction(()->pricingDao.deleteAllPriceConditionEntities()       ) )
+                .andThen(Completable.fromAction(()->pricingDao.deleteAllPriceBundles()                   ))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceCondition()                   ) )
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionTypes()              ))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionScale()             ) )
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceAccessSequence()              ))
+                .andThen(Completable.fromAction(()->pricingDao.deletePriceConditionOutletAttribute()    ))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodMasters()                  ))
                 .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodGroups()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteFreePriceConditionOutletAttribute()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodDetails()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodExclusives()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodEntityDetails()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedFreeGoods()))
-                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedPromotion()));
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreePriceConditionOutletAttribute() ))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodDetails()                   ))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodExclusives()                 ))
+                .andThen(Completable.fromAction(()->pricingDao.deleteFreeGoodEntityDetails()             ))
+                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedFreeGoods()            ))
+                .andThen(Completable.fromAction(()->pricingDao.deleteOutletAvailedPromotion()             ));
 
     }
 
@@ -530,7 +539,24 @@ public class HomeRepository {
                 pricingModelResponse.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
                         AsyncTask.execute(() -> {
-                            deleteAllPricing();
+
+                            pricingDao.deleteAllPriceConditionClasses();
+                            pricingDao.deleteAllPricingAreas();
+                            pricingDao.deleteAllPriceConditionEntities();
+                            pricingDao.deleteAllPriceBundles();
+                            pricingDao.deletePriceCondition();
+                            pricingDao.deletePriceConditionTypes();
+                            pricingDao.deletePriceConditionScale();
+                            pricingDao.deletePriceAccessSequence();
+                            pricingDao.deletePriceConditionOutletAttribute();
+                            pricingDao.deleteFreeGoodMasters();
+                            pricingDao.deleteFreeGoodGroups();
+                            pricingDao.deleteFreePriceConditionOutletAttribute();
+                            pricingDao.deleteFreeGoodDetails();
+                            pricingDao.deleteFreeGoodExclusives();
+                            pricingDao.deleteFreeGoodEntityDetails();
+                            pricingDao.deleteOutletAvailedFreeGoods();
+                            pricingDao.deleteOutletAvailedPromotion();
 
                             pricingDao.insertPriceConditionClasses(response.getPriceConditionClasses());
                             pricingDao.insertPriceConditionType(response.getPriceConditionTypes());

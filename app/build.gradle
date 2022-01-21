@@ -9,13 +9,13 @@ apply plugin: 'com.google.firebase.crashlytics'
 //eds_order_booking alias
 //eds@123 password
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.optimus.eds"
         minSdkVersion 23
-        targetSdkVersion 30
-        versionCode 5
-        versionName "1.0.5"
+        targetSdkVersion 31
+        versionCode 9
+        versionName "1.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -114,6 +114,9 @@ dependencies {
 //    implementation 'com.crashlytics.sdk.android:crashlytics:17.2.2'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.kaopiz:kprogresshud:1.0.2'
+
+    implementation 'com.bugfender.sdk:android:3.+'
+
 
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
     implementation 'com.google.firebase:firebase-crashlytics-ktx'

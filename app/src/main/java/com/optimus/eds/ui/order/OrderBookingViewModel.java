@@ -321,7 +321,6 @@ public class OrderBookingViewModel extends AndroidViewModel {
                     }
                 });
 
-
     }
 
     private void onProductsLoaded(List<Product> products , Long groupId) {

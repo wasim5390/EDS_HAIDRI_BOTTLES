@@ -630,6 +630,7 @@ public class OutletDetailActivity extends BaseActivity implements
         if (orderUploadSuccessReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(orderUploadSuccessReceiver);
         }
+        if (locationProviderClient != null)
         locationProviderClient.removeLocationUpdates(locationCallback);
         super.onDestroy();
     }
@@ -713,12 +714,12 @@ public class OutletDetailActivity extends BaseActivity implements
                 MasterModel response = (MasterModel) intent.getSerializableExtra("Response");
                 hideProgress();
                 if(response!=null && response.isSuccess()){
-                    Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg()+"", Toast.LENGTH_SHORT).show();
                     if (!withoutVerification)
                         viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken());
                     finish();
                 }else{
-                    Toast.makeText(context, response.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, response.getErrorMessage()+"", Toast.LENGTH_SHORT).show();
                 }
             }
         }

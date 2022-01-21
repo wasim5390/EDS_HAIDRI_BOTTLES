@@ -549,9 +549,9 @@ public class OutletMerchandiseActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                     Bitmap rotatedBitmap = null;
+                    File file = Util.saveToInternalStorage(simpleBitmap , this);
+                    simpleBitmap = BitmapFactory.decodeFile(file.getPath());
                     if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q){
-                        File file = Util.saveToInternalStorage(simpleBitmap , this);
-                        simpleBitmap = BitmapFactory.decodeFile(file.getPath());
                         rotatedBitmap = Util.captureImageOrientation(file.getAbsolutePath() , simpleBitmap);
                     }else{
                         rotatedBitmap = Util.captureImageOrientation(new File(data.getData().getPath()).getAbsolutePath(), simpleBitmap);
@@ -584,7 +584,7 @@ public class OutletMerchandiseActivity extends BaseActivity {
                                 viewModel.saveImages(actualImage.getPath(),type);
                         }, throwable -> {
                            // throwable.printStackTrace();
-                            Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, throwable.getMessage()+"", Toast.LENGTH_SHORT).show();
                         });
     }
 

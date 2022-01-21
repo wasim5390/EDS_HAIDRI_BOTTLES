@@ -126,7 +126,7 @@ public class PermissionUtil {
                         token.continuePermissionRequest();
 
                     }
-                }).withErrorListener(error -> Toast.makeText(activity, error.name(), Toast.LENGTH_SHORT).show())
+                }).withErrorListener(error -> Toast.makeText(activity, error.name()+"", Toast.LENGTH_SHORT).show())
                 .onSameThread()
                 .check();
     }

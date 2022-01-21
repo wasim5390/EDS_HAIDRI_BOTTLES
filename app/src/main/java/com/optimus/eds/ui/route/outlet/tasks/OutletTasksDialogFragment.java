@@ -70,7 +70,7 @@ public class OutletTasksDialogFragment extends DialogFragment implements TaskSel
         });
 
         tasksViewModel.showMsg().observe(this,s -> {
-            Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), s+"", Toast.LENGTH_SHORT).show();
         });
     }
 

@@ -102,7 +102,14 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
         if (getIntent().hasExtra("route")){
             routeIntent = (Route) getIntent().getSerializableExtra("route");
-            setToolbar(routeIntent.getRouteName());
+
+            if (PreferenceUtil.getInstance(this).getUsername().contains("@")){
+                String[] usernameString = PreferenceUtil.getInstance(this).getUsername().split("@");
+                setToolbar(usernameString[0]+"-"+routeIntent.getRouteName());
+            }else{
+                setToolbar(PreferenceUtil.getInstance(this).getUsername() +"-"+routeIntent.getRouteName());
+            }
+//            setToolbar(routeIntent.getRouteName());
         }
         // Comment
 //        viewModel.getRoutes().observe(this, routes -> {
@@ -347,7 +354,7 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
 
     private void showError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, message+"", Toast.LENGTH_LONG).show();
     }
 
 
@@ -442,7 +449,7 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
 
 
     public void showMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message+"", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -554,7 +561,7 @@ public class OutletListActivity extends BaseActivity implements OutletListAdapte
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction()==Constant.ACTION_ORDER_UPLOAD){
                 MasterModel response = (MasterModel) intent.getSerializableExtra("Response");
-                Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg()+"", Toast.LENGTH_SHORT).show();
 
                 progressBar.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);

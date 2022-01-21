@@ -5,6 +5,7 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.PersistableBundle;
 import android.util.Log;
 
@@ -42,9 +43,13 @@ public class ProductUpdateService extends IntentService implements Constant {
 
     public static void startProductsUpdateService(Context context, Long outletId) {
 
-        Intent intent = new Intent(context, ProductUpdateService.class);
-        intent.putExtra(EXTRA_PARAM_OUTLET_ID,outletId);
-        context.startService(intent);
+        try {
+            Intent intent = new Intent(context, ProductUpdateService.class);
+            intent.putExtra(EXTRA_PARAM_OUTLET_ID,outletId);
+            context.startService(intent);
+        }catch (Exception e){
+            e.getLocalizedMessage();
+        }
     }
 
     @Override

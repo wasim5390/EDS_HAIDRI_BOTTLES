@@ -6,6 +6,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 
+import com.bugfender.sdk.Bugfender;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.optimus.eds.Constant;
@@ -115,6 +117,11 @@ public class HomeViewModel extends AndroidViewModel {
                 .toObservable().subscribeOn(Schedulers.computation());
     }
 
+    public Observable<List<Outlet>> findAllOutlets() {
+        return OutletListRepository.getInstance(getApplication()).getAllOutlet()
+                .toObservable().subscribeOn(Schedulers.computation());
+    }
+
     public void pushOrdersToServer(){
 
         List<OrderStatus> count =  OutletListRepository.getInstance(getApplication()).getOrderStatus()
@@ -174,7 +181,7 @@ public class HomeViewModel extends AndroidViewModel {
     public LiveData<Boolean> dayEnded(){
         MutableLiveData<Boolean> when = new MutableLiveData<>();
         WorkStatus syncDate = PreferenceUtil.getInstance(getApplication()).getWorkSyncData();
-        when.postValue(syncDate.getDayStarted()==Constant.DAY_END);
+        when.postValue(syncDate.getDayStarted().equals(Constant.DAY_END));
         //when.postValue(DateUtils.isToday(syncDate));
         return when;
     }
@@ -226,7 +233,7 @@ public class HomeViewModel extends AndroidViewModel {
                     remainingTasks=totalTasks=orderStatuses.size();
                     return orderStatuses;
                 }).concatMap(orderStatus ->
-                    saveOrderObservable(orderStatus)
+                    saveOrderObservable(orderStatus).delay(2 , TimeUnit.SECONDS)
                 )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.single())
@@ -237,17 +244,16 @@ public class HomeViewModel extends AndroidViewModel {
                     public void onNext(MasterModel response) {
                         Log.i(TAG,"OnNext");
                         remainingTasks = remainingTasks-1;
+
 //                        if(remainingTasks>0)
 //                            NotificationUtil.getInstance(getApplication().getApplicationContext()).updateNotificationProgress(((float)remainingTasks/totalTasks),10);
                         onUpload(response,response.getOutletId(),response.getOutletStatus());
                     }
-
-
                     @Override
                     public void onError(Throwable e){
 
                         isLoading().postValue(false);
-                        Toast.makeText(getApplication(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplication(), e.getLocalizedMessage()+"", Toast.LENGTH_SHORT).show();
                         if(e instanceof OrderException) {
                             OrderException exception = (OrderException)e;
                             if (exception != null){
@@ -262,15 +268,19 @@ public class HomeViewModel extends AndroidViewModel {
                                 ex.printStackTrace();
                             }
                         }
-
-
                     }
-
                     @Override
                     public void onComplete() {
-                        Log.i(TAG,"OnComplete");
-                        isLoading().postValue(false);
-                        Toast.makeText(getApplication().getApplicationContext(), "All orders uploaded", Toast.LENGTH_SHORT).show();
+
+                        new Handler().postDelayed(() -> {
+                            Log.i(TAG,"OnComplete");
+                            isLoading().postValue(false);
+                            Toast.makeText(getApplication().getApplicationContext(), "All orders uploaded", Toast.LENGTH_SHORT).show();
+//
+                        }, 60000);
+//                        Log.i(TAG,"OnComplete");
+//                        isLoading().postValue(false);
+//                        Toast.makeText(getApplication().getApplicationContext(), "All orders uploaded", Toast.LENGTH_SHORT).show();
 //                        NotificationUtil.getInstance(getApplication().getApplicationContext()).finishUpload(10);
                     }
                 });
@@ -278,9 +288,9 @@ public class HomeViewModel extends AndroidViewModel {
 
     private void onUpload(MasterModel orderResponseModel,Long outletId,Integer statusId) {
 
-        isLoading().postValue(false);
 
         if(!orderResponseModel.isSuccess()){
+            isLoading().postValue(false);
             try {
                 error(orderResponseModel);
 
@@ -342,7 +352,7 @@ public class HomeViewModel extends AndroidViewModel {
 
         }
         isLoading().postValue(false);
-        Toast.makeText(getApplication(), errorBody, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplication(), errorBody+"", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -350,6 +360,10 @@ public class HomeViewModel extends AndroidViewModel {
 
         Gson gson = new Gson();
         MasterModel masterModel = gson.fromJson(orderStatus.getData(),MasterModel.class);
+
+        if (masterModel != null)
+            Bugfender.d("OutletId Multiple Request", masterModel.getOutletId() +"  " + PreferenceUtil.getInstance(getApplication().getApplicationContext()).getUsername())    ;
+
 
         return RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
                 .observeOn(AndroidSchedulers.mainThread()).toObservable()

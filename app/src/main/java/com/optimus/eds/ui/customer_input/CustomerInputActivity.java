@@ -173,7 +173,7 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
 
 
     private void showMsg(String error) {
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, error+"", Toast.LENGTH_SHORT).show();
     }
 
     private void setProgress(boolean isLoading) {
@@ -297,12 +297,12 @@ public class CustomerInputActivity extends BaseActivity implements SignaturePad.
                 hideProgress();
                 if(response!=null && response.isSuccess()){
                     hideProgress();
-                    Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, response.isSuccess()?"Order Uploaded Successfully!":response.getResponseMsg()+"", Toast.LENGTH_SHORT).show();
                     viewModel.setOrderSaved(true);
                     viewModel.scheduleMerchandiseJob(getApplication(), outletId, PreferenceUtil.getInstance(getApplication()).getToken() , statusId);
                 }else{
                     findViewById(R.id.btnNext).setEnabled(true);
-                    Toast.makeText(context, response.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, response.getErrorMessage()+"", Toast.LENGTH_SHORT).show();
                 }
             }
         }

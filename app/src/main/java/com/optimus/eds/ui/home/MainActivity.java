@@ -16,14 +16,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bugfender.sdk.Bugfender;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.ActivityResult;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.Task;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.optimus.eds.BaseActivity;
+import com.optimus.eds.BuildConfig;
 import com.optimus.eds.Constant;
 import com.optimus.eds.R;
 import com.optimus.eds.model.TargetVsAchievement;
@@ -39,6 +43,8 @@ import com.optimus.eds.utils.NetworkManagerKotlin;
 import com.optimus.eds.utils.PermissionUtil;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.Objects;
@@ -129,7 +135,7 @@ public class MainActivity extends BaseActivity {
             }
         }).addOnFailureListener(e -> {
 
-            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, e.getLocalizedMessage()+"", Toast.LENGTH_SHORT).show();
             init();
         });
 
@@ -142,6 +148,8 @@ public class MainActivity extends BaseActivity {
 //        appUpdateManager = AppUpdateManagerFactory.create(this);
 //
 //        checkUpdate();
+
+        Bugfender.d("Test", "Hello world!");
 
 
     }
@@ -165,6 +173,9 @@ public class MainActivity extends BaseActivity {
         }else{
             navProfileName.setText(PreferenceUtil.getInstance(this).getUsername());
         }
+
+        MenuItem appVersion = nav.getMenu().getItem(3);
+        appVersion.setTitle("App version " + BuildConfig.VERSION_CODE);
 
         nav.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -373,13 +384,19 @@ public class MainActivity extends BaseActivity {
                     return;
                 }
 
-                viewModel.findOutletsWithPendingTasks().subscribe(outlets -> {
-                    if (outlets.size() > 0 && PreferenceUtil.getInstance(this).getConfig().getEndDayOnPjpCompletion()) {
-                        viewModel.getErrorMsg().postValue("Please complete your tasks");
-                    } else {
-                        viewModel.getEndDayLiveData().postValue(true);
+                viewModel.findAllOutlets().subscribe( outletsSize -> {
+
+                    if(outletsSize.size() > 0){
+                        viewModel.findOutletsWithPendingTasks().subscribe(outlets -> {
+                            if (outlets.size() > 0 && PreferenceUtil.getInstance(this).getConfig().getEndDayOnPjpCompletion()) {
+                                viewModel.getErrorMsg().postValue("Please complete your tasks");
+                            } else {
+                                viewModel.getEndDayLiveData().postValue(true);
+                            }
+                        });
                     }
                 });
+
                 break;
         }
 
@@ -479,12 +496,13 @@ public class MainActivity extends BaseActivity {
             showProgress();
         } else {
             findViewById(R.id.btnUpload).setClickable(true);
+            findViewById(R.id.btnEndDay).setClickable(true);
             hideProgress();
         }
     }
 
     private void showMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, message+"", Toast.LENGTH_LONG).show();
     }
 
 
@@ -532,6 +550,7 @@ public class MainActivity extends BaseActivity {
 
                 case RESULT_OK:
 
+                    Toast.makeText(this, "Downloading latest app", Toast.LENGTH_SHORT).show();
                     break;
                 case ActivityResult.RESULT_IN_APP_UPDATE_FAILED :
                 case RESULT_CANCELED:
@@ -545,8 +564,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-
 //        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
 //            if (appUpdateInfo.updateAvailability()
 //                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS

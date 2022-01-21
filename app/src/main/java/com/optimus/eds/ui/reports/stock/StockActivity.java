@@ -81,7 +81,7 @@ public class StockActivity extends BaseActivity {
 
         viewModel.getProductList().observe(this, this::setSectionedAdapter);
 
-        viewModel.showMessage().observe(this,s -> Toast.makeText(this, s, Toast.LENGTH_SHORT).show());
+        viewModel.showMessage().observe(this,s -> Toast.makeText(this, s+"", Toast.LENGTH_SHORT).show());
 
     }
 

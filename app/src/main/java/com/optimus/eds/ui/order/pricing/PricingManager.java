@@ -694,7 +694,11 @@ public class PricingManager {
             for (PriceConditionScale conditionScale : scaleList) {
 
                 if (conditionScale.getPriceConditionDetailId() == priceConditionDetailId && conditionScale.getFrom() <= quantity) {
-                    returnAmount = conditionScale.getAmount();
+                    if (useCartonAmount){
+                        if (conditionScale.getCartonAmount() != null)
+                            returnAmount = BigDecimal.valueOf(conditionScale.getCartonAmount());
+                    } else
+                        returnAmount = conditionScale.getAmount();
                     break;
                 }
             }
@@ -704,7 +708,11 @@ public class PricingManager {
             for (PriceConditionScale conditionScale : scaleList) {
 
                 if (conditionScale.getPriceConditionDetailId() == priceConditionDetailId && conditionScale.getFrom() <= totalPrice.doubleValue()) {
-                    returnAmount = conditionScale.getAmount();
+                    if (useCartonAmount){
+                        if (conditionScale.getCartonAmount() != null)
+                            returnAmount = BigDecimal.valueOf(conditionScale.getCartonAmount());
+                    } else
+                        returnAmount = conditionScale.getAmount();
                     break;
                 }
             }
@@ -851,7 +859,10 @@ public class PricingManager {
                         }
 
                         if (limitDTO.getLimitBy() != null) {
-                            objSingleBlock.setMaximumLimit(limitDTO.getMaximumLimit().doubleValue());
+
+
+                            if (limitDTO.getMaximumLimit() != null)
+                                objSingleBlock.setMaximumLimit(limitDTO.getMaximumLimit().doubleValue());
                             objSingleBlock.setLimitBy(limitDTO.getLimitBy());
 
                             if (objSingleBlock.getAlreadyAvailed() == null)
@@ -1074,9 +1085,12 @@ public class PricingManager {
         return objReturnPrice;
     }
 
-    private double getRemainingBlockPrice(double amount, double maxLimit, Double alreadyAvailed) {
+    private double getRemainingBlockPrice(double amount, Double maxLimit, Double alreadyAvailed) {
         if (alreadyAvailed == null) {
             alreadyAvailed = 0.0;
+        }
+        if (maxLimit == null) {
+            maxLimit = 0.0;
         }
         double remainingAmount = maxLimit - alreadyAvailed;
         if (remainingAmount < amount) {

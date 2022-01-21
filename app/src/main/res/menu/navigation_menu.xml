@@ -8,7 +8,11 @@
         android:icon="@drawable/ic_refresh"
         android:title="Check for Update"/>
 
+
     <item android:id="@+id/exit"
         android:icon="@drawable/ic_exit_to_app"
         android:title="Logout"/>
+
+    <item android:id="@+id/appVersion"
+        android:title="App version"/>
 </menu>

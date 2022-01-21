@@ -38,7 +38,9 @@ public interface RouteDao extends MerchandiseDao{
     LiveData<Route> findRouteById(Long id);
 
     @Query("SELECT * FROM Outlet ORDER BY mOutletName ASC")
-    LiveData<List<Outlet>> findAllOutlets();
+    Single<List<Outlet>> findAllOutlets();
+
+
 
     @Query("SELECT * FROM Outlet WHERE mRouteId=:routeId AND planned=:planned ORDER BY sequenceNumber")
     Single<List<Outlet>> findAllOutletsForRoute(Long routeId,int planned);

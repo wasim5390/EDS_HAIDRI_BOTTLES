@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.annotation.NonNull;
 
 
+import com.bugfender.sdk.Bugfender;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,6 +39,7 @@ import com.optimus.eds.ui.order.OrderBookingRepository;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.NetworkManager;
 import com.optimus.eds.utils.NetworkManagerKotlin;
+import com.optimus.eds.utils.PreferenceUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -184,6 +186,8 @@ public class CustomerInputViewModel extends AndroidViewModel {
         FirebaseCrashlytics.getInstance().log(masterModelGson);
         FirebaseCrashlytics.getInstance().setCustomKey("orderStatuses" , masterModelGson);
 
+        if (masterModel != null)
+            Bugfender.d("OutletId Single Request" , masterModel.getOutletId() +"  "  + PreferenceUtil.getInstance(getApplication().getApplicationContext()).getUsername());
 
         RetrofitHelper.getInstance().getApi().saveOrder(masterModel)
                 .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(response->{
@@ -194,7 +198,20 @@ public class CustomerInputViewModel extends AndroidViewModel {
 
     private void onUpload(MasterModel orderResponseModel,Long outletId,Integer statusId) {
         if(!orderResponseModel.isSuccess()){
-            error(orderResponseModel);
+
+            if (orderResponseModel.getErrorMessage() != null){
+                if (orderResponseModel.getErrorMessage().isEmpty()){
+                    MasterModel baseResponse = new MasterModel();
+                    baseResponse.setResponseMsg(orderResponseModel.getErrorMessage());
+                    baseResponse.setSuccess(false);
+                    isSaving.postValue(false);
+                    orderSaved.postValue(true);
+                }else{
+                    error(orderResponseModel);
+                }
+            }else{
+                error(orderResponseModel);
+            }
             return;
         }
 
@@ -334,6 +351,8 @@ public class CustomerInputViewModel extends AndroidViewModel {
         baseResponse.setResponseMsg(errorBody);
         baseResponse.setSuccess(false);
         msg.postValue(errorBody);
+
+        isSaving.postValue(false);
         orderSaved.postValue(false);
     }
 

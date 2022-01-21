@@ -102,7 +102,7 @@ public class ScannerActivity extends AppCompatActivity {
                     intent.putExtra("barCodeNum",result.getContents().trim());
                     intent.putExtra("barCodeImage" , result.getBarcodeImagePath());
 
-                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, result.getContents()+"", Toast.LENGTH_LONG).show();
                     setResult(RESULT_OK, getIntent().putExtra(KEY_SCANNER_RESULT, result.getContents()));
                     finish();
                 }

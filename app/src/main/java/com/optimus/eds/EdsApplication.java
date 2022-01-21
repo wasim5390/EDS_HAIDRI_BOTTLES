@@ -2,6 +2,7 @@ package com.optimus.eds;
 
 import android.content.Context;
 
+import com.bugfender.sdk.Bugfender;
 import com.google.firebase.FirebaseApp;
 
 import androidx.multidex.MultiDexApplication;
@@ -23,5 +24,9 @@ public class EdsApplication extends MultiDexApplication  {
         super.onCreate();
         instance = this;
         FirebaseApp.initializeApp(this);
+
+        Bugfender.init(this, "ANzl0O4BdPYkCkgyFSxWQzEsWVef78EF", BuildConfig.DEBUG);
+        Bugfender.enableCrashReporting();
+        Bugfender.enableUIEventLogging(this);
     }
 }

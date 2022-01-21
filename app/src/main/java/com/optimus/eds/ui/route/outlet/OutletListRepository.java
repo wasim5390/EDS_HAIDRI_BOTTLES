@@ -43,6 +43,12 @@ public class OutletListRepository  extends OrderBookingRepository {
         return routeDao.findAllOutletsForRoute(routeId,outletType);
     }
 
+    public Single<List<Outlet>> getAllOutlet(){
+        //1 for get All planned outlet calls
+        return routeDao.findAllOutlets();
+    }
+
+
     public Flowable<List<Outlet>> getOutletsWithNoVisits(){
         // get All planned outlet calls
         return routeDao.findOutletsWithPendingTasks(); //1
