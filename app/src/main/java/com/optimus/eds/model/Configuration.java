@@ -36,7 +36,7 @@ public class Configuration {
     }
 
     public Integer getGeoFenceMinRadius() {
-        return geoFenceMinRadius==null?20:geoFenceMinRadius;
+        return geoFenceMinRadius==null?50:geoFenceMinRadius;
     }
 
     public Boolean getGeoFenceRequired() {

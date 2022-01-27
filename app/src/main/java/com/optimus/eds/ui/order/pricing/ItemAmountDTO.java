@@ -26,7 +26,16 @@ public class ItemAmountDTO {
         BlockPrice = blockPrice;
     }
 
+    public Integer getActualQuantity() {
+        return actualQuantity;
+    }
+
+    public void setActualQuantity(Integer actualQuantity) {
+        this.actualQuantity = actualQuantity;
+    }
+
     public boolean IsMaxLimitReached;
     public double TotalPrice;
     public double BlockPrice;
+    public Integer actualQuantity;
 }

@@ -56,6 +56,7 @@ import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
@@ -176,6 +177,9 @@ public class MainActivity extends BaseActivity {
 
         MenuItem appVersion = nav.getMenu().getItem(3);
         appVersion.setTitle("App version " + BuildConfig.VERSION_CODE);
+
+        MenuItem lastUpdate = nav.getMenu().getItem(4);
+        lastUpdate.setTitle("Updated on 1/22/2022");
 
         nav.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -330,6 +334,7 @@ public class MainActivity extends BaseActivity {
                         , verified -> {
                             if (verified) {
 //                                showProgress();
+                                PreferenceUtil.getInstance(this).saveConfig(null);
                                 viewModel.download();
                             }
                         });
@@ -384,13 +389,27 @@ public class MainActivity extends BaseActivity {
                     return;
                 }
 
+
+//                viewModel.findAllOutlets().flatMap(outlets -> {
+//                    if (outlets.size() > 0){
+//                        return viewModel.findOutletsWithPendingTasks();
+//                    }
+//                    return null;
+//                }).subscribe(outlets -> {
+//
+//                    if (outlets == null && outlets.size() > 0 && PreferenceUtil.getInstance(this).getConfig() != null && PreferenceUtil.getInstance(this).getConfig().getEndDayOnPjpCompletion()) {
+//                        viewModel.getErrorMsg().postValue("Please complete your tasks");
+//                    } else {
+//                        viewModel.getEndDayLiveData().postValue(true);
+//                    }
+//                });
                 viewModel.findAllOutlets().subscribe( outletsSize -> {
 
                     if(outletsSize.size() > 0){
                         viewModel.findOutletsWithPendingTasks().subscribe(outlets -> {
-                            if (outlets.size() > 0 && PreferenceUtil.getInstance(this).getConfig().getEndDayOnPjpCompletion()) {
+                            if (outlets.size() > 0 && PreferenceUtil.getInstance(this).getConfig() != null && PreferenceUtil.getInstance(this).getConfig().getEndDayOnPjpCompletion()) {
                                 viewModel.getErrorMsg().postValue("Please complete your tasks");
-                            } else {
+                            } else if (PreferenceUtil.getInstance(this).getConfig() != null){
                                 viewModel.getEndDayLiveData().postValue(true);
                             }
                         });
@@ -399,8 +418,6 @@ public class MainActivity extends BaseActivity {
 
                 break;
         }
-
-
     }
 
     public void setObservers() {
@@ -453,13 +470,15 @@ public class MainActivity extends BaseActivity {
         });
 
         viewModel.getEndDayLiveData().observe(this, aBoolean -> {
-            String endDate = Util.formatDate(Util.DATE_FORMAT_2, PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate());
-            AlertDialogManager.getInstance().showVerificationAlertDialog(this, getString(R.string.day_closing_title).concat(" ( " + endDate + " )"),
-                    getString(R.string.end_day_msg)
-                    , verified -> {
-                        if (verified)
-                            viewModel.updateDayEndStatus();
-                    });
+            if (aBoolean){
+                String endDate = Util.formatDate(Util.DATE_FORMAT_2, PreferenceUtil.getInstance(this).getWorkSyncData().getSyncDate());
+                AlertDialogManager.getInstance().showVerificationAlertDialog(this, getString(R.string.day_closing_title).concat(" ( " + endDate + " )"),
+                        getString(R.string.end_day_msg)
+                        , verified -> {
+                            if (verified)
+                                viewModel.updateDayEndStatus();
+                        });
+            }
         });
         viewModel.appUpdateLiveData().observe(this, appUpdateModel -> {
             boolean appNeedToUpdate = AppUpdater.getInstance().apkChanged(appUpdateModel);

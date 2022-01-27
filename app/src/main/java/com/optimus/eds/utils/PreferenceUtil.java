@@ -283,9 +283,9 @@ public class PreferenceUtil {
         Gson gson = new Gson();
         Configuration configuration = gson.fromJson(sPref.getString(KEY_CONFIG, ""), Configuration.class);
 
-        if (configuration == null) {
-            configuration = new Configuration();
-        }
+//        if (configuration == null) {
+//            configuration = new Configuration();
+//        }
         return configuration;
     }
 

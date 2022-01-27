@@ -329,7 +329,10 @@ public class OutletDetailActivity extends BaseActivity implements
                         if (outletLatLng != null) {
 
                             Double metre = checkMetre(currentLatLng, outletLatLng);
-                            Configuration config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
+
+                            Configuration config = new Configuration();
+                            if (PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig() != null)
+                            config = PreferenceUtil.getInstance(OutletDetailActivity.this).getConfig();
 
                             startLocationTime = System.currentTimeMillis();
                             if (config.getGeoFenceMinRadius() != null) {
@@ -455,7 +458,7 @@ public class OutletDetailActivity extends BaseActivity implements
     }
 
     public void showOutsideBoundaryDialog(int repeat, String metres) {
-        if (repeat < 5) {
+        if (repeat < 2) {
 
             final int repeatLocal = ++repeat;
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);

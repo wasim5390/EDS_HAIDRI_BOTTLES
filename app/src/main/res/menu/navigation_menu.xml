@@ -15,4 +15,7 @@
 
     <item android:id="@+id/appVersion"
         android:title="App version"/>
+
+    <item android:id="@+id/lastUpdate"
+        android:title="Updated on "/>
 </menu>

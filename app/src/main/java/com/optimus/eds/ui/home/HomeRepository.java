@@ -183,7 +183,6 @@ public class HomeRepository {
 
                     if (response.body() != null && response.body().getDistributionId() != null)
                         preferenceUtil.saveDistributionId(response.body().getDistributionId());
-                    preferenceUtil.saveConfig(response.body().getConfiguration());
                     deleteAllRoutesAssets()
                             .andThen(deleteAllOutlets(onDayStart))
                             .andThen(Completable.fromAction(() -> {
@@ -217,6 +216,7 @@ public class HomeRepository {
                                 for (Outlet outlet : response.body().getOutletList()) {
                                     outletIds.add(outlet.getOutletId());
                                 }
+
                             }))
                             .andThen(Completable.fromAction(() -> {
                                 routeDao.insertAssets(response.body().getAssetList());
@@ -270,6 +270,7 @@ public class HomeRepository {
                                     }
                                     mobileOrderId++;
                                 }
+                                preferenceUtil.saveConfig(response.body().getConfiguration());
                             }))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.single()).subscribe(new CompletableObserver() {

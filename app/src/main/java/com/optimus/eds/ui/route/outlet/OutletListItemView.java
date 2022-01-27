@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.optimus.eds.R;
 import com.optimus.eds.db.entities.Outlet;
 import com.optimus.eds.db.entities.OutletOrderStatus;
+import com.optimus.eds.utils.PreferenceUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,19 +71,26 @@ View noSaleView;
             outletName.setText(outletItem.getOutletName().concat(" - " + outletItem.getLocation()));
             outletCode.setText(getResources().getString(R.string.outlet_code, outletItem.getOutletCode()));
 
-            if (outletOrderStatus != null) {
-                if (outletOrderStatus.orderStatus != null) {
-                    if (outletOrderStatus.orderStatus.getStatus() >= 7) {
-                        orderAmount.setText("RS. " + outletOrderStatus.orderStatus.getOrderAmount());
-                    } else {
-                        orderAmount.setText("RS. " + 0.0);
-                    }
-                } else {
-                    setTotal();
-                }
-            } else {
-                setTotal();
+
+            if (outletItem.getMtdSale() != null){
+                orderAmount.setText("Sales in CS: " + outletItem.getMtdSale());
+            }else{
+                orderAmount.setText("Sales in CS 0" );
             }
+
+//            if (outletOrderStatus != null) {
+//                if (outletOrderStatus.orderStatus != null) {
+//                    if (outletOrderStatus.orderStatus.getStatus() >= 7) {
+//                        orderAmount.setText("RS. " + outletOrderStatus.orderStatus.getOrderAmount());
+//                    } else {
+//                        orderAmount.setText("RS. " + 0.0);
+//                    }
+//                } else {
+//                    setTotal();
+//                }
+//            } else {
+//                setTotal();
+//            }
 
 
             if (outletItem.getHasHTHDiscount())
