@@ -836,6 +836,7 @@ public class PricingManager {
                                 existingCombinedLimit.setPackageId(packageId.intValue());
                                 existingCombinedLimit.setPriceConditionId(prAccSeqDetail.getPriceConditionId());
                                 existingCombinedLimit.setAvailedAmount(0.0);
+                                existingCombinedLimit.setAvailedQuantity(0);
                                 existingCombinedLimit.setPriceConditionAppliedForTheFirstItem(true);
 
                             }
@@ -887,12 +888,23 @@ public class PricingManager {
                                     }
                                 }
 
-                                if (pcDefinitionLevelId == (int) Enums.EnumPCDefinitionLevel.PackageLevel)
+                                if (pcDefinitionLevelId == (int) Enums.EnumPCDefinitionLevel.PackageLevel || (conditionType.getLRB() != null && conditionType.getLRB() ) )
                                 {
-                                    if (existingCombinedLimit.getAvailedAmount() != null)
+//                                    if (existingCombinedLimit.getAvailedAmount() != null)
+//                                    {
+//                                        objSingleBlock.setAlreadyAvailed(objSingleBlock.getAlreadyAvailed() + existingCombinedLimit.getAvailedAmount());
+//                                    }
+
+                                    if (limitDTO.getLimitBy() == (int) Enums.LimitBy.Amount && existingCombinedLimit.getAvailedAmount() != null)
                                     {
-                                        objSingleBlock.setAlreadyAvailed(objSingleBlock.getAlreadyAvailed() + existingCombinedLimit.getAvailedAmount());
+                                        objSingleBlock.setAlreadyAvailed(objSingleBlock.getAlreadyAvailed() + existingCombinedLimit.getAvailedAmount());;
                                     }
+                                    else if (limitDTO.getLimitBy() == (int)Enums.LimitBy.Quantity && existingCombinedLimit.getAvailedQuantity() != null)
+                                    {
+                                        objSingleBlock.setAlreadyAvailed(objSingleBlock.getAlreadyAvailed() + existingCombinedLimit.getAvailedQuantity());
+                                    }
+
+
 
                                     if (prAccSeqDetail.getCombinedLimitBy() == (int) Enums.LimitBy.Amount)
                                     {
@@ -956,12 +968,25 @@ public class PricingManager {
                             objPriceOutputDTO.getMessages().add(message);
                         }
 
+
+                        if (existingCombinedLimit != null)
+                        {
+                            existingCombinedLimit.setAvailedAmount(existingCombinedLimit.getAvailedAmount() != null ? existingCombinedLimit.getAvailedAmount()+blockPrice.BlockPrice : blockPrice.BlockPrice);
+                            if (blockPrice.getActualQuantity() != null)
+                            {
+                                existingCombinedLimit.setAvailedQuantity(existingCombinedLimit.getAvailedQuantity()!= null ? existingCombinedLimit.getAvailedQuantity()+  blockPrice.getActualQuantity() : blockPrice.getActualQuantity());
+                            }
+                            if (existingCombinedLimit.getPriceConditionAppliedForTheFirstItem() !=null && existingCombinedLimit.getPriceConditionAppliedForTheFirstItem())
+                            {
+                                existingCombinedLimit.setPriceConditionAppliedForTheFirstItem(false);
+                                combinedMaxLimitHolderDTOList.add(existingCombinedLimit);
+                            }
+                        }
+
                         break;
                     }
 
                 }
-
-
             }
             if (!isPriceFound && !TextUtils.isEmpty(conditionClass.getSeverityLevelMessage())
                     && conditionClass.getSeverityLevel() != Enums.MessageSeverityLevel.MESSAGE) {
@@ -1028,6 +1053,7 @@ public class PricingManager {
                 actualQuantity = remainingQuantity;
                 objReturnPrice.IsMaxLimitReached = true;
             }
+            objReturnPrice.setActualQuantity(actualQuantity);
         }
 
 
