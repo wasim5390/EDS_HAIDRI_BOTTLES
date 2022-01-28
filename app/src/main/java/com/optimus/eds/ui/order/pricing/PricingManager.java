@@ -83,6 +83,7 @@ public class PricingManager {
         return pricingDao.priceConditionTypeValidation().subscribeOn(Schedulers.io()).blockingGet();
     }
 
+
     //region "Public Functions"
 
     public PriceOutputDTO getOrderPrice(OrderResponseModel orderResponseModel , BigDecimal orderTotalAmount, int quantity, int outletId, int routeId, Integer distributionId) {
