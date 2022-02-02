@@ -43,6 +43,7 @@ public class Util {
     public static final String DATE_FORMAT_3 = "MMM-dd";
     public static final String DATE_FORMAT_5 = "hh:mm a";
     public static final String DATE_FORMAT_4 = "MM/dd/yyyy";
+    public static final String DATE_FORMAT_7 = "YYYY-MM-dd";
 
     private static final String TAG = "Util";
 

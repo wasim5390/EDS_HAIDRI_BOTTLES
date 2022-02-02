@@ -183,21 +183,42 @@ public class HomeRepository {
 
                     if (response.body() != null && response.body().getDistributionId() != null)
                         preferenceUtil.saveDistributionId(response.body().getDistributionId());
-                    deleteAllRoutesAssets()
-                            .andThen(deleteAllOutlets(onDayStart))
+                    deleteAllData()
+//                            .andThen(deleteAllOutlets(onDayStart))
                             .andThen(Completable.fromAction(() -> {
-                                if (onDayStart) {
+//                                if (onDayStart) {
                                     routeDao.deleteAllMerchandise();
                                     customerDao.deleteAllCustomerInput();
                                     taskDao.deleteAllTask();
                                     routeDao.deleteAllPromotion();
                                     routeDao.deleteAllLookUp();
+                                    routeDao.deleteAllRoutes();
+                                    routeDao.deleteAllAssets();
+                                    routeDao.deleteAllOutlets();
+
+                                    pricingDao.deleteAllPriceConditionClasses();
+                                    pricingDao.deleteAllPricingAreas();
+                                    pricingDao.deleteAllPriceConditionEntities();
+                                    pricingDao.deleteAllPriceBundles();
+                                    pricingDao.deletePriceCondition();
+                                    pricingDao.deletePriceConditionTypes();
+                                    pricingDao.deletePriceConditionScale();
+                                    pricingDao.deletePriceAccessSequence();
+                                    pricingDao.deletePriceConditionOutletAttribute();
+                                    pricingDao.deleteFreeGoodMasters();
+                                    pricingDao.deleteFreeGoodGroups();
+                                    pricingDao.deleteFreePriceConditionOutletAttribute();
+                                    pricingDao.deleteFreeGoodDetails();
+                                    pricingDao.deleteFreeGoodExclusives();
+                                    pricingDao.deleteFreeGoodEntityDetails();
+                                    pricingDao.deleteOutletAvailedFreeGoods();
+                                    pricingDao.deleteOutletAvailedPromotion();
 
                                     // remove Pricing
 //                                    pricingDao.deleteAllPriceConditionClasses();
 //                                    pricingDao.deleteAllPricingAreas();
 //                                    deleteAllPricing();
-                                }
+//                                }
                             }))
 
                             .andThen(Completable.fromAction(() -> {
@@ -348,6 +369,37 @@ public class HomeRepository {
         return Completable.fromAction(() -> {
             routeDao.deleteAllRoutes();
             routeDao.deleteAllAssets();
+
+        });
+    }
+    public Completable deleteAllData() {
+        return Completable.fromAction(() -> {
+            routeDao.deleteAllMerchandise();
+            customerDao.deleteAllCustomerInput();
+            taskDao.deleteAllTask();
+            routeDao.deleteAllPromotion();
+            routeDao.deleteAllLookUp();
+            routeDao.deleteAllRoutes();
+            routeDao.deleteAllAssets();
+            routeDao.deleteAllOutlets();
+
+            pricingDao.deleteAllPriceConditionClasses();
+            pricingDao.deleteAllPricingAreas();
+            pricingDao.deleteAllPriceConditionEntities();
+            pricingDao.deleteAllPriceBundles();
+            pricingDao.deletePriceCondition();
+            pricingDao.deletePriceConditionTypes();
+            pricingDao.deletePriceConditionScale();
+            pricingDao.deletePriceAccessSequence();
+            pricingDao.deletePriceConditionOutletAttribute();
+            pricingDao.deleteFreeGoodMasters();
+            pricingDao.deleteFreeGoodGroups();
+            pricingDao.deleteFreePriceConditionOutletAttribute();
+            pricingDao.deleteFreeGoodDetails();
+            pricingDao.deleteFreeGoodExclusives();
+            pricingDao.deleteFreeGoodEntityDetails();
+            pricingDao.deleteOutletAvailedFreeGoods();
+            pricingDao.deleteOutletAvailedPromotion();
 
         });
     }
@@ -541,23 +593,23 @@ public class HomeRepository {
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
                         AsyncTask.execute(() -> {
 
-                            pricingDao.deleteAllPriceConditionClasses();
-                            pricingDao.deleteAllPricingAreas();
-                            pricingDao.deleteAllPriceConditionEntities();
-                            pricingDao.deleteAllPriceBundles();
-                            pricingDao.deletePriceCondition();
-                            pricingDao.deletePriceConditionTypes();
-                            pricingDao.deletePriceConditionScale();
-                            pricingDao.deletePriceAccessSequence();
-                            pricingDao.deletePriceConditionOutletAttribute();
-                            pricingDao.deleteFreeGoodMasters();
-                            pricingDao.deleteFreeGoodGroups();
-                            pricingDao.deleteFreePriceConditionOutletAttribute();
-                            pricingDao.deleteFreeGoodDetails();
-                            pricingDao.deleteFreeGoodExclusives();
-                            pricingDao.deleteFreeGoodEntityDetails();
-                            pricingDao.deleteOutletAvailedFreeGoods();
-                            pricingDao.deleteOutletAvailedPromotion();
+//                            pricingDao.deleteAllPriceConditionClasses();
+//                            pricingDao.deleteAllPricingAreas();
+//                            pricingDao.deleteAllPriceConditionEntities();
+//                            pricingDao.deleteAllPriceBundles();
+//                            pricingDao.deletePriceCondition();
+//                            pricingDao.deletePriceConditionTypes();
+//                            pricingDao.deletePriceConditionScale();
+//                            pricingDao.deletePriceAccessSequence();
+//                            pricingDao.deletePriceConditionOutletAttribute();
+//                            pricingDao.deleteFreeGoodMasters();
+//                            pricingDao.deleteFreeGoodGroups();
+//                            pricingDao.deleteFreePriceConditionOutletAttribute();
+//                            pricingDao.deleteFreeGoodDetails();
+//                            pricingDao.deleteFreeGoodExclusives();
+//                            pricingDao.deleteFreeGoodEntityDetails();
+//                            pricingDao.deleteOutletAvailedFreeGoods();
+//                            pricingDao.deleteOutletAvailedPromotion();
 
                             pricingDao.insertPriceConditionClasses(response.getPriceConditionClasses());
                             pricingDao.insertPriceConditionType(response.getPriceConditionTypes());

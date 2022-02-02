@@ -32,6 +32,7 @@ import com.optimus.eds.ui.order.pricing.PricingManager;
 import com.optimus.eds.ui.route.outlet.detail.OutletDetailRepository;
 import com.optimus.eds.utils.NetworkManager;
 import com.optimus.eds.utils.NetworkManagerKotlin;
+import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
 
 
@@ -439,27 +440,26 @@ public class OrderBookingViewModel extends AndroidViewModel {
             NetworkManager.getInstance().isOnline().subscribe((aBoolean, throwable) -> {
                 if (!aBoolean) {
 
-                    disposable.add(calculateLocally(responseModel));
-//                    msg.postValue(Constant.NETWORK_ERROR);
+                    //                    msg.postValue(Constant.NETWORK_ERROR);
 //                    isSaving.postValue(false);
                 } else {
                     new Gson().toJson(responseModel);
 //                    disposable.add(calculateFromServer(responseModel));
-                    disposable.add(calculateLocally(responseModel));
                 }
+                disposable.add(calculateLocally(responseModel));
             });
         }
     }
 
     private Disposable calculateLocally(OrderResponseModel responseModel) {
         return PricingManager.getInstance(getApplication())
-                .calculatePriceBreakdown(responseModel)
+                .calculatePriceBreakdown(responseModel , Util.formatDate(Util.DATE_FORMAT_7 , PreferenceUtil.getInstance(getApplication().getApplicationContext()).getWorkSyncData().getSyncDate()))
                 .map(orderResponseModel -> {
                     Gson gson = new Gson();
                     BigDecimal orderTotalAmount = BigDecimal.valueOf(orderResponseModel.getPayable());
                     int totalQty = getOrderTotalQty(orderResponseModel.getOrderDetails());
                     PriceOutputDTO priceOutputDTO = PricingManager.getInstance(getApplication()).getOrderPrice(orderResponseModel , orderTotalAmount,totalQty,orderResponseModel.getOutletId()
-                            ,orderResponseModel.getRouteId(),orderResponseModel.getDistributionId());
+                            ,orderResponseModel.getRouteId(),orderResponseModel.getDistributionId() , Util.formatDate(Util.DATE_FORMAT_7 , PreferenceUtil.getInstance(getApplication().getApplicationContext()).getWorkSyncData().getSyncDate()));
                     String gsonText = gson.toJson(priceOutputDTO.getPriceBreakdown());
                     List<UnitPriceBreakDown> priceBreakDown =  gson.fromJson(gsonText, new TypeToken<List<UnitPriceBreakDown>>(){}.getType());
                     orderResponseModel.setPriceBreakDown(priceBreakDown);
@@ -473,7 +473,7 @@ public class OrderBookingViewModel extends AndroidViewModel {
                         }
                     }
                     // call free goods
-                    OrderResponseModel orderResponseModelcheck = PricingManager.getInstance(getApplication()).GetFreeGoods(orderResponseModel);
+                    OrderResponseModel orderResponseModelcheck = PricingManager.getInstance(getApplication()).GetFreeGoods(orderResponseModel , Util.formatDate(Util.DATE_FORMAT_7 , PreferenceUtil.getInstance(getApplication().getApplicationContext()).getWorkSyncData().getSyncDate()));
                     OrderModel orderModel = new OrderModel();
                     String orderString = new Gson().toJson(orderResponseModelcheck);
                     Order order = new Gson().fromJson(orderString, Order.class);

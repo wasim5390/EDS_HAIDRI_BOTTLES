@@ -79,7 +79,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         builder.setTitle(R.string.location_dialog_title);
         builder.setMessage(R.string.location_dialog_message);
         builder.setPositiveButton("GOTO SETTINGS", (dialog, which) -> {
-            dialog.cancel();
+            dialog.dismiss();
             openSettings();
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());

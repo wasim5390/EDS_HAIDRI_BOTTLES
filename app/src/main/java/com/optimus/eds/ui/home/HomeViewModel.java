@@ -111,6 +111,9 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
 
+    public void deleteAllData(){
+        repository.deleteAllData();
+    }
 
     public Observable<List<Outlet>> findOutletsWithPendingTasks() {
         return OutletListRepository.getInstance(getApplication()).getOutletsWithNoVisits()

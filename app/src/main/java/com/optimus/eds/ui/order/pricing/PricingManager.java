@@ -86,7 +86,7 @@ public class PricingManager {
 
     //region "Public Functions"
 
-    public PriceOutputDTO getOrderPrice(OrderResponseModel orderResponseModel , BigDecimal orderTotalAmount, int quantity, int outletId, int routeId, Integer distributionId) {
+    public PriceOutputDTO getOrderPrice(OrderResponseModel orderResponseModel , BigDecimal orderTotalAmount, int quantity, int outletId, int routeId, Integer distributionId , String date) {
         PriceOutputDTO objPriceOutputDTO = new PriceOutputDTO();
 
         // AccessSequenceDTO appliedAccessSequence = new AccessSequenceDTO();
@@ -104,7 +104,7 @@ public class PricingManager {
                 List<PriceConditionWithAccessSequence> priceConditions = pricingDao
                         .getPriceConditionAndAccessSequenceByTypeId(conditionType.getPriceConditionTypeId() , orderResponseModel.getOutlet().getVpoClassificationId() , orderResponseModel.getOutlet().getPricingGroupId()
                                 , orderResponseModel.getChannelId() , orderResponseModel.getOrganizationId() , orderResponseModel.getOutlet().getPromoTypeId(),
-                                orderResponseModel.getOutlet().getCustomerRegistrationTypeId()).subscribeOn(Schedulers.io()).blockingGet();
+                                orderResponseModel.getOutlet().getCustomerRegistrationTypeId() , date , distributionId , outletId).subscribeOn(Schedulers.io()).blockingGet();
 
 
                 Collections.sort(priceConditions, (o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
@@ -215,7 +215,7 @@ public class PricingManager {
     }
 
 
-    public Single<OrderResponseModel> calculatePriceBreakdown(OrderResponseModel orderModel) {
+    public Single<OrderResponseModel> calculatePriceBreakdown(OrderResponseModel orderModel , String date) {
 
         return Single.create(emitter -> {
             Gson gson = new Gson();
@@ -253,7 +253,7 @@ public class PricingManager {
                     if (!orderDetail.type.equals("freegood")){
                         priceOutputDTO = getOrderItemPrice(productQuantityDTOList , orderDetail.getMobileOrderDetailId(), orderModel.getOutletId()
                                 , orderDetail.getProductTempDefId(), orderDetail.getProductTempQuantity()
-                                , orderModel.getRouteId(), orderModel.getDistributionId() , combinedMaxLimitHolderDTOList , orderModel ); // Missing organizationID , isPeriodic // orderDate // Add ProductListDTO
+                                , orderModel.getRouteId(), orderModel.getDistributionId() , combinedMaxLimitHolderDTOList , orderModel , date , orderDetail.getProductId() ); // Missing organizationID , isPeriodic // orderDate // Add ProductListDTO
 
                         String gsonText = gson.toJson(priceOutputDTO.getPriceBreakdown());
                         if (orderDetail.getProductTempDefId() == orderDetail.getCartonDefinitionId()) {
@@ -733,7 +733,7 @@ public class PricingManager {
             int mobileOrderDetailId,
             int outletId, int productDefinitionId, int quantity, int routeId,
             Integer distributionId , List<CombinedMaxLimitHolderDTO> combinedMaxLimitHolderDTOList ,
-            OrderResponseModel orderResponseModel) {
+            OrderResponseModel orderResponseModel , String date , Long productId) {
 
         // Added By Husnain
 
@@ -761,7 +761,7 @@ public class PricingManager {
                     priceConditions = pricingDao
                             .getPriceConditionAndAccessSequenceByTypeId(conditionType.getPriceConditionTypeId() , orderResponseModel.getOutlet().getVpoClassificationId()
                                     , orderResponseModel.getOutlet().getPricingGroupId(), orderResponseModel.getChannelId() , orderResponseModel.getOrganizationId() , orderResponseModel.getOutlet().getOutletPromoConfigId(),
-                                    orderResponseModel.getOutlet().getCustomerRegistrationTypeId()).subscribeOn(Schedulers.io()).blockingGet();
+                                    orderResponseModel.getOutlet().getCustomerRegistrationTypeId() , date , distributionId , outletId).subscribeOn(Schedulers.io()).blockingGet();
 
                     for (PriceConditionWithAccessSequence priceConditionWithAccessSequence : priceConditions){
 
@@ -814,6 +814,8 @@ public class PricingManager {
                         {
                             if (prAccSeqDetail.getCombinedLimitBy() != null)
                             {
+                                if (combinedMaxLimitHolderDTOList.size() == 0)
+                                    existingCombinedLimit = null;
                                 for (CombinedMaxLimitHolderDTO combinedMaxLimitHolderDTO : combinedMaxLimitHolderDTOList){
                                     if (combinedMaxLimitHolderDTO.getPriceConditionId() == prAccSeqDetail.getPriceConditionId()){
                                         existingCombinedLimit = combinedMaxLimitHolderDTO;
@@ -823,6 +825,8 @@ public class PricingManager {
                             }
                             else
                             {
+                                if (combinedMaxLimitHolderDTOList.size() == 0)
+                                    existingCombinedLimit = null;
                                 for (CombinedMaxLimitHolderDTO combinedMaxLimitHolderDTO : combinedMaxLimitHolderDTOList){
                                     if (combinedMaxLimitHolderDTO.getPriceConditionId() == prAccSeqDetail.getPriceConditionId() && packageId.equals(Long.valueOf(combinedMaxLimitHolderDTO.getPackageId()))){
                                         existingCombinedLimit = combinedMaxLimitHolderDTO;
@@ -872,7 +876,7 @@ public class PricingManager {
                                 objSingleBlock.setAlreadyAvailed(0.0);
                             }
 
-                            OutletAvailedPromotion objAlreadyAvailed = pricingDao.getAlreadyAvailedPromo(outletId , prAccSeqDetail.getPriceConditionId() , objSingleBlock.getPriceConditionDetailId() , productDefinitionId).subscribeOn(Schedulers.io()).blockingGet();
+                            OutletAvailedPromotion objAlreadyAvailed = pricingDao.getAlreadyAvailedPromo(outletId , prAccSeqDetail.getPriceConditionId() , objSingleBlock.getPriceConditionDetailId() , productDefinitionId , productId).subscribeOn(Schedulers.io()).blockingGet();
                         /*   var objAlreadyAvailed = _outletAvailedPromotionDataHandler.GetAlreadyAvailedValue(objSingleBlock.getPriceConditionDetailId());
 //                            }*/
 
@@ -1179,7 +1183,7 @@ public class PricingManager {
 //    }
 
 
-    public OrderResponseModel GetFreeGoods(OrderResponseModel orderVM)
+    public OrderResponseModel GetFreeGoods(OrderResponseModel orderVM , String date)
     {
         try
         {
@@ -1215,7 +1219,7 @@ public class PricingManager {
 
                     Integer optionalFreeGoodCount = 0;
 
-                    List<FreeGoodOutputDTO> freeGoodOutputDTOS = GetFreeGoods(orderVM.getOutletId() , orderVM.getChannelId() , orderVM.getOutlet().getVpoClassificationId(), orderVM.getOutlet().getPricingGroupId() , orderVM.getRouteId() , orderVM.getDistributionId() , orderDetail.getProductTempDefId() , ProductList , AppliedFreeGoodGroupIds);
+                    List<FreeGoodOutputDTO> freeGoodOutputDTOS = GetFreeGoods(orderVM.getOutletId() , orderVM.getChannelId() , orderVM.getOutlet().getVpoClassificationId(), orderVM.getOutlet().getPricingGroupId() , orderVM.getRouteId() , orderVM.getDistributionId() , orderDetail.getProductTempDefId() , ProductList , AppliedFreeGoodGroupIds , date);
                     for(FreeGoodOutputDTO freegood :freeGoodOutputDTOS){
                         freegood.setParentId(orderDetail.orderDetailId);
                         //freegood.Type="freegood";
@@ -1352,7 +1356,7 @@ public class PricingManager {
         }
     }
 
-    public List<FreeGoodOutputDTO> GetFreeGoods(Integer OutletId , Integer channelId , Integer vpoClassficationId , Integer pricingGroupId , Integer RouteId ,  Integer DistributionId, Integer ProductDefinitionId,  List<ProductQuantity> ProductList, List<Integer> AppliedFreeGoodGroupIds)
+    public List<FreeGoodOutputDTO> GetFreeGoods(Integer OutletId , Integer channelId , Integer vpoClassficationId , Integer pricingGroupId , Integer RouteId ,  Integer DistributionId, Integer ProductDefinitionId,  List<ProductQuantity> ProductList, List<Integer> AppliedFreeGoodGroupIds , String date)
     {
         List<PriceAccessSequence> priceAccessSequence = pricingDao.getAccessSequenceByTypeId().subscribeOn(Schedulers.io()).blockingGet();
 
@@ -1365,7 +1369,7 @@ public class PricingManager {
             if (sequence.getSequenceCode().toLowerCase().equals(Enums.AccessSequenceCode.OUTLET_PRODUCT.toString().toLowerCase()))
             {
 
-                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(OutletId , channelId , vpoClassficationId , pricingGroupId , 0 , 0  , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId).subscribeOn(Schedulers.io()).blockingGet();
+                appliedFreeGoodGroups = pricingDao.appliedFreeGoodGroups(OutletId , channelId , vpoClassficationId , pricingGroupId , 0 , 0  , ProductDefinitionId , sequence.getPriceAccessSequenceId(), OutletId ).subscribeOn(Schedulers.io()).blockingGet();
                 //prfreeGoodsList = _freeGoodMasterRepository.prGetFreeGoods(OutletId, 0, 0, 0, ProductId, ProductDefinitionId, Quantity, OrderDate, udtProductList);
 //                prfreeGoodsList = _freeGoodMasterRepository.prGetFreeGoods(OutletId, 0, 0, 0, ProductDefinitionId, OrderDate, udtProductList, sequence.AccessSequenceId, OutletId);
 

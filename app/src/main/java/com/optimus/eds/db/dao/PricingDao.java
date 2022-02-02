@@ -71,91 +71,95 @@ public interface PricingDao {
 //            "INNER JOIN PriceAccessSequence pas on PriceCondition.accessSequenceId=pas.priceAccessSequenceId\n" +
 //            "Where PriceCondition.priceConditionTypeId=:priceConditionTypeId order by pas.`order`")
 //    Single<List<PriceConditionWithAccessSequence>> getPriceConditionAndAccessSequenceByTypeId(int priceConditionTypeId);
-    @Query("SELECT PC.*,pas.* , ChannelAttribute.ChannelAttributeCount , OutletChannelAttribute.ChannelAttributeCount AS OutletChannelAttribute , " +
-            "GroupAttribute.GroupAttributeCount , OutletGroupAttribute.GroupAttributeCount AS OutletGroupAttribute, "+
-            "VPOClassificationAttribute.VPOClassificationAttributeCount , OutletVPOClassificationAttribute.VPOClassificationAttributeCount AS OutletVPOClassificationAttributeCount "+
-            "FROM PriceCondition PC\n" +
-            "INNER JOIN PriceConditionType PCT ON PCT.priceConditionTypeId=PC.priceConditionTypeId " +
-            "INNER JOIN PriceConditionClass pcc ON pcc.priceConditionClassId=pct.priceConditionClassId "+
-            "INNER JOIN PriceAccessSequence pas ON pas.priceAccessSequenceId=pc.accessSequenceId "+
-            "LEFT JOIN (\n" +
-            "\t\t\t\t\t\t\tSELECT\tCount(pcoa.ChannelId) AS ChannelAttributeCount,pcoa.PriceConditionId\n" +
-            "\t\t\t\t\t\t\tFROM\tPriceConditionOutletAttribute pcoa\n" +
-            "\t\t\t\t\t\t\tGroup By pcoa.PriceConditionId\n" +
-            "\t\t\t\t\t\t) ChannelAttribute ON ChannelAttribute.PriceConditionId = PC.PriceConditionId \n" +
-
-            "LEFT JOIN (\n" +
-            "\t\t\t\t\t\t\tSELECT\tCount(pcoa.ChannelId) AS ChannelAttributeCount,pcoa.PriceConditionId\n" +
-            "\t\t\t\t\t\t\tFROM\tPriceConditionOutletAttribute pcoa\n" +
-            "\t\t\t\t\t\t\tWhere  pcoa.ChannelId = :ChannelId\n" +
-            "\t\t\t\t\t\t\tGroup By pcoa.PriceConditionId\n" +
-            "\t\t\t\t\t\t) OutletChannelAttribute ON ChannelAttribute.PriceConditionId = PC.PriceConditionId \n" +
-
-            "LEFT JOIN (" +
-            "         SELECT\tCount(pcoa.OutletGroupId) AS GroupAttributeCount, pcoa.PriceConditionId" +
-            "         FROM\tPriceConditionOutletAttribute pcoa\n" +
-            "         Group By pcoa.PriceConditionId\n" +
-            "         ) GroupAttribute ON GroupAttribute.PriceConditionId = PC.PriceConditionId\n" +
-            "LEFT JOIN (" +
-            "         SELECT Count(pcoa.OutletGroupId) AS GroupAttributeCount, pcoa.PriceConditionId" +
-            "         FROM PriceConditionOutletAttribute pcoa\n" +
-            "         Where pcoa.OutletGroupId = :PricingGroupId\n" +
-            "         Group By pcoa.PriceConditionId\n" +
-            "         ) OutletGroupAttribute ON OutletGroupAttribute.PriceConditionId = PC.PriceConditionId\n" +
-
-            "LEFT JOIN (\n" +
-            "                                \tSELECT\tCount(pcoa.VPOClassificationId) AS VPOClassificationAttributeCount, pcoa.PriceConditionId\n" +
-            "                                \tFROM\tPriceConditionOutletAttribute pcoa\n" +
-            "                                \tGroup By pcoa.PriceConditionId\n" +
-            "                                \t)\tVPOClassificationAttribute ON VPOClassificationAttribute.PriceConditionId = PC.PriceConditionId\n" +
-            "        " +
-
-            "LEFT JOIN (\n" +
-            "                                \tSELECT\tCount(pcoa.VPOClassificationId) AS VPOClassificationAttributeCount, pcoa.PriceConditionId\n" +
-            "                                \tFROM\tPriceConditionOutletAttribute pcoa\n" +
-            "                                \tWhere\tpcoa.VPOClassificationId = :VPOClassificationId\n" +
-            "                                \tGroup By pcoa.PriceConditionId\n" +
-            "                                 ) OutletVPOClassificationAttribute ON OutletVPOClassificationAttribute.PriceConditionId = PC.PriceConditionId\n" +
-            "        " +
-            "        " +
-            "Where PC.priceConditionTypeId = :priceConditionTypeId  AND\n" +
-            "  (PC.IsBundle = 0 OR PC.IsBundle IS NULL)\n" +
-            "\t\t\tAND (:OrganizationId = 0 OR :OrganizationId IS NULL OR PC.OrganizationId = :OrganizationId)\n" +
-            "\t\t\tAND (\n" +
-            "\t\t\t\t\t(PCC.Code IS NULL OR PCC.Code  <> 'Tax') OR\n" +
-            "\t\t\t\t\t(pc.CustomerRegistrationTypeId = 3) OR\n" +
-            "\t\t\t\t\t(PCC.Code = 'Tax' AND pc.CustomerRegistrationTypeId = :CustomerRegistrationTypeId)\n" +
-            "\t\t\t\t)\n" +
-            "\t\t\tAND (ChannelAttribute.ChannelAttributeCount > 0  OR (\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tSELECT\t\tCount(pcoa1.ChannelId)\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tFROM\t\tPriceConditionOutletAttribute pcoa1\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tWHERE\t\tpcoa1.PriceConditionId = PC.PriceConditionId\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t) = 0\t\t\n" +
-            "\t\t\t\t )\n" +
-            "\t\t\tAND (GroupAttribute.GroupAttributeCount > 0  OR\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t(\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t SELECT\t\tCount(pcoa1.OutletGroupId)\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t FROM\t\tPriceConditionOutletAttribute pcoa1\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t WHERE\t\tpcoa1.PriceConditionId = PC.PriceConditionId \n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t ) = 0\t\t\n" +
-            "\t\t\t\t )\n" +
-            "\t\t\tAND  (VPOClassificationAttribute.VPOClassificationAttributeCount > 0  OR\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t(\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t SELECT\t\tCount(pcoa1.VPOClassificationId)\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t FROM\t\tPriceConditionOutletAttribute pcoa1\n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t WHERE\t\tpcoa1.PriceConditionId = PC.PriceConditionId \n" +
-            "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t ) = 0\n" +
-            "\t\t\t\t )\n" +
-            "\t\t\tAND (\n" +
-            "\t\t\t        (:OutletPromoConfigId IS NULL OR :OutletPromoConfigId=2) \n" +
-            "\t\t\t\t\tOR (:OutletPromoConfigId=1 AND pct.IsPromo = 0) " +
-            "\t\t\t)\n" +
-            "order by pas.`order`")
+    @Query("SELECT PC.*,pas.* , ChannelAttribute.ChannelAttributeCount , OutletChannelAttribute.ChannelAttributeCount AS OutletChannelAttribute ,  \n" +
+            "            GroupAttribute.GroupAttributeCount , OutletGroupAttribute.GroupAttributeCount AS OutletGroupAttribute, \n" +
+            "            VPOClassificationAttribute.VPOClassificationAttributeCount , OutletVPOClassificationAttribute.VPOClassificationAttributeCount AS OutletVPOClassificationAttributeCount \n" +
+            "            FROM PriceCondition PC \n" +
+            "            INNER JOIN PriceConditionType PCT ON PCT.priceConditionTypeId=PC.priceConditionTypeId  \n" +
+            "            INNER JOIN PriceConditionClass pcc ON pcc.priceConditionClassId=pct.priceConditionClassId \n" +
+            "            INNER JOIN PriceAccessSequence pas ON pas.priceAccessSequenceId=pc.accessSequenceId \n" +
+            "            LEFT JOIN PriceConditionEntities E ON E.priceConditionId=PC.priceConditionId\n" +
+            "            LEFT JOIN ( \n" +
+            "            SELECT Count(pcoa.ChannelId) AS ChannelAttributeCount,pcoa.PriceConditionId \n" +
+            "            FROM PriceConditionOutletAttribute pcoa \n" +
+            "            Group By pcoa.PriceConditionId \n" +
+            "            ) ChannelAttribute ON ChannelAttribute.PriceConditionId = PC.PriceConditionId  \n" +
+            "\n" +
+            "            LEFT JOIN ( \n" +
+            "            SELECT Count(pcoa.ChannelId) AS ChannelAttributeCount,pcoa.PriceConditionId \n" +
+            "            FROM PriceConditionOutletAttribute pcoa \n" +
+            "            Where  pcoa.ChannelId = :ChannelId \n" +
+            "            Group By pcoa.PriceConditionId \n" +
+            "            ) OutletChannelAttribute ON ChannelAttribute.PriceConditionId = PC.PriceConditionId  \n" +
+            "\n" +
+            "            LEFT JOIN ( \n" +
+            "                     SELECT Count(pcoa.OutletGroupId) AS GroupAttributeCount, pcoa.PriceConditionId \n" +
+            "                     FROM PriceConditionOutletAttribute pcoa \n" +
+            "                     Group By pcoa.PriceConditionId \n" +
+            "                     ) GroupAttribute ON GroupAttribute.PriceConditionId = PC.PriceConditionId \n" +
+            "            LEFT JOIN ( \n" +
+            "                     SELECT Count(pcoa.OutletGroupId) AS GroupAttributeCount, pcoa.PriceConditionId \n" +
+            "                     FROM PriceConditionOutletAttribute pcoa \n" +
+            "                     Where pcoa.OutletGroupId = :PricingGroupId \n" +
+            "                     Group By pcoa.PriceConditionId \n" +
+            "                     ) OutletGroupAttribute ON OutletGroupAttribute.PriceConditionId = PC.PriceConditionId \n" +
+            "\n" +
+            "            LEFT JOIN ( \n" +
+            "                                            SELECT Count(pcoa.VPOClassificationId) AS VPOClassificationAttributeCount, pcoa.PriceConditionId \n" +
+            "                                            FROM PriceConditionOutletAttribute pcoa \n" +
+            "                                            Group By pcoa.PriceConditionId \n" +
+            "                                            )VPOClassificationAttribute ON VPOClassificationAttribute.PriceConditionId = PC.PriceConditionId \n" +
+            "                     \n" +
+            "\n" +
+            "            LEFT JOIN ( \n" +
+            "                                            SELECT Count(pcoa.VPOClassificationId) AS VPOClassificationAttributeCount, pcoa.PriceConditionId \n" +
+            "                                            FROM PriceConditionOutletAttribute pcoa \n" +
+            "                                            Where pcoa.VPOClassificationId = :VPOClassificationId \n" +
+            "                                            Group By pcoa.PriceConditionId \n" +
+            "                                             ) OutletVPOClassificationAttribute ON OutletVPOClassificationAttribute.PriceConditionId = PC.PriceConditionId \n" +
+            "                     \n" +
+            "                     \n" +
+            "            Where PC.priceConditionTypeId = :priceConditionTypeId  AND \n" +
+            "              (PC.IsBundle = 0 OR PC.IsBundle IS NULL) \n" +
+            "            AND (:OrganizationId = 0 OR :OrganizationId IS NULL OR PC.OrganizationId = :OrganizationId) \n" +
+            "            AND ( \n" +
+            "            (PCC.Code IS NULL OR PCC.Code  <> 'Tax') OR \n" +
+            "            (pc.CustomerRegistrationTypeId = 3) OR \n" +
+            "            (PCC.Code = 'Tax' AND pc.CustomerRegistrationTypeId = :CustomerRegistrationTypeId) \n" +
+            "            ) \n" +
+            "            AND (ChannelAttribute.ChannelAttributeCount > 0  OR ( \n" +
+            "            SELECT Count(pcoa1.ChannelId) \n" +
+            "            FROM PriceConditionOutletAttribute pcoa1 \n" +
+            "            WHERE pcoa1.PriceConditionId = PC.PriceConditionId \n" +
+            "            ) = 0 \n" +
+            "             ) \n" +
+            "            AND (GroupAttribute.GroupAttributeCount > 0  OR \n" +
+            "            ( \n" +
+            "             SELECT Count(pcoa1.OutletGroupId) \n" +
+            "             FROM PriceConditionOutletAttribute pcoa1 \n" +
+            "             WHERE pcoa1.PriceConditionId = PC.PriceConditionId  \n" +
+            "             ) = 0 \n" +
+            "             ) \n" +
+            "            AND  (VPOClassificationAttribute.VPOClassificationAttributeCount > 0  OR \n" +
+            "            ( \n" +
+            "             SELECT Count(pcoa1.VPOClassificationId) \n" +
+            "             FROM PriceConditionOutletAttribute pcoa1 \n" +
+            "             WHERE pcoa1.PriceConditionId = PC.PriceConditionId  \n" +
+            "             ) = 0 \n" +
+            "             ) \n" +
+            "            AND ( \n" +
+            "                    (:OutletPromoConfigId IS NULL OR :OutletPromoConfigId=2)  \n" +
+            "            OR (:OutletPromoConfigId=1 AND pct.IsPromo = 0)  \n" +
+            "            ) \n" +
+            "            AND Cast(PC.ValidFrom AS Date)<=Cast(:date as Date) AND Cast(PC.ValidTo AS Date) >= Cast(:date as Date)   \n" +
+            "             AND (PAS.SequenceCode <> 'DISTRIBUTION_PRODUCT' OR (PAS.SequenceCode = 'DISTRIBUTION_PRODUCT' AND E.DistributionId = :DistributionId))\n" +
+            "             \t\t\tAND (PAS.SequenceCode <> 'OUTLET_PRODUCT' OR (PAS.SequenceCode = 'OUTLET_PRODUCT' AND E.OutletId = :OutletId))\n" +
+            "             order by pas.`order`")
     //--Outlet Is Promo
     //Or Outlet Is No Promo and Pricing is also no promo
     Single<List<PriceConditionWithAccessSequence>> getPriceConditionAndAccessSequenceByTypeId(int priceConditionTypeId , int VPOClassificationId ,
                                                                                               int PricingGroupId , int ChannelId , int OrganizationId,
-                                                                                              int OutletPromoConfigId , int CustomerRegistrationTypeId);
+                                                                                              int OutletPromoConfigId , int CustomerRegistrationTypeId ,String date , Integer DistributionId , Integer OutletId );
 
     @Query("SELECT * from PriceCondition pc " +
             "INNER JOIN PriceAccessSequence pas ON pc.accessSequenceId=pas.priceAccessSequenceId\n" +
@@ -359,7 +363,6 @@ public interface PricingDao {
             "                       )\n" +
             "                    )\n" +
             "                 AND    fgg.isActive = 1 AND fgg.isDeleted=0\n" +
-            "                 --AND fgm.ValidFrom <= @OrderDate AND  fgm.ValidTo >= @OrderDate;\n" +
             "                 AND O.outletPromoConfigId<>1")
     Maybe<List<FreeGoodGroups>> appliedFreeGoodGroups(Integer OutletId , Integer ChannelId , Integer VpoClassificationId , Integer PricingGroupId , Integer RouteId, Integer DistributionId , Integer ProductDefinitionId , Integer AccessSequenceId , Integer OutletIdToCheckAttribute);
 
@@ -378,7 +381,7 @@ public interface PricingDao {
             "    :PriceConditionId AS priceConditionId,\n" +
             "    :PriceConditionDetailId AS priceConditionDetailId,\n" +
             "    :ProductDefinitionId AS productDefinitionId,\n" +
-            "    OAP.productId AS productId,\n" +
+            "    :productId AS productId,\n" +
             "    OAP.packageId AS packageId,\n" +
             "    Sum (OAP.Amount) AS amount ,\n" +
             "    Sum(OAP.Quantity) AS quantity\n" +
@@ -395,5 +398,5 @@ public interface PricingDao {
             "            (OAP.PriceConditionDetailId = :PriceConditionDetailId)\n" +
             "\t\t\t)")
     Maybe<OutletAvailedPromotion> getAlreadyAvailedPromo(Integer OutletId , Integer PriceConditionId , Integer PriceConditionDetailId,
-                                                         Integer ProductDefinitionId );
+                                                         Integer ProductDefinitionId , Long productId );
 }

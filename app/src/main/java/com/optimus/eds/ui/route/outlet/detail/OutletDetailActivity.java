@@ -730,7 +730,8 @@ public class OutletDetailActivity extends BaseActivity implements
 
     @Override
     public void showProgress() {
-        showProgressD(this, true);
+        if(! isFinishing())
+            showProgressD(this, true);
     }
 
     @Override
