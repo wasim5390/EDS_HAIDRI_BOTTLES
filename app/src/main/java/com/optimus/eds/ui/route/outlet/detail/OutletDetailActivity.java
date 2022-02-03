@@ -610,11 +610,32 @@ public class OutletDetailActivity extends BaseActivity implements
     @OnClick(R.id.btnOk)
     public void onOkClick() {
 
-        viewModel.updateOutletStatusCode(1);
-        if (currentLatLng != null)
-            viewModel.onNextClick(currentLocation , currentLatLng, outletVisitStartTime);
-        else{
-            locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
+        if(android.provider.Settings.Global.getInt(getContentResolver(), android.provider.Settings.Global.AUTO_TIME, 0)==1){
+
+           outletVisitStartTime = System.currentTimeMillis();
+            viewModel.updateOutletStatusCode(1);
+            if (currentLatLng != null)
+                viewModel.onNextClick(currentLocation , currentLatLng, outletVisitStartTime);
+            else{
+                locationProviderClient.requestLocationUpdates(locationRequest , locationCallback , Looper.getMainLooper());
+            }
+        }else{
+
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle(R.string.warning);
+            builderSingle.setMessage("Please set the Auto Date and Time");
+            builderSingle.setCancelable(false);
+            builderSingle.setPositiveButton("Setting", (dialog1, which1) -> {
+                dialog1.dismiss();
+                startActivityForResult(new Intent(android.provider.Settings.ACTION_DATE_SETTINGS), 0);
+
+            });
+            builderSingle.setNegativeButton("Cancel" , (dialog1, which1) -> {
+                dialog1.dismiss();
+
+            });
+            builderSingle.show();
+
         }
 //        if (!isFakeLocation) {
 //            viewModel.updateOutletStatusCode(1);

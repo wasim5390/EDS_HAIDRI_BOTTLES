@@ -169,7 +169,7 @@ public class OutletDetailViewModel extends AndroidViewModel {
     }
 
     public Configuration getConfiguration(){
-        return repository.getConfiguration();
+        return repository.getConfiguration() == null ? new Configuration() : repository.getConfiguration();
     }
 
     public void onNextClick( Location currentLocation, LatLng currentLatLng, Long outletVisitStartTime) {
