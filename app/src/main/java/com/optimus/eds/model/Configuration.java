@@ -16,6 +16,7 @@ public class Configuration {
     private Boolean taskExists;
 
 
+
     public Configuration() {
     }
 
@@ -40,11 +41,11 @@ public class Configuration {
     }
 
     public Boolean getGeoFenceRequired() {
-        return geoFenceRequired==null?false:geoFenceRequired;
+        return geoFenceRequired != null && geoFenceRequired;
     }
 
     public boolean taskExists() {
-        return taskExists==null?false:taskExists;
+        return taskExists != null && taskExists;
     }
 
 
