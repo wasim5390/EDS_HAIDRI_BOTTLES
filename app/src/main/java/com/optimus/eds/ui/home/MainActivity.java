@@ -179,7 +179,7 @@ public class MainActivity extends BaseActivity {
         appVersion.setTitle("App version " + BuildConfig.VERSION_CODE);
 
         MenuItem lastUpdate = nav.getMenu().getItem(4);
-        lastUpdate.setTitle("Updated on 2/3/2022");
+        lastUpdate.setTitle("Updated on 24/2/2022");
 
         nav.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();

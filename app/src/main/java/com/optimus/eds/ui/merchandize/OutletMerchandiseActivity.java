@@ -17,6 +17,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -53,6 +54,8 @@ import com.optimus.eds.ui.merchandize.asset_verification.AssetsVerificationActiv
 import com.optimus.eds.ui.merchandize.planogaram.ImageDialog;
 import com.optimus.eds.utils.PreferenceUtil;
 import com.optimus.eds.utils.Util;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.watermark.androidwm.WatermarkBuilder;
 import com.watermark.androidwm.bean.WatermarkText;
 
@@ -333,17 +336,9 @@ public class OutletMerchandiseActivity extends BaseActivity {
     @OnClick(R.id.btnBeforeMerchandise)
     public void onBeforeMerchandiseClick(){
 
-//        if(isAssets && PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
-//            type= MerchandiseImgType.BEFORE_MERCHANDISE;
-//            actionPic(Constant.IntentExtras.ACTION_CAMERA);
-//        }else if (isAssets && !PreferenceUtil.getInstance(this).getAssetScannedInLastMonth()){
-//            Toast.makeText(this, "Please scan all assets", Toast.LENGTH_SHORT).show();
-//        }else{
+
             type= MerchandiseImgType.BEFORE_MERCHANDISE;
             actionPic(Constant.IntentExtras.ACTION_CAMERA);
-//        }
-
-
 
     }
 
@@ -513,6 +508,25 @@ public class OutletMerchandiseActivity extends BaseActivity {
     }
 
 
+    private Target onActivityTarget = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap rotatedBitmap, Picasso.LoadedFrom from) {
+
+            runOnUiThread(() ->{
+                File file  = createWaterMark(rotatedBitmap);
+                viewModel.saveImages(file.getPath() , type);
+            });
+        }
+        @Override
+        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -541,27 +555,28 @@ public class OutletMerchandiseActivity extends BaseActivity {
 //                    break;
 
                 case ImagePicker.REQUEST_CODE:
-                    Bitmap simpleBitmap = null;
-                    try {
-                        simpleBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+//                    Bitmap simpleBitmap = null;
+//                    try {
+//                        simpleBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Bitmap rotatedBitmap = null;
+//                    File file = Util.saveToInternalStorage(simpleBitmap , this);
+//                    simpleBitmap = BitmapFactory.decodeFile(file.getPath());
+//                    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q){
+//                        rotatedBitmap = Util.captureImageOrientation(file.getAbsolutePath() , simpleBitmap);
+//                    }else{
+//                        rotatedBitmap = Util.captureImageOrientation(new File(data.getData().getPath()).getAbsolutePath(), simpleBitmap);
+//                    }
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Bitmap rotatedBitmap = null;
-                    File file = Util.saveToInternalStorage(simpleBitmap , this);
-                    simpleBitmap = BitmapFactory.decodeFile(file.getPath());
-                    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q){
-                        rotatedBitmap = Util.captureImageOrientation(file.getAbsolutePath() , simpleBitmap);
-                    }else{
-                        rotatedBitmap = Util.captureImageOrientation(new File(data.getData().getPath()).getAbsolutePath(), simpleBitmap);
-                    }
+//                    File rotatedFile = null;
+//                    if (rotatedBitmap != null)
+//                        rotatedFile =  createWaterMark(rotatedBitmap);
+//                    if (rotatedFile != null)
 
-                    File rotatedFile = null;
-                    if (rotatedBitmap != null)
-                        rotatedFile =  createWaterMark(rotatedBitmap);
-                    if (rotatedFile != null)
-                     viewModel.saveImages(rotatedFile.getPath() , type);
+                    Picasso.get().load(data.getData()).into(onActivityTarget);
                     break;
                 case REQUEST_CODE:
                     setResult(RESULT_OK,data);

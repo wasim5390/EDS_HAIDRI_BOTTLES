@@ -201,8 +201,6 @@ public class OutletDetailViewModel extends AndroidViewModel {
 
             uploadStatus.postValue(outletStatus != 1);
         }
-
-
     }
 
     // schedule

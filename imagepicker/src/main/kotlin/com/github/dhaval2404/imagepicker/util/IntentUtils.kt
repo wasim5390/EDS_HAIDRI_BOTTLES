@@ -2,9 +2,12 @@ package com.github.dhaval2404.imagepicker.util
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import com.github.dhaval2404.imagepicker.R
@@ -70,7 +73,7 @@ object IntentUtils {
      */
     @JvmStatic
     fun getCameraIntent(context: Context, file: File): Intent? {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             // authority = com.github.dhaval2404.imagepicker.provider
@@ -81,6 +84,24 @@ object IntentUtils {
         } else {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file))
         }
+
+        var defaultCameraPackage = ""
+        val list: List<ApplicationInfo> =
+            context.packageManager.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES)
+        for (n in list.indices) {
+            if (list[n].flags and ApplicationInfo.FLAG_SYSTEM === 1) {
+                Log.d(
+                    "TAG",
+                    "Installed Applications  : " + list[n].loadLabel(context.packageManager).toString()
+                )
+                Log.d("TAG", "package name  : " + list[n].packageName)
+                if (list[n].loadLabel(context.packageManager).toString().equals("Camera" , ignoreCase = true)) {
+                    defaultCameraPackage = list[n].packageName
+                    break
+                }
+            }
+        }
+
 
         return intent
     }

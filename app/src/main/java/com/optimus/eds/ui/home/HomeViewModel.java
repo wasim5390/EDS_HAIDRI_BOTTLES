@@ -241,8 +241,6 @@ public class HomeViewModel extends AndroidViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.single())
                 .subscribe(new DisposableObserver<MasterModel>() {
-
-
                     @Override
                     public void onNext(MasterModel response) {
                         Log.i(TAG,"OnNext");
@@ -381,9 +379,9 @@ public class HomeViewModel extends AndroidViewModel {
                 })
                 .map(model -> {
                     if(model.isSuccess()) {
+                        scheduleMerchandiseJob(getApplication().getApplicationContext() , model.getOutletId() , PreferenceUtil.getInstance(getApplication()).getToken() , model.getOutletStatus());
                         model.setOutletId(masterModel.getOutletId());
                         model.setOutletStatus(orderStatus.getStatus());
-                        scheduleMerchandiseJob(getApplication().getApplicationContext() , model.getOutletId() , PreferenceUtil.getInstance(getApplication()).getToken() , model.getOutletStatus());
                         return model;
                     }else{
 
