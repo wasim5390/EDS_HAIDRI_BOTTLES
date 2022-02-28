@@ -14,8 +14,8 @@ android {
         applicationId "com.optimus.eds"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 13
-        versionName "1.0.13"
+        versionCode 1
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -33,7 +33,7 @@ android {
 //        }
         pepsi_uat{ // For PEPSI
 //            buildConfigField "String", "BASE_URL", '"http://101.50.85.136:81/api/"'
-            buildConfigField "String", "BASE_URL", '"https://edshblapi.azurewebsites.net/"'
+            buildConfigField "String", "BASE_URL", '"http://115.186.182.57:8092/API/"'
         }
         pepsi_uat_testing{ // For PEPSI
             buildConfigField "String", "BASE_URL", '"http://115.186.182.57:81/API/"'
