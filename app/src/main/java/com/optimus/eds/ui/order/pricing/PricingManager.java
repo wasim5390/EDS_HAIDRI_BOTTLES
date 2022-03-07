@@ -1245,8 +1245,11 @@ public class PricingManager {
                             childOrderDetail.setCartonDefinitionId(freegood.getProductDefinitionId());
                             childOrderDetail.setCartonQuantity(freegood.getFinalFreeGoodsQuantity());
                             childOrderDetail.setActualCartonStock(freegood.getStockInHand());
+                            if (freegood.getFreeGoodGroupId() != null)
                             childOrderDetail.setCartonFreeGoodGroupId(freegood.getFreeGoodGroupId().longValue());
+                            if (freegood.getFreeGoodDetailId() != null)
                             childOrderDetail.setCartonFreeGoodDetailId(freegood.getFreeGoodDetailId().longValue());
+                            if (freegood.getFreeGoodExclusiveId() != null)
                             childOrderDetail.setCartonFreeGoodExclusiveId(freegood.getFreeGoodExclusiveId().longValue());
                             childOrderDetail.setCartonFreeQuantityTypeId(freegood.getFreeQuantityTypeId());
                             childOrderDetail.setCartonFreeGoodQuantity(freegood.getFinalFreeGoodsQuantity());
