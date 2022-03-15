@@ -77,7 +77,7 @@ import com.optimus.eds.ui.order.pricing.ProductQuantity;
         PriceAccessSequence.class,
         PriceBundle.class, PriceCondition.class, PriceConditionAvailed.class,
         PriceConditionClass.class, FreeGoodDetails.class , FreeGoodEntityDetails.class ,
-        FreeGoodExclusives.class , FreeGoodGroups.class , FreeGoodMasters.class , FreePriceConditionOutletAttributes.class,
+        FreeGoodExclusives. class , FreeGoodGroups.class , FreeGoodMasters.class , FreePriceConditionOutletAttributes.class,
         OutletAvailedFreeGoods.class,
         PriceConditionDetail.class , ProductQuantity.class, PriceConditionEntities.class,
         PriceConditionScale.class, PriceConditionType.class, PriceScaleBasis.class,
