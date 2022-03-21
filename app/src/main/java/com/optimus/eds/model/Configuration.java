@@ -11,7 +11,6 @@ public class Configuration {
     private Integer geoFenceMinRadius;
     @Expose
     private Boolean geoFenceRequired;
-
     @Expose
     private Boolean taskExists;
 
