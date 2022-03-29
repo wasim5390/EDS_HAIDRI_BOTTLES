@@ -137,8 +137,17 @@ public class CustomerInputViewModel extends AndroidViewModel {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String finalJson = gson.toJson(data);
 //        OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOrder().getPayable());
+
+
+        OrderStatus dbOutletStatus = statusRepository.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
+
+
         OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOutlet().getLastOrder()!=null?orderModel.getOutlet().getLastOrder().getOrderTotal() : 0.0);
-        orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
+
+        if (dbOutletStatus != null && dbOutletStatus.getOutletVisitEndTime() != null)
+            orderStatus.setOutletVisitEndTime(dbOutletStatus.getOutletVisitEndTime());
+        else
+            orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
         orderStatus.setData(finalJson);
 
         if (orderModel.order.serverOrderId != null)
@@ -149,7 +158,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
         statusRepository.updateStatus(orderStatus);
 
         NetworkManager.getInstance().isOnline().subscribe((available, throwable) -> {
-            Log.println(100,"Post Data:",outletId.toString());
+//            Log.println(100,"Post Data:",outletId.toString());
             if (available){
                 startUploadService.postValue(outletId);
             }else{
@@ -341,8 +350,7 @@ public class CustomerInputViewModel extends AndroidViewModel {
             Throwable mThrowable = (Throwable) throwable;
             mThrowable.printStackTrace();
             errorBody = mThrowable.getMessage();
-        }
-        else{
+        }else{
             if(((MasterModel)throwable).getErrorCode()==2)
                 errorBody =((MasterModel)throwable).getResponseMsg();
 

@@ -193,7 +193,7 @@ public class OutletDetailViewModel extends AndroidViewModel {
             outlet.setStatusId(outletStatus);
 
             OrderStatus orderStatus = new OrderStatus(outlet.getOutletId(),outletStatus,false,0.0);
-            orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
+//            orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
             orderStatus.setOutletVisitStartTime(outletVisitStartTime);
             statusRepository.insertStatus(orderStatus);
             repository.updateOutlet(outlet);

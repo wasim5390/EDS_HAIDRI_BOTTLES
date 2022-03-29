@@ -74,6 +74,9 @@ import butterknife.OnClick;
 import id.zelory.compressor.Compressor;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class OutletMerchandiseActivity extends BaseActivity {
 
@@ -514,6 +517,12 @@ public class OutletMerchandiseActivity extends BaseActivity {
 
             runOnUiThread(() ->{
                 File file  = createWaterMark(rotatedBitmap);
+
+                RequestBody requestFile =
+                        RequestBody.create(file , MediaType.parse("multipart/form-data"));
+                // MultipartBody.Part is used to send also the actual file name
+                MultipartBody.Part multiPart = MultipartBody.Part.createFormData("imagePath", file.getName(), requestFile);
+
                 viewModel.saveImages(file.getPath() , type);
             });
         }
