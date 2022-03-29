@@ -41,17 +41,24 @@ public class MerchandiseUploadService extends JobService implements Constant {
             final Long outletId = bundle.getLong(EXTRA_PARAM_OUTLET_ID);
             token = bundle.getString(TOKEN);
             statusId = bundle.getInt("statusId");
-            AppDatabase.getDatabase(getApplication())
-                    .merchandiseDao().findMerchandiseByOutletId(outletId)
-                    .map(merchandise -> {
-                        for(MerchandiseImage merchandiseImage: merchandise.getMerchandiseImages()){
-                            merchandiseImage.setBase64Image(Util.imageFileToBase64(new File(merchandiseImage.getPath())));
-                        }
-                        return merchandise;
-                    })
-                    .observeOn(Schedulers.io())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(this::uploadMerchandise,this::error);
+
+            // Multipart Code
+//            RequestBody requestFile =
+////                        RequestBody.create(file , MediaType.parse("multipart/form-data"));
+////                // MultipartBody.Part is used to send also the actual file name
+////                MultipartBody.Part multiPart = MultipartBody.Part.createFormData("imagePath", file.getName(), requestFile);
+
+                AppDatabase.getDatabase(getApplication())
+                .merchandiseDao().findMerchandiseByOutletId(outletId)
+                .map(merchandise -> {
+                    for(MerchandiseImage merchandiseImage: merchandise.getMerchandiseImages()){
+                        merchandiseImage.setBase64Image(Util.imageFileToBase64(new File(merchandiseImage.getPath())));
+                    }
+                    return merchandise;
+                })
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::uploadMerchandise,this::error);
 
         }
         return true;

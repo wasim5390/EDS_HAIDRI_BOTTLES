@@ -517,12 +517,6 @@ public class OutletMerchandiseActivity extends BaseActivity {
 
             runOnUiThread(() ->{
                 File file  = createWaterMark(rotatedBitmap);
-
-                RequestBody requestFile =
-                        RequestBody.create(file , MediaType.parse("multipart/form-data"));
-                // MultipartBody.Part is used to send also the actual file name
-                MultipartBody.Part multiPart = MultipartBody.Part.createFormData("imagePath", file.getName(), requestFile);
-
                 viewModel.saveImages(file.getPath() , type);
             });
         }
