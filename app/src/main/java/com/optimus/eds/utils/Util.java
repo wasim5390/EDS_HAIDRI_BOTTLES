@@ -417,9 +417,9 @@ public class Util {
     public static File saveToInternalStorage(Bitmap bitmapImage , Context context){
         ContextWrapper cw = new ContextWrapper(context);
         // path to /data/data/yourapp/app_data/imageDir
-        File directory = cw.getDir("imageDir " + System.currentTimeMillis(), Context.MODE_PRIVATE);
+        File directory = cw.getDir("imageDir" , Context.MODE_PRIVATE);
         // Create imageDir
-        File mypath=new File(directory,"profile.jpg");
+        File mypath=new File(directory,System.currentTimeMillis() +".jpg");
 
         FileOutputStream fos = null;
         try {

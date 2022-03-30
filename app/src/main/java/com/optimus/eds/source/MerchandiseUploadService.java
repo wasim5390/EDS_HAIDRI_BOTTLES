@@ -43,16 +43,27 @@ public class MerchandiseUploadService extends JobService implements Constant {
             statusId = bundle.getInt("statusId");
 
             // Multipart Code
-//            RequestBody requestFile =
-////                        RequestBody.create(file , MediaType.parse("multipart/form-data"));
-////                // MultipartBody.Part is used to send also the actual file name
-////                MultipartBody.Part multiPart = MultipartBody.Part.createFormData("imagePath", file.getName(), requestFile);
-
                 AppDatabase.getDatabase(getApplication())
                 .merchandiseDao().findMerchandiseByOutletId(outletId)
                 .map(merchandise -> {
                     for(MerchandiseImage merchandiseImage: merchandise.getMerchandiseImages()){
-                        merchandiseImage.setBase64Image(Util.imageFileToBase64(new File(merchandiseImage.getPath())));
+
+                        // Before Multipart
+//                        merchandiseImage.setBase64Image(Util.imageFileToBase64(new File(merchandiseImage.getPath())));
+
+                        String[] path = merchandiseImage.getPath().split("/");
+
+                        if (path != null && path.length > 0){
+                            // After Multipart
+                            merchandiseImage.setBase64Image(outletId+"_"+merchandiseImage.getId()+"_"+path[path.length-1]);
+                        }
+//                        File file = new File(merchandiseImage.getPath());
+//                        RequestBody requestFile = RequestBody.create(file , MediaType.parse("multipart/form-data"));
+////                        MultipartBody.Part is used to send also the actual file name
+//                        MultipartBody.Part multiPart = MultipartBody.Part.createFormData("imagePath", file.getName(), requestFile);
+//
+//                        RequestBody.create("120193" , MediaType.parse("text/plain"));
+
                     }
                     return merchandise;
                 })

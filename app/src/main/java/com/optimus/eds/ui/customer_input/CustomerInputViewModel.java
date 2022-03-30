@@ -135,19 +135,21 @@ public class CustomerInputViewModel extends AndroidViewModel {
     public void postData(OrderModel orderModel,CustomerInput customerInput){
         MasterModel data = generateOrder(orderModel,customerInput);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String finalJson = gson.toJson(data);
 //        OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOrder().getPayable());
 
-
-        OrderStatus dbOutletStatus = statusRepository.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
-
-
+        OrderStatus status = statusRepository.findOrderStatus(orderModel.getOutlet().getOutletId()).blockingGet();
         OrderStatus orderStatus = new OrderStatus(outletId,Constant.STATUS_PENDING_TO_SYNC,false,orderModel.getOutlet().getLastOrder()!=null?orderModel.getOutlet().getLastOrder().getOrderTotal() : 0.0);
 
-        if (dbOutletStatus != null && dbOutletStatus.getOutletVisitEndTime() != null)
-            orderStatus.setOutletVisitEndTime(dbOutletStatus.getOutletVisitEndTime());
-        else
-            orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
+
+        if (status != null && status.getOutletVisitEndTime() != null){
+            orderStatus.setOutletVisitEndTime(status.getOutletVisitEndTime());
+            data.setOutletEndTime(status.getOutletVisitEndTime());
+        } else{
+            if (status != null)
+                orderStatus.setOutletVisitEndTime(Calendar.getInstance().getTimeInMillis());
+        }
+
+        String finalJson = gson.toJson(data);
         orderStatus.setData(finalJson);
 
         if (orderModel.order.serverOrderId != null)
